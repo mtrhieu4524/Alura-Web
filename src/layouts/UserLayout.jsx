@@ -1,16 +1,14 @@
 import HeaderComponent from "../components/Header/HeaderComponent";
 import FooterComponent from "../components/Footer/FooterComponent";
 
-const Home = () => {
-
+const UserLayout = ({ children }) => {
     return (
-        <div>
+        <>
             <HeaderComponent />
-            <h1>This is home</h1>
+            <main>{children}</main>
             <FooterComponent />
-
-        </div>
+        </>
     );
 };
 
-export default Home;
+export default UserLayout;
