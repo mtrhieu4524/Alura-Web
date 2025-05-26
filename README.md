@@ -1,12 +1,70 @@
-# React + Vite
+# Alurà Project Structure Guide
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Alurà** is an AI-powered e-commerce platform specializing in selling cosmetics and pharmaceuticals. This web application helps users easily discover the most suitable products for their needs through intelligent search and recommendation features.
 
-Currently, two official plugins are available:
+The frontend is built using **React** and **Vite** to ensure fast development, high performance, and maintainability.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Below is a breakdown of how the project is structured and how each folder in the `src/` directory should be used.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📁 src/
+
+This is the main source folder containing all the frontend code.
+
+### ┣ 📁 assets/
+- Static assets like images, icons, fonts, etc.
+- Example: `logo.png`, `background.jpg`
+
+### ┣ 📁 components/
+- Reusable UI components (buttons, cards, modals, etc.)
+- Keep components small and modular.
+- Example: `ProductCard.jsx`, `Navbar.jsx`, `SearchBar.jsx`
+
+### ┣ 📁 hooks/
+- Custom React hooks to encapsulate logic.
+- Useful for AI-based recommendations, debouncing, auth, etc.
+- Example: `useProductSearch.js`, `useAuth.js`, `useDebounce.js`
+
+### ┣ 📁 layouts/
+- Layout components that wrap around pages.
+- Example: `MainLayout.jsx`, `AdminLayout.jsx`, `UserLayout.jsx`
+
+### ┣ 📁 pages/
+- Main page-level components.
+- These are typically mapped to routes.
+- Example: `Home.jsx`, `ProductDetail.jsx`, `Cart.jsx`, `Login.jsx`
+
+### ┣ 📁 routes/
+- Route configuration using React Router.
+- Manages all application navigation in a centralized file.
+- Example: `AppRoutes.jsx`
+
+### ┣ 📁 store/
+- Global state management (e.g., using Redux, Zustand, etc.).
+- Handles shared state like user, cart, product filters.
+- Example: `userStore.js`, `cartSlice.js`, `productStore.js`
+
+### ┣ 📁 styles/
+- Global styles or Tailwind CSS configurations.
+- Can include CSS modules or utility classes.
+- Example: `App.css`, `index.css`
+
+### 📄 App.jsx
+- The root component that sets up routing and layout wrappers.
+
+### 📄 main.jsx
+- The entry point of the application. It renders `App.jsx` into the DOM and initializes the app.
+
+---
+
+## 🚀 Getting Started
+
+To run the project locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
