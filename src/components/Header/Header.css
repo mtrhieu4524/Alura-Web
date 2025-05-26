@@ -66,7 +66,7 @@ body {
 }
 
 .logo {
-    width: 70%;
+    width: 65%;
     margin: 8px 0 5px 0;
     cursor: pointer;
 }
@@ -153,7 +153,7 @@ body {
 .navbar-nav .nav-item .nav-link {
     position: relative;
     display: inline-block;
-    padding: 8px 16px 3px 8px;
+    padding: 8px 0px 3px 0px;
     overflow: hidden;
     color: #000;
     text-decoration: none;
@@ -249,176 +249,6 @@ body {
 }
 
 
-.diamond_dropdown_section {
-    position: relative;
-    display: inline-block;
-}
-
-.diamond_dropdown_section:hover .dropdown-menu {
-    display: block;
-}
-
-.diamond_dropdown_section:hover .icon_arrow_diamond {
-    transform: rotate(-180deg);
-}
-
-.diamond_dropdown_section i {
-    color: #797979;
-    font-size: 15px;
-}
-
-.diamond_dropdown_section li:focus {
-    color: #797979;
-}
-
-.diamond_dropdown_menu {
-    display: none;
-    flex-direction: row;
-    width: 455%;
-    border-radius: 0;
-    left: 0;
-    right: 0;
-    top: 38px;
-    background-color: white;
-    padding: 10px 40px 15px 40px;
-}
-
-.diamond_dropdown_menu .dropdown_content {
-    display: flex;
-    width: 100%;
-}
-
-.diamond_dropdown_menu .dropdown_items {
-    flex: 1;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.diamond_dropdown_menu .dropdown_image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.diamond_dropdown_menu .dropdown_image img {
-    max-height: 200px;
-    width: 500px;
-}
-
-.diamond_dropdown_menu li a,
-.wedding_dropdown_menu li a {
-    cursor: pointer;
-    color: #797979;
-    display: block;
-    padding: 10px;
-}
-
-.wedding_dropdown_section {
-    position: relative;
-    display: inline-block;
-}
-
-.wedding_dropdown_section:hover .dropdown-menu {
-    display: block;
-}
-
-.wedding_dropdown_section:hover .icon_arrow_wedding {
-    transform: rotate(-180deg);
-}
-
-.wedding_dropdown_section i {
-    color: #565e6c;
-    font-size: 15px;
-}
-
-.wedding_dropdown_section li:focus {
-    color: #565e6c;
-}
-
-.wedding_dropdown_menu {
-    display: none;
-    flex-direction: row;
-    width: 460%;
-    border-radius: 0;
-    left: -114%;
-    right: 0;
-    top: 38px;
-    background-color: white;
-    padding: 10px 40px 15px 40px;
-}
-
-.wedding_dropdown_menu .dropdown_content {
-    display: flex;
-    width: 100%;
-}
-
-.wedding_dropdown_menu .dropdown_items {
-    flex: 1;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.wedding_dropdown_menu .dropdown_image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.wedding_dropdown_menu .dropdown_image img {
-    max-height: 200px;
-    width: 500px;
-}
-
-.diamond_dropdown_menu,
-.wedding_dropdown_menu {
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    transform: translateX(4px);
-}
-
-.diamond_dropdown_section:hover .dropdown-menu,
-.wedding_dropdown_section:hover .dropdown-menu {
-    display: flex;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.diamond_dropdown_section .dropdown-item,
-.wedding_dropdown_section .dropdown-item {
-    transition: font-weight 0.3s ease, transform 0.3s ease;
-}
-
-.diamond_dropdown_section .dropdown-item:hover,
-.wedding_dropdown_section .dropdown-item:hover {
-    transform: translateX(4px);
-    background-color: transparent !important;
-    color: #1c1c1c;
-}
-
-.diamond_dropdown_section:hover .dropdown-menu,
-.wedding_dropdown_section:hover .dropdown-menu,
-.diamond_dropdown_section .dropdown-menu:hover,
-.wedding_dropdown_section .dropdown-menu:hover {
-    display: flex;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.diamond_dropdown_section:hover .header_spe_nav_link,
-.wedding_dropdown_section:hover .header_spe_nav_link,
-.diamond_dropdown_section .dropdown-menu:hover~.header_spe_nav_link,
-.wedding_dropdown_section .dropdown-menu:hover~.header_spe_nav_link {
-    color: #797979;
-    text-decoration: none;
-}
-
-.dropdown-item {
-    cursor: pointer;
-}
 
 /* Account dropdown menu  */
 .account_dropdown_section {
@@ -452,7 +282,7 @@ body {
     position: absolute;
     top: 50%;
     right: 0;
-    margin-top: 10px;
+    margin-top: 9px;
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0;

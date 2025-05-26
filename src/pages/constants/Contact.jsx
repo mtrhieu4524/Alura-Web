@@ -1,10 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import '../styles/Contact.css';
-import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
-// import ScrollToTop from '../../components/ScrollToTop/ScrollToTop.js';
-import Insta from '../components/Insta/Instagram';
+import '../../styles/constants/Contact.css';
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
+import Insta from '../../components/Insta/Instagram';
 
 function Contact() {
     const breadcrumbItems = [
@@ -65,7 +64,6 @@ function Contact() {
                 </div>
             </div>
 
-            {/* <ScrollToTop /> */}
             <Insta />
         </div>
     );

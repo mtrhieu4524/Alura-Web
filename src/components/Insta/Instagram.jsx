@@ -1,9 +1,9 @@
-import inspired1 from '../../assets/inspired1.png';
-import inspired2 from '../../assets/inspired2.png';
-import inspired3 from '../../assets/inspired3.png';
-import inspired4 from '../../assets/inspired4.png';
-import inspired5 from '../../assets/inspired5.png';
-import inspired6 from '../../assets/inspired6.png';
+import inspired1 from '../../assets/ins1.png';
+import inspired2 from '../../assets/ins2.png';
+import inspired3 from '../../assets/ins3.png';
+import inspired4 from '../../assets/ins4.png';
+import inspired5 from '../../assets/ins5.png';
+import inspired6 from '../../assets/ins6.png';
 import '../Insta/Instagram.css';
 
 const Instagram = () => {

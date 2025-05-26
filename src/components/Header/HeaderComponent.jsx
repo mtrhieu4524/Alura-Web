@@ -128,7 +128,7 @@ const HeaderComponent = () => {
                     >
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/home">
+                                <Link className="home nav-link" to="/">
                                     HOME
                                 </Link>
                             </li>
@@ -232,7 +232,7 @@ const HeaderComponent = () => {
                             </li>
                             <li className="nav-item">
                                 <Link className="home nav-link" to="/introduce">
-                                    INTRODUCTION
+                                    INTRODUCE
                                 </Link>
                             </li>
                             <li className="nav-item">
