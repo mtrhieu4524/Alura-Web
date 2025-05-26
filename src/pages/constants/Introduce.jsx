@@ -102,7 +102,7 @@ const Introduce = () => {
                         <h3>YOUR JOURNEY MATTERS</h3>
                         <div className="introduce_experience_underline"></div>
                         <p>From personalized consultations to expert treatments, our approach is tailored to your skin goals and comfort. Whether you're treating acne, wrinkles, pigmentation, or simply seeking a glow-up, we’re here to help you feel your best.</p>
-                        <button onClick={() => handleNavigate('/cosmetics', { category: 'all' })} className="introduce_shop_now_btn">Explore Cosmetics</button>
+                        <button onClick={() => handleNavigate('/cosmetics', { category: 'all' })} className="introduce_shop_now_btn">Explore cosmetics</button>
                     </div>
                     <div className="introduce_experience_right col-lg-6 col-md-6 col-sm-12">
                         <img src={experience} alt="Client Experience" />
