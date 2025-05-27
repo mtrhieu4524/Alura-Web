@@ -319,13 +319,13 @@ const Register = () => {
                         </div>
                         <div className="re_password_section mb-3 position-relative">
                             <label className="password_label" htmlFor="re_password">
-                                Re-enter password
+                                Confirm password
                             </label>
                             <input
                                 type="password"
                                 className="form-control"
                                 id="re_password"
-                                placeholder="Re-enter password"
+                                placeholder="Confirm password"
                                 required
                             />
                             <span className="re_password_eye">
