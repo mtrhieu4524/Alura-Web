@@ -7,6 +7,10 @@ import faqsImg from '../../assets/faq.png';
 import Insta from '../../components/Insta/Instagram';
 
 function Faqs() {
+    useEffect(() => {
+        document.title = "Alurà - Frequently Asked Questions";
+    }, []);
+
     const [transitionKey, setTransitionKey] = useState(Date.now());
     const breadcrumbItems = [
         { name: 'Home', link: '/' },

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import '../../styles/constants/Introduce.css';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
@@ -23,6 +25,10 @@ const Introduce = () => {
     const handleNavigate = (path, state) => {
         navigate(path, { state });
     };
+
+    useEffect(() => {
+        document.title = "Alurà - Introduce";
+    }, []);
 
     return (
         <div className="Introduce">
