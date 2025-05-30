@@ -7,6 +7,7 @@ import Introduce from "../pages/constants/Introduce";
 import Faqs from "../pages/constants/Faqs";
 import Login from "../pages/authen/Login";
 import Register from "../pages/authen/Register";
+import ProductList from "../pages/product/ProductList";
 
 import UserLayout from "../layouts/UserLayout";
 // import AdminLayout from "../layouts/AdminLayout";
@@ -25,6 +26,7 @@ const MainRoutes = () => {
       <Route path="/introduce" element={<UserLayout><Introduce /></UserLayout>} />
       <Route path="/faqs" element={<UserLayout><Faqs /></UserLayout>} />
       <Route path="/visual-search" element={<UserLayout><VisualSearch /></UserLayout>} />
+      <Route path="/cosmetics" element={<UserLayout><ProductList /></UserLayout>} />
 
 
       {/* Admin Routes */}

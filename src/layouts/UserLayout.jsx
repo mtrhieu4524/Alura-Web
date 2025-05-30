@@ -1,6 +1,7 @@
 import HeaderComponent from "../components/Header/HeaderComponent";
 import FooterComponent from "../components/Footer/FooterComponent";
 import ScrollToTop from "../components/ScrollToTop/ScrollToTop";
+import AutoScroll from "../components/AutoScroll/AutoScroll";
 
 const UserLayout = ({ children }) => {
     return (
@@ -8,6 +9,7 @@ const UserLayout = ({ children }) => {
             <HeaderComponent />
             <main>{children}</main>
             <ScrollToTop />
+            <AutoScroll />
             <FooterComponent />
         </>
     );
