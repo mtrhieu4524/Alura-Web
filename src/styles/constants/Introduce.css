@@ -194,6 +194,7 @@
 .difference_2_left img {
     width: 80%;
     height: 600px;
+    object-fit: cover;
 }
 
 .difference_2_right {

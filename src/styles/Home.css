@@ -677,7 +677,8 @@ body {
 
 .bb_image {
     width: 93%;
-    height: 500px;
+    height: 550px;
+    object-fit: cover;
 }
 
 .bb_content {

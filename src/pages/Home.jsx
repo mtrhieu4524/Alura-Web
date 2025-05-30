@@ -27,9 +27,9 @@ import heart from '../assets/heart.png';
 import slide3 from '../assets/slide1.jpg';
 import slide2 from '../assets/slide2.png';
 import slide1 from '../assets/slide3.webp';
-import slide3Small from '../assets/slide3Small.webp';
-import slide2Small from '../assets/slide2Small.webp';
-import slide1Small from '../assets/slide1Small.jpg';
+import slide3Small from '../assets/slide3Small.jpeg';
+import slide2Small from '../assets/slide2Small.jpg';
+import slide1Small from '../assets/slide1Small.png';
 import sliderBackground from '../assets/homeBackground.png';
 import bb from '../assets/belove.jpg';
 import trending from '../assets/diff2.png';
@@ -186,12 +186,12 @@ const Home = () => {
                         </div>
                         <div className="slide-content">
                             <img className="slide-img left-img" src={slide1} alt="Slide 1" />
-                            <h1>DIAMOND <br></br>RINGS</h1>
+                            <h1>FACIAL <br></br>COSMETICS</h1>
                             <div className="slide-right-section">
-                                <p className="slide-text right-text">C  L  A  S  S  I  C     J  E  W  E  L  R  Y</p>
+                                <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
                                     <img src={slide1Small} alt="Small Slide 1" />
-                                    <button onClick={() => handleNavigate('/diamond-jewelry', { category: 'ring' })} className="slide-button">SHOP THIS CATEGORY</button>
+                                    <button onClick={() => handleNavigate('/cosmetics', { category: 'ring' })} className="slide-button">SHOP THIS CATEGORY</button>
                                 </div>
                             </div>
                         </div>
@@ -199,17 +199,15 @@ const Home = () => {
                     <div className="slide">
                         <div className="slide-background">
                             <img src={sliderBackground} alt="Slide 2" />
-                            <h1>NEW  <br></br>ARRIVAL</h1>
+                            <h1>SKIN  <br></br>CARE</h1>
                         </div>
                         <div className="slide-content">
                             <img className="slide-img left-img" src={slide2} alt="Slide 2" />
                             <div className="slide-right-section">
-                                <p className="slide-text right-text">C  L  A  S  S  I  C     J  E  W  E  L  R  Y</p>
+                                <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
-                                    <img src={slide2Small} alt="Small Slide 2" />
-                                    {newestCollection && (
-                                        <button onClick={handleCollectionClick} className="slide-button">SHOP THIS COLLECTION</button>
-                                    )}
+                                    <img src={slide2Small} alt="Small Slide 1" />
+                                    <button onClick={() => handleNavigate('/cosmetics', { category: 'ring' })} className="slide-button">SHOP THIS CATEGORY</button>
                                 </div>
                             </div>
                         </div>
@@ -217,12 +215,12 @@ const Home = () => {
                     <div className="slide">
                         <div className="slide-background">
                             <img src={sliderBackground} alt="Slide 3" />
-                            <h1>ENGAGEMENT <br></br>RINGS</h1>
+                            <h1>PURE <br></br>FRAGRANCE</h1>
                         </div>
                         <div className="slide-content">
                             <img className="slide-img left-img" src={slide3} alt="Slide 3" />
                             <div className="slide-right-section">
-                                <p className="slide-text right-text">C  L  A  S  S  I   C     J  E  W  E  L  R  Y</p>
+                                <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
                                     <img src={slide3Small} alt="Small Slide 3" />
                                     <button onClick={() => handleNavigate('/diamond-jewelry', { category: 'engagementRing' })} className="slide-button">SHOP THIS CATEGORY</button>
@@ -267,7 +265,7 @@ const Home = () => {
             <hr className="under_slider_hr" />
 
             {/* Diamond shape  */}
-            <h1 className="shape_title">Explore Diamond Shapes</h1>
+            {/* <h1 className="shape_title">Explore Diamond Shapes</h1>
             <div className="diamond_shape_container">
                 <div className="diamond_shape_grid">
                     <div className="diamond_shape_column">
@@ -331,7 +329,7 @@ const Home = () => {
                         </a>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Category */}
             <div className="category_container text-center">
