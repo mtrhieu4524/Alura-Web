@@ -99,7 +99,7 @@ function ProductListPage() {
 
     return (
         <div className="ProductList">
-            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetic', link: '/cosmetics' }]} />
+            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Product', link: '' }]} />
 
             <div className="filters_and_products">
                 <div className="filters_products">
@@ -289,15 +289,15 @@ function ProductListPage() {
 
                     {/* Capacity */}
                     <FormControl className="filter_group" size="small">
-                        <InputLabel id="capacityFilter-label" sx={{
+                        <InputLabel id="volumnFilter-label" sx={{
                             fontSize: '14px',
                             paddingTop: '2px'
                         }}
-                        >Capacity</InputLabel>
+                        >Volumn</InputLabel>
                         <Select
-                            labelId="capacityFilter-label"
-                            id="capacityFilter"
-                            label="Capacity"
+                            labelId="volumnFilter-label"
+                            id="volumnFilter"
+                            label="Volumn"
                         >
                             <MenuItem value="">None</MenuItem>
                             <MenuItem value="10g">10g</MenuItem>

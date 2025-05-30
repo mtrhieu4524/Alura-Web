@@ -28,7 +28,7 @@ const SpecialCard = () => {
     const navigate = useNavigate();
 
     const handleShopNowClick = () => {
-        navigate('/cosmetics', { state: { category: 'all' } });
+        navigate('/product', { state: { category: 'all' } });
     };
 
     return (

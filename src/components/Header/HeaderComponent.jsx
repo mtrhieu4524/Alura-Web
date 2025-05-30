@@ -133,8 +133,8 @@ const HeaderComponent = () => {
                                 </Link>
                             </li>
                             <li className="nav-item dropdown-cosmetics">
-                                <Link className="home nav-link cosmetics-link" to="/cosmetics">
-                                    COSMETICS
+                                <Link className="home nav-link cosmetics-link" to="/product">
+                                    COSMETIC
                                     <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i>
                                 </Link>
                                 <div className="cosmetics-dropdown">
@@ -171,7 +171,7 @@ const HeaderComponent = () => {
                                         <p>Nail Treatment</p>
                                     </div>
                                     <div className="dropdown-viewall">
-                                        <Link to="/cosmetics">View all →</Link>
+                                        <Link to="/cosmetic">View all →</Link>
                                     </div>
                                 </div>
                             </li>

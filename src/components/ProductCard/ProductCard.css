@@ -118,8 +118,8 @@
 .product_view_icon_wrapper[data-tooltip]::after {
     content: attr(data-tooltip);
     position: absolute;
-    left: calc(100% + -150px);
-    top: -235px;
+    left: calc(100% + -140px);
+    top: -240px;
     background-color: #1c1c1c;
     color: #fff;
     padding: 5px 10px;
