@@ -8,6 +8,7 @@ import Question from '../../components/Question/Question';
 import ProductList from '../../components/ProductCard/ProductCard';
 // import CollectionSlide from '../../components/CollectionSlide/CollectionSlide';
 import Insta from '../../components/Insta/Instagram';
+import banner from '../../assets/banner.png';
 
 function ProductListPage() {
     const [sort, setSort] = useState('');
@@ -15,6 +16,7 @@ function ProductListPage() {
     const [type, setType] = useState('');
     const [products, setProducts] = useState([]);
     const [resetKey, setResetKey] = useState(Date.now());
+    const [transitionKey, setTransitionKey] = useState(Date.now());
 
     const hardcodedProducts = [
         {
@@ -100,10 +102,22 @@ function ProductListPage() {
     useEffect(() => {
         document.title = "Alurà - All Product";
     }, []);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            document.querySelector('.news_banner_main_wrapper').classList.add('visible');
+        }, 10);
+        return () => clearTimeout(timeout);
+    }, [transitionKey]);
+
     return (
         <div className="ProductList">
             <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Product', link: '' }]} />
-
+            <div key={transitionKey} className="news_banner_main_wrapper">
+                <div className="news_banner_image">
+                    <img src={banner} alt="banner" />
+                </div>
+            </div>
             <div className="filters_and_products">
                 <div className="filters_products">
                     {(sort || sex || type) && (
