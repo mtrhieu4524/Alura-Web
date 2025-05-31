@@ -309,7 +309,7 @@ const Login = () => {
             }
 
             setCartItemsForUser(userGGInfoRes.data.customerId);
-            navigate("/home");
+            navigate("/");
         }
     };
 

@@ -124,7 +124,7 @@ const FooterComponent = () => {
                                 <li><Link to="https://www.facebook.com/profile.php?id=61560517631582" target="_blank"><i className="fb fab fa-facebook-f" target="_blank"></i></Link></li>
                                 <li><Link to="https://www.instagram.com/alura" target="_blank"><i className="ins fab fa-instagram"></i></Link></li>
                                 <li><Link to="https://www.tiktok.com/@alura" target="_blank"><i className="tik fab fa-tiktok"></i></Link></li>
-                                <li><Link to="/home" target="_blank"><i className="gg fab fa-google"></i></Link></li>
+                                <li><Link to="/" target="_blank"><i className="gg fab fa-google"></i></Link></li>
                             </ul>
                             <h6 className='footer_last_column_title_2'>Secure payment</h6>
                             <ul className="footer_content">

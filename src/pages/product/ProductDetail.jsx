@@ -51,6 +51,10 @@ function ProductDetail() {
 
     const isVolumeDisabled = (volume) => false;
 
+    useEffect(() => {
+        document.title = "Alurà - Product Detail";
+    }, []);
+
     const handleVolumeChange = (e) => {
         setSelectedVolume(e.target.value);
         setVolumePrice(e.target.value === "7.5 ml" ? 2 : 0);
@@ -64,6 +68,7 @@ function ProductDetail() {
     const navigateToProductDetail = (product) => {
         toast.info("Navigating to product detail for preview only.");
     };
+
 
     return (
         <div id="product_detail" className={`product_detail ${showSizeGuide ? "no-scroll" : ""}`}>

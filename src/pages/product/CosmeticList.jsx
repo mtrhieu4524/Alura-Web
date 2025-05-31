@@ -9,7 +9,7 @@ import ProductList from '../../components/ProductCard/ProductCard';
 // import CollectionSlide from '../../components/CollectionSlide/CollectionSlide';
 import Insta from '../../components/Insta/Instagram';
 
-function ProductListPage() {
+function CosmeticListPage() {
     const [sort, setSort] = useState('');
     const [sex, setSex] = useState('');
     const [type, setType] = useState('');
@@ -70,6 +70,10 @@ function ProductListPage() {
     ];
 
     useEffect(() => {
+        document.title = "Alurà - Cosmetic";
+    }, []);
+
+    useEffect(() => {
         let filtered = [...hardcodedProducts];
 
         if (sex) filtered = filtered.filter(p => p.sex === sex);
@@ -97,12 +101,9 @@ function ProductListPage() {
         setType('');
     };
 
-    useEffect(() => {
-        document.title = "Alurà - All Product";
-    }, []);
     return (
         <div className="ProductList">
-            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Product', link: '' }]} />
+            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Product', link: '/product' }, { name: 'Cosmetic', link: '' }]} />
 
             <div className="filters_and_products">
                 <div className="filters_products">
@@ -347,4 +348,4 @@ function ProductListPage() {
     );
 }
 
-export default ProductListPage;
+export default CosmeticListPage;

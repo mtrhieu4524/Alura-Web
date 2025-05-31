@@ -8,7 +8,13 @@ import Faqs from "../pages/constants/Faqs";
 import Login from "../pages/authen/Login";
 import Register from "../pages/authen/Register";
 import ProductList from "../pages/product/ProductList";
+import CosmeticList from "../pages/product/CosmeticList";
+import MedicalList from "../pages/product/MedicalList";
 import ProductDetail from "../pages/product/ProductDetail";
+import Cart from "../pages/cart/Cart";
+import Profile from "../pages/setting/Profile";
+import OrderHistory from "../pages/setting/OrderHistory";
+import OrderDetail from "../pages/setting/OrderDetail";
 
 import UserLayout from "../layouts/UserLayout";
 // import AdminLayout from "../layouts/AdminLayout";
@@ -28,9 +34,13 @@ const MainRoutes = () => {
       <Route path="/faqs" element={<UserLayout><Faqs /></UserLayout>} />
       <Route path="/visual-search" element={<UserLayout><VisualSearch /></UserLayout>} />
       <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} />
-      {/* <Route path="/cosmetic" element={<UserLayout><ProductList /></UserLayout>} /> */}
-      {/* <Route path="/medical-treatment" element={<UserLayout><ProductList /></UserLayout>} /> */}
+      <Route path="/cosmetic" element={<UserLayout><CosmeticList /></UserLayout>} />
+      <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} />
       <Route path="/product-detail/:name" element={<UserLayout><ProductDetail /></UserLayout>} />
+      <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
+      <Route path="/profile" element={<UserLayout><Profile /></UserLayout>} />
+      <Route path="/order-history" element={<UserLayout><OrderHistory /></UserLayout>} />
+      <Route path="/order-detail/:id" element={<UserLayout><OrderDetail /></UserLayout>} />
 
       {/* Admin Routes */}
       {/* <Route
