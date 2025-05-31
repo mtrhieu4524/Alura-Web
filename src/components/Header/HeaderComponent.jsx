@@ -61,7 +61,7 @@ const HeaderComponent = () => {
                                     <input
                                         type="text"
                                         className="search_bar"
-                                        placeholder="Search..."
+                                        placeholder="Search by name..."
                                     />
                                 </div>
                             </div>

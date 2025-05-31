@@ -133,6 +133,10 @@ function OrderDetail() {
         }
     }, [orderDetails]);
 
+    useEffect(() => {
+        document.title = "Alurà - Order Detail";
+    }, []);
+
     const navItems = [
         { name: 'Home', link: '/' },
         { name: 'Order History', link: '/order-history' },
