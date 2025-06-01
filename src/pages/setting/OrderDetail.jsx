@@ -93,19 +93,23 @@ function OrderDetail() {
         const mockProducts = [
             {
                 productId: "P001",
-                name: "Elegant Diamond Ring",
+                name: "Elegant Perfume",
                 imageLinkList: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
-                shellMaterial: "White Gold",
-                size: "6",
+                type: "Serum",
+                skinType: "Oily",
+                volume: "30ml",
+                quantity: "2",
                 lineTotal: 80.00,
                 isSingleDiamond: false
             },
             {
                 productId: "P002",
-                name: "Brilliant Cut Diamond",
+                name: "Vaseline",
                 imageLinkList: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
-                shellMaterial: null,
-                size: null,
+                type: "Cream",
+                skinType: "Dry",
+                volume: "50ml",
+                quantity: "1",
                 lineTotal: 55.00,
                 isSingleDiamond: true
             }
@@ -188,7 +192,7 @@ function OrderDetail() {
                                 <Space size={12}>
                                     <Image
                                         width={150}
-                                        height={120}
+                                        height={130}
                                         marginRight={10}
                                         style={{ objectFit: 'cover', marginRight: '10px' }}
                                         src={product?.imageLinkList.split(';')[0]}
@@ -209,12 +213,10 @@ function OrderDetail() {
                                             <a href="" onClick={() => handleProductView(product)}>VIEW</a>
                                         </div>
                                     </div>
-                                    <p className="order_detail_product_size">
-                                        {product?.isSingleDiamond ? '(Only diamond)' : `Shell: ${product?.shellMaterial}`}
-                                    </p>
-                                    <p className="order_detail_product_size">
-                                        {product?.size ? `Size: ${product?.size}` : ''}
-                                    </p>
+                                    <p className="order_detail_product_size">Type: {product?.type}</p>
+                                    <p className="order_detail_product_size">Volume: {product?.volume}</p>
+                                    <p className="order_detail_product_size">Quantity: {product?.quantity}</p>
+
                                     <p className="order_detail_product_price">${product?.lineTotal}</p>
                                 </div>
                             </div>
@@ -244,7 +246,7 @@ function OrderDetail() {
                         </div>
                         <hr className="order_detail_line3"></hr>
                         <div className="order_detail_footer">
-                            <p className="order_detail_date">{formatDate(orderDetails?.date)}</p>
+                            <p className="order_detail_date">Order date: {formatDate(orderDetails?.date)}</p>
                             <p className="order_detail_total_price">
                                 {/* <span className="order_detail_discount">
                                     {promotionCode ? `Promotion: ${promotionCode} (-${promotionAmount * 100}%)` : ''}

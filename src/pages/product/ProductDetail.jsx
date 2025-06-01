@@ -48,6 +48,7 @@ function ProductDetail() {
     // const [availableSizes] = useState(["30ml", "50ml", "100ml"]);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const [showSpecifications, setShowSpecifications] = useState(true);
+    const [quantity, setQuantity] = useState(1);
 
     const isVolumeDisabled = (volume) => false;
 
@@ -130,17 +131,34 @@ function ProductDetail() {
 
                     <div className="price_size_container">
                         <p className="product_price_detail">${product.price + volumePrice}</p>
-                        {/* <div className="size_guide_container">
-                            <button onClick={openSizeGuide} className="size_guide_detail">Size guide</button>
-                            <select className="ring_size_detail" value={selectedSize} onChange={handleSizeChange}>
-                                <option value="">Size</option>
-                                {availableSizes.map((size, index) => (
-                                    <option key={index} value={size} disabled={isSizeDisabled(size)}>
-                                        {size}
-                                    </option>
-                                ))}
-                            </select>
-                        </div> */}
+                        <div className="quantity_selector_container">
+                            {/* <label htmlFor="quantity" className="quantity_label">Quantity</label> */}
+                            <div className="quantity_controls">
+                                <button
+                                    className="quantity_btn"
+                                    onClick={() => setQuantity(prev => Math.max(prev - 1, 1))}
+                                    disabled={quantity <= 1}
+                                >-</button>
+                                <input
+                                    type="number"
+                                    id="quantity"
+                                    className="quantity_input"
+                                    value={quantity}
+                                    min="1"
+                                    max={maxProductAvailable}
+                                    onChange={(e) => {
+                                        const value = Math.max(1, Math.min(maxProductAvailable, parseInt(e.target.value) || 1));
+                                        setQuantity(value);
+                                    }}
+                                />
+                                <button
+                                    className="quantity_btn"
+                                    onClick={() => setQuantity(prev => Math.min(prev + 1, maxProductAvailable))}
+                                    disabled={quantity >= maxProductAvailable}
+                                >+</button>
+                            </div>
+                        </div>
+
                     </div>
                     <div className="product_actions_detail">
                         <button
