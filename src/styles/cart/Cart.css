@@ -12,7 +12,7 @@
 
 .cart_header {
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
     padding: 20px 21% 20px 270px;
     margin: 40px 205px -25px -177px;
 }

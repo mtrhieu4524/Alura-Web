@@ -68,7 +68,9 @@ function Cart() {
         navigate(`/product-detail/${encodedName}`);
     };
 
-
+    const handleCheckoutPage = () => {
+        navigate("/checkout");
+    };
 
     return (
         <div className="cart">
@@ -77,7 +79,7 @@ function Cart() {
             <div className="cart_main_container">
                 <div className="cart_header">
                     <div className="cart_title">
-                        {/* <i className="fas fa-shopping-cart"></i> My Cart ({totalQuantity}) */}
+                        <i className="fas fa-shopping-cart"></i> Cart (2)
                     </div>
                     <div className="continue_shopping" >
                         &lt; Continue Shopping
@@ -208,7 +210,7 @@ function Cart() {
                         </div>
                         <hr />
                         <button
-                            // onClick={handleCheckoutPage}
+                            onClick={handleCheckoutPage}
                             className="cart_summary_checkout"
                         >
                             Proceed to checkout
