@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./../../styles/visual/VisualSearch.css";
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 
@@ -15,6 +16,7 @@ const VisualSearch = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [imageLink, setImageLink] = useState("");
     const [showImageButton, setShowImageButton] = useState(false);
+    const navigate = useNavigate();
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -36,7 +38,7 @@ const VisualSearch = () => {
     };
 
     const handleSearch = () => {
-        alert("TEST SEARCH");
+        nav
     };
 
     const handleRemoveImage = () => {
@@ -94,9 +96,13 @@ const VisualSearch = () => {
                 </div>
 
                 {imagePreview && (
-                    <button className="search_button" onClick={handleSearch}>
+                    <button
+                        className="search_button"
+                        onClick={() => navigate("/visual-search-result", { state: { image: imagePreview } })}
+                    >
                         Search for matching products
                     </button>
+
                 )}
             </div>
             <br /><br /><br />

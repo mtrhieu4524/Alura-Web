@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../Header/Header.css";
 import logo from "../../assets/logo.png";
@@ -16,6 +16,7 @@ const HeaderComponent = () => {
         setIsLoggedIn(!!token);
     }, []);
 
+    const [searchTerm, setSearchTerm] = useState("");
 
     return (
         <header className="header">
@@ -62,6 +63,14 @@ const HeaderComponent = () => {
                                         type="text"
                                         className="search_bar"
                                         placeholder="Search by name..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                navigate(`/search`);
+                                                setSearchTerm("");
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>

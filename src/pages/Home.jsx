@@ -71,7 +71,7 @@ const Home = () => {
     const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [animate, setAnimate] = useState(false);
-    const [activeTab, setActiveTab] = useState('newArrivals');
+    // const [activeTab, setActiveTab] = useState('newArrivals');
     const [displayProducts, setDisplayProducts] = useState([]);
     const [newProducts, setNewProducts] = useState([]);
     const [topSellingProducts, setTopSellingProducts] = useState([]);
@@ -409,20 +409,20 @@ const Home = () => {
                         <h2 className="bb_title">Best & Beloved</h2>
                         <p className="bb_description">Our most loved skincare and beauty products, carefully selected based on what our customers adore the most.</p>
                     </div>
-                    <button onClick={() => handleNavigate('/diamond-jewelry', { category: 'engagementRing' })} className="bb_shop_now_button">Shop now</button>
+                    <button onClick={() => handleNavigate('/product', { category: 'engagementRing' })} className="bb_shop_now_button">Shop now</button>
                 </div>
             </div>
 
             {/* Trending */}
             <div className="trending_container">
-                <div className="trending_text">trendy collection</div>
+                <div className="trending_text">newest collection</div>
                 <div className="trending_white">                                 </div>
                 <div className="row">
                     <div className="col-lg-5 col-md-6 ">
                         <img src={trending} alt="Trending" className="trending_image" />
                     </div>
                     <div className="col-lg-7 col-md-6 trending_right">
-                        <h2 className="trending_title">Trending Cosmetics</h2>
+                        <h2 className="trending_title">New Arrival Cosmetics</h2>
                         <div className="trending_product_card_section row">
                             {trendingProducts.map((product, index) => (
                                 <div key={index} className="trending_product_card card" onClick={() => handleProductClick(product)}>
@@ -437,7 +437,7 @@ const Home = () => {
             </div>
 
             {/* Feature */}
-            <div className='home_feature_container_wrapper'>
+            {/* <div className='home_feature_container_wrapper'>
                 <div className="home_feature_container container">
                     <div className="home_feature_navbar">
                         <button
@@ -470,7 +470,8 @@ const Home = () => {
                         ))}
                     </div>
                 </div>
-            </div>
+            </div> */}
+            <br></br><br></br>
 
             {/* Reason */}
             <Reason></Reason>

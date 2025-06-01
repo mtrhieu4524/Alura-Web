@@ -98,7 +98,7 @@
     border-radius: 50%;
     width: 45px;
     height: 45px;
-    padding: 1px 0.5px 0 0;
+    padding: 15px 0.5px 0 0;
     transition: opacity 0.3s ease-in-out, transform 0.4s ease-in-out;
     opacity: 0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -134,7 +134,6 @@
 .product_view_icon_wrapper:hover::after {
     opacity: 1;
 }
-
 
 .special_card {
     flex: 0 0 260px;

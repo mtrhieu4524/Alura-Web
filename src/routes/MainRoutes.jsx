@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import VisualSearch from "../pages/visual/VisualSearch";
+import Result from "../pages/visual/Result";
 import Contact from "../pages/constants/Contact";
 import Introduce from "../pages/constants/Introduce";
 import Faqs from "../pages/constants/Faqs";
@@ -11,6 +12,7 @@ import ProductList from "../pages/product/ProductList";
 import CosmeticList from "../pages/product/CosmeticList";
 import MedicalList from "../pages/product/MedicalList";
 import ProductDetail from "../pages/product/ProductDetail";
+import ProductSearch from "../pages/product/ProductSearch";
 import Cart from "../pages/cart/Cart";
 import Profile from "../pages/setting/Profile";
 import OrderHistory from "../pages/setting/OrderHistory";
@@ -33,6 +35,8 @@ const MainRoutes = () => {
       <Route path="/introduce" element={<UserLayout><Introduce /></UserLayout>} />
       <Route path="/faqs" element={<UserLayout><Faqs /></UserLayout>} />
       <Route path="/visual-search" element={<UserLayout><VisualSearch /></UserLayout>} />
+      <Route path="/visual-search-result" element={<UserLayout><Result /></UserLayout>} />
+      <Route path="/search" element={<UserLayout><ProductSearch /></UserLayout>} />
       <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} />
       <Route path="/cosmetic" element={<UserLayout><CosmeticList /></UserLayout>} />
       <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} />
