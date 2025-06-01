@@ -28,191 +28,47 @@ function Cart() {
     // const { cartItems, removeFromCart } = useCart();
     // const [shellData, setShellData] = useState({});
     // const [diamondAttributes, setDiamondAttributes] = useState({});
-    const [filteredCartItems, setFilteredCartItems] = useState([]);
+    const [filteredCartItems, setFilteredCartItems] = useState([
+        {
+            productId: "P001",
+            name: "Elegant Perfume",
+            image: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
+            price: 40.0,
+            quantity: 2,
+            isOutOfStock: false,
+            type: "Serum",
+            skinType: "Oily",
+            volume: "7.5 ml"
+        },
+        {
+            productId: "P002",
+            name: "Vaseline",
+            image: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
+            price: 55.0,
+            quantity: 1,
+            isOutOfStock: false,
+            type: "Cream",
+            skinType: "Dry",
+            volume: "7.5 ml"
+        }
+    ]);
 
-    // useEffect(() => {
-    //     const cartKey = `cartItems${customerId}`;
-    //     const storedCartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
-    //     const groupedItems = groupCartItems(storedCartItems);
-    //     setFilteredCartItems(groupCartItems(storedCartItems));
+    const handleQuantityChange = (changedItem, newQuantity) => {
+        setFilteredCartItems(prevItems =>
+            prevItems.map(item =>
+                item.productId === changedItem.productId
+                    ? { ...item, quantity: newQuantity }
+                    : item
+            )
+        );
+    };
 
-    //     const fetchData = async () => {
-    //         await Promise.all(
-    //             storedCartItems.map(async (item) => {
-    //                 if (!item.selectedShellName) {
-    //                     await fetchDiamondAttributes(item.productId);
-    //                 } else {
-    //                     try {
-    //                         const response = await getShellByProductId(item.productId);
-    //                         setShellData((prevShellData) => ({
-    //                             ...prevShellData,
-    //                             [item.productId]: response.data,
-    //                         }));
-    //                     } catch (error) {
-    //                         console.error("Error fetching shell data:", error);
-    //                     }
-    //                 }
-    //             })
-    //         );
-    //         await checkStockStatus(storedCartItems);
-    //     };
+    const handleViewProduct = (item) => {
+        const encodedName = encodeURIComponent(item.name.toLowerCase().replace(/\s+/g, '-'));
+        navigate(`/product-detail/${encodedName}`);
+    };
 
-    //     fetchData();
-    // }, [customerId, cartItems]);
 
-    // const fetchDiamondAttributes = async (productId) => {
-    //     try {
-    //         const productResponse = await getProductDetail(productId);
-    //         const mainDiamondAttributeId =
-    //             productResponse.data.mainDiamondAttributeId;
-    //         const diamondResponse = await getDiamondDetail(mainDiamondAttributeId);
-    //         const diamondDetails = diamondResponse.data;
-    //         setDiamondAttributes((prev) => ({
-    //             ...prev,
-    //             [productId]: diamondDetails,
-    //         }));
-    //     } catch (error) {
-    //         console.error("Error fetching diamond attributes:", error);
-    //     }
-    // };
-
-    // const checkStockStatus = async (items) => {
-    //     try {
-    //         const stockChecks = await Promise.all(
-    //             items.map((item) =>
-    //                 checkProductStock(item.productId)
-    //                     .then((response) => ({
-    //                         ...item,
-    //                         isOutOfStock: response.data.message === "Not enough stock",
-    //                     }))
-    //                     .catch((error) => ({
-    //                         ...item,
-    //                         isOutOfStock: true,
-    //                     }))
-    //             )
-    //         );
-    //         setFilteredCartItems(groupCartItems(stockChecks));
-    //     } catch (error) {
-    //         console.error("Error checking stock status:", error);
-    //     }
-    // };
-
-    // const groupCartItems = (items) => {
-    //     const groupedItems = items.reduce((acc, item) => {
-    //         const key = `${item.productId}-${item.name}-${item.image}-${item.price}-${item.selectedShellId}-${item.selectedShellName}-${item.selectedSize}`;
-    //         if (!acc[key]) {
-    //             acc[key] = { ...item, quantity: 1 };
-    //         } else {
-    //             acc[key].quantity += 1;
-    //         }
-    //         return acc;
-    //     }, {});
-
-    //     return Object.values(groupedItems);
-    // };
-
-    // const handleCheckoutPage = async () => {
-    //     const updatedCartItems =
-    //         JSON.parse(localStorage.getItem(`cartItems${customerId}`)) || [];
-
-    //     if (updatedCartItems.length === 0) {
-    //         toast.warning("Please add something first! There is nothing in the cart.");
-    //         return;
-    //     }
-
-    //     const missingSizeItems = updatedCartItems.some(
-    //         (item) => !item.selectedSize && item.selectedShellName
-    //     );
-    //     if (missingSizeItems) {
-    //         toast.warning("Please select a size for jewelry in your cart.");
-    //         return;
-    //     }
-
-    //     try {
-    //         const stockChecks = await Promise.all(
-    //             updatedCartItems.map((item) =>
-    //                 checkProductStock(item.productId)
-    //                     .then((response) => ({
-    //                         ...item,
-    //                         isOutOfStock: response.data.message === "Not enough stock",
-    //                     }))
-    //                     .catch((error) => ({
-    //                         ...item,
-    //                         isOutOfStock: true,
-    //                     }))
-    //             )
-    //         );
-
-    //         const hasOutOfStockItems = stockChecks.some((item) => item.isOutOfStock);
-
-    //         if (hasOutOfStockItems) {
-    //             toast.error(
-    //                 "Some products in your cart are currently out of stock. Please remove them to checkout.",
-    //                 {
-    //                     position: "top-right",
-    //                     autoClose: 3000,
-    //                 }
-    //             );
-    //             setFilteredCartItems(groupCartItems(stockChecks));
-    //             return;
-    //         }
-
-    //         localStorage.setItem("fromCart", "true");
-    //         navigate("/checkout", { state: { cartItems: updatedCartItems } });
-    //     } catch (error) {
-    //         toast.error(
-    //             "Some products in your cart are currently out of stock. Please remove them to checkout.",
-    //             {
-    //                 position: "top-right",
-    //                 autoClose: 3000,
-    //             }
-    //         );
-    //         console.error(error);
-    //     }
-    // };
-
-    // const handleContinueShopping = () => {
-    //     navigate("/diamond-jewelry", { state: { category: "all" } });
-    // };
-
-    // const handleViewProduct = (product) => {
-    //     const productName = product.name.replace(/\s+/g, "-").toLowerCase();
-    //     const targetPath = product.selectedShellName
-    //         ? `/product-detail/${productName}`
-    //         : `/diamond-detail/${productName}`;
-    //     navigate(targetPath, { state: { id: product.productId } });
-    // };
-
-    // const handleRemoveFromCart = (key) => {
-    //     const cartKey = `cartItems${customerId}`;
-    //     const updatedCartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
-    //     const indexToRemove = updatedCartItems.findIndex((item) => {
-    //         const itemKey = `${item.productId}-${item.name}-${item.image}-${item.price}-${item.selectedShellId}-${item.selectedShellName}-${item.selectedSize}`;
-    //         return itemKey === key;
-    //     });
-
-    //     if (indexToRemove !== -1) {
-    //         updatedCartItems.splice(indexToRemove, 1);
-    //         localStorage.setItem(cartKey, JSON.stringify(updatedCartItems));
-    //         setFilteredCartItems(groupCartItems(updatedCartItems));
-    //         removeFromCart(indexToRemove);
-    //     }
-    // };
-
-    // const calculateTotalQuantity = () => {
-    //     return filteredCartItems.reduce((total, item) => {
-    //         return total + item.quantity;
-    //     }, 0);
-    // };
-
-    // const calculateTotal = () => {
-    //     return filteredCartItems.reduce((total, item) => {
-    //         return total + parseFloat(item.price) * item.quantity;
-    //     }, 0);
-    // };
-
-    // const totalQuantity = calculateTotalQuantity();
-    // const totalPrice = calculateTotal();
 
     return (
         <div className="cart">
@@ -239,12 +95,10 @@ function Cart() {
                                 {filteredCartItems.map((item) => {
                                     const firstImage = item.image.split(";")[0];
                                     const isOutOfStock = item.isOutOfStock;
-                                    const diamondAttr = diamondAttributes[item.productId];
                                     const key = `${item.productId}-${item.name}-${item.image}-${item.price}-${item.selectedShellId}-${item.selectedShellName}-${item.selectedSize}`;
                                     return (
                                         <div
-                                            className={`cart_item ${isOutOfStock ? "out-of-stock" : ""
-                                                }`}
+                                            className={`cart_item ${isOutOfStock ? "out-of-stock" : ""}`}
                                             key={key}
                                         >
                                             <Image
@@ -256,14 +110,11 @@ function Cart() {
                                             <div className="cart_item_details">
                                                 <div className="cart_item_header">
                                                     <h5
-                                                        className={`cart_item_name ${isOutOfStock ? "text-grey" : ""
-                                                            }`}
+                                                        className={`cart_item_name ${isOutOfStock ? "text-grey" : ""}`}
                                                     >
                                                         {item.name}
                                                         {isOutOfStock && (
-                                                            <span className="out-of-stock-text">
-                                                                {/*  (Sold out) */}
-                                                            </span>
+                                                            <span className="out-of-stock-text"></span>
                                                         )}
                                                     </h5>
                                                     <div className="cart_item_links">
@@ -282,42 +133,55 @@ function Cart() {
                                                         </a>
                                                     </div>
                                                 </div>
-                                                {diamondAttr && !item.selectedShellName && (
-                                                    <p
-                                                        className={`cart_item_diamond_attributes ${isOutOfStock ? "text-grey" : "text-diamond-data"
-                                                            }`}
-                                                    >
-                                                        {diamondAttr.cut} Cutㅤ|ㅤ{diamondAttr.color}{" "}
-                                                        Colorㅤ|ㅤ{diamondAttr.clarity} Clarity
-                                                    </p>
-                                                )}
-                                                <p
-                                                    className={`cart_item_description ${isOutOfStock ? "text-grey" : "text-diamond-only"
-                                                        }`}
-                                                >
-                                                    {item.selectedShellName
-                                                        ? `Shell: ${item.selectedShellName}`
-                                                        : "(Only diamond)"}
-                                                    <br />
-                                                    {item.selectedSize && `Size: ${item.selectedSize}`}
+
+                                                <p className={`cart_item_description ${isOutOfStock ? "text-grey" : ""}`}>
+                                                    Type: {item.type} for {item.skinType} skin
                                                 </p>
+                                                <p className={`cart_item_description ${isOutOfStock ? "text-grey" : ""}`}>
+                                                    Volume: {item.volume}
+                                                </p>
+
                                                 <div className="cart_item_footer">
-                                                    <div
-                                                        className={`cart_item_quantity ${isOutOfStock ? "text-grey" : ""
-                                                            }`}
-                                                    >
-                                                        Quantity:
-                                                        {/* {item.quantity} */}
+                                                    <div className="quantity_selector_container">
+                                                        <label htmlFor="quantity" className="quantity_label">Quantity:</label>
+
+                                                        <div className="quantity_controls">
+                                                            <button
+                                                                className="quantity_btn"
+                                                                onClick={() => handleQuantityChange(item, Math.max(item.quantity - 1, 1))}
+                                                                disabled={item.quantity <= 1 || isOutOfStock}
+                                                            >
+                                                                -
+                                                            </button>
+                                                            <input
+                                                                type="number"
+                                                                className="quantity_input"
+                                                                value={item.quantity}
+                                                                min="1"
+                                                                max={item.stock || 10}
+                                                                onChange={(e) => {
+                                                                    const value = Math.max(1, Math.min(item.stock || 10, parseInt(e.target.value) || 1));
+                                                                    handleQuantityChange(item, value);
+                                                                }}
+                                                                disabled={isOutOfStock}
+                                                            />
+                                                            <button
+                                                                className="quantity_btn"
+                                                                onClick={() => handleQuantityChange(item, Math.min(item.quantity + 1, item.stock || 10))}
+                                                                disabled={item.quantity >= (item.stock || 10) || isOutOfStock}
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div
-                                                        className={`cart_item_price ${isOutOfStock ? "text-grey-price" : ""
-                                                            }`}
-                                                    >
-                                                        {/* ${Math.floor(item.price * item.quantity)} */}
+
+                                                    <div className={`cart_item_price ${isOutOfStock ? "text-grey-price" : ""}`}>
+                                                        ${Math.floor(item.price * item.quantity)}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                     );
                                 })}
                             </Image.PreviewGroup>
@@ -330,15 +194,15 @@ function Cart() {
                         </h5>
                         <div className="cart_summary_details">
                             <p className="cart_summary_subtotal">
-                                <span>Subtotal</span>
+                                <span>Subtotal:</span>
                                 <span>
-                                    {/* <strong>${totalPrice}</strong> */}
+                                    <strong>$1000</strong>
                                 </span>
                             </p>
                             <p className="cart_summary_total">
-                                <span>Total</span>
+                                <span>Total:</span>
                                 <span>
-                                    {/* <strong>${totalPrice}</strong> */}
+                                    <strong>$1000</strong>
                                 </span>
                             </p>
                         </div>

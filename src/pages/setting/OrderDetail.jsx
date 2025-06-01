@@ -100,7 +100,6 @@ function OrderDetail() {
                 volume: "30ml",
                 quantity: "2",
                 lineTotal: 80.00,
-                isSingleDiamond: false
             },
             {
                 productId: "P002",
@@ -111,7 +110,6 @@ function OrderDetail() {
                 volume: "50ml",
                 quantity: "1",
                 lineTotal: 55.00,
-                isSingleDiamond: true
             }
         ];
 
@@ -213,7 +211,7 @@ function OrderDetail() {
                                             <a href="" onClick={() => handleProductView(product)}>VIEW</a>
                                         </div>
                                     </div>
-                                    <p className="order_detail_product_size">Type: {product?.type}</p>
+                                    <p className="order_detail_product_size">Type: {product?.type} for {product?.skinType} skin</p>
                                     <p className="order_detail_product_size">Volume: {product?.volume}</p>
                                     <p className="order_detail_product_size">Quantity: {product?.quantity}</p>
 
