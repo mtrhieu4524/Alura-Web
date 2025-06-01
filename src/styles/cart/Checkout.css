@@ -384,10 +384,6 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
 
 .payment_method .payment_label {
     margin-top: -33px;

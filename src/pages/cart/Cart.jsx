@@ -107,7 +107,7 @@ function Cart() {
                                                 src={firstImage}
                                                 className="cart_item_image"
                                                 alt={item.name}
-                                                width={195}
+                                                width={175}
                                             />
                                             <div className="cart_item_details">
                                                 <div className="cart_item_header">

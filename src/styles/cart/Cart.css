@@ -66,7 +66,7 @@
 }
 
 .cart_item_image {
-    width: 190px !important;
+    width: 175px !important;
     height: 170px !important;
     /* border-radius: 8px !important; */
     margin-right: 25px !important;
@@ -75,7 +75,7 @@
 }
 
 .cart :where(.css-dev-only-do-not-override-1pg9a38).ant-image .ant-image-mask {
-    width: 190px !important;
+    width: 175px !important;
     height: 170px !important;
     border-radius: 8px !important;
     margin-right: 25px !important;
@@ -83,9 +83,8 @@
 }
 
 .cart .ant-image-mask {
-    width: 190px !important;
+    width: 175px !important;
     height: 170px !important;
-    border-radius: 8px !important;
     margin-right: 25px !important;
     margin-left: -10px !important;
 }
