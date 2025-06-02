@@ -15,7 +15,7 @@ import ProductDetail from "../pages/product/ProductDetail";
 import ProductSearch from "../pages/product/ProductSearch";
 import Cart from "../pages/cart/Cart";
 import Checkout from "../pages/cart/Checkout";
-// import Invoice from "../pages/cart/Invoice";
+import Invoice from "../pages/cart/Invoice";
 import Profile from "../pages/setting/Profile";
 import OrderHistory from "../pages/setting/OrderHistory";
 import OrderDetail from "../pages/setting/OrderDetail";
@@ -45,7 +45,7 @@ const MainRoutes = () => {
       <Route path="/product-detail/:name" element={<UserLayout><ProductDetail /></UserLayout>} />
       <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
       <Route path="/checkout" element={<UserLayout><Checkout /></UserLayout>} />
-      {/* <Route path="/invoice" element={<UserLayout><Invoice /></UserLayout>} /> */}
+      <Route path="/invoice" element={<UserLayout><Invoice /></UserLayout>} />
       <Route path="/profile" element={<UserLayout><Profile /></UserLayout>} />
       <Route path="/order-history" element={<UserLayout><OrderHistory /></UserLayout>} />
       <Route path="/order-detail/:id" element={<UserLayout><OrderDetail /></UserLayout>} />

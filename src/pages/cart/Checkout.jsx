@@ -53,7 +53,9 @@ function Checkout() {
     const loading = false;
 
     const handleApplyVoucher = () => { };
-    const handleInvoice = () => { };
+    const handleInvoice = () => {
+        navigate("/invoice");
+    };
 
     const navigate = useNavigate();
     const handleBackToCart = () => {
