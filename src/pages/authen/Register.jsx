@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -9,10 +9,10 @@ import rightImage from "../../assets/r1.jpeg";
 import rightImage2 from "../../assets/r2.jpg";
 import rightImage3 from "../../assets/r3.jpg";
 // import { getUserInfo, registerCustomerApi } from "../../services/UserService";
-import { Link } from "react-router-dom";
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Alurà - Sign Up";
@@ -251,6 +251,10 @@ const Register = () => {
         cssEase: "linear",
     };
 
+    const handleGuestLogin = () => {
+        navigate("/dashboard");
+    };
+
     return (
         <div className="register_main_container container-fluid">
             <div className="row register_wrapper">
@@ -368,6 +372,19 @@ const Register = () => {
                                     Sign in
                                 </Link>
                             </span>
+                        </div>
+
+                        <div className="google_section text-center">
+                            <hr className="line" />
+                            <div className="google_guest_section">
+                                <div
+                                    className="guest_login_section"
+                                    onClick={handleGuestLogin}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    Navigate to admin
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

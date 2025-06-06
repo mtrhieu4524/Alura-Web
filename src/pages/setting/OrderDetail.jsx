@@ -162,7 +162,7 @@ function OrderDetail() {
                 <div className="order_history_setting_menu">
                     <div className="order_history_setting_menu_section">
                         <div className="order_history_setting_full_name">{`${firstName} ${lastName}`}</div>
-                        <div className="order_history_setting_point"><p>{`${points} points`}</p></div>
+                        {/* <div className="order_history_setting_point"><p>{`${points} points`}</p></div> */}
                     </div>
                     <div className="order_history_setting_menu_items">
                         {menuItems.map(item => (

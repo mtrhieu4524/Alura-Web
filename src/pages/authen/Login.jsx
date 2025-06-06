@@ -419,7 +419,7 @@ const Login = () => {
                                     onClick={handleGuestLogin}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Button for login with google
+                                    Navigate to home
                                 </div>
                             </div>
                         </div>
