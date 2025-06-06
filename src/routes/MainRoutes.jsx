@@ -61,6 +61,9 @@ const MainRoutes = () => {
       <Route path="/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
       <Route path="/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
 
+      {/* Staff Routes */}
+      {/* <Route path="/dashboard" element={<StaffLayout><AdminDashboard /></StaffLayout>} /> */}
+
     </Routes>
   );
 };
