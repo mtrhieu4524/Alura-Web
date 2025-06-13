@@ -4,7 +4,7 @@ import '../../../styles/admin/account/AccountList.css';
 
 function AccountList() {
     useEffect(() => {
-        document.title = "Account List - Alurà System Management";
+        document.title = "Manage Account - Alurà System Management";
     }, []);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +50,7 @@ function AccountList() {
                 <div className="modal_overlay">
                     <div className="modal_content">
                         <button className="close_modal_btn" onClick={() => setIsModalOpen(false)}>×</button>
-                        <h3>Add Account Modal</h3>
+                        <h3>Add account modal</h3>
                     </div>
                 </div>
             )}

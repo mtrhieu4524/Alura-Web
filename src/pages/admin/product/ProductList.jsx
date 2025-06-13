@@ -8,7 +8,7 @@ function ProductList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        document.title = "Product List - Alurà System Management";
+        document.title = "Manage Product - Alurà System Management";
     }, []);
 
     const columns = ["Name", "Category", "Price", "Stock", "Detail"];

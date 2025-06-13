@@ -8,7 +8,7 @@ function WarehouseList() {
     const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
     useEffect(() => {
-        document.title = "Warehouse List - Alurà System Management";
+        document.title = "Manage Warehouse - Alurà System Management";
     }, []);
 
     const columns = ["Name", "Location", "Capacity", "Stock", "Action"];

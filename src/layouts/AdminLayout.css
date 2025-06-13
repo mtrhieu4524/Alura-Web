@@ -97,11 +97,28 @@
     box-sizing: border-box;
 }
 
-/* .admin_content_card {
-    background: white;
-    padding: 15px 30px;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    overflow-y: auto;
-} */
+@media (max-width: 600px) {
+    .admin_top_card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .admin_logo {
+        margin-left: 0;
+    }
+
+    .admin_search_section {
+        width: 100%;
+    }
+
+    .admin_search_bar_container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .admin_search_bar {
+        width: 100%;
+    }
+}
