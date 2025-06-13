@@ -252,7 +252,7 @@ const Register = () => {
     };
 
     const handleGuestLogin = () => {
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
     };
 
     return (

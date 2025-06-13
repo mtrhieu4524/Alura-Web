@@ -1,14 +1,14 @@
-.account_list_container {
+.product_list_container {
     padding: 20px;
 }
 
-.account_list_header {
+.product_list_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.add_account_btn {
+.add_product_btn {
     background-color: #1c1c1c;
     color: white;
     border: none;
@@ -20,7 +20,7 @@
     margin-bottom: 10px;
 }
 
-.add_account_btn:hover {
+.add_product_btn:hover {
     background-color: #333;
 }
 
@@ -55,4 +55,15 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
+}
+
+.detail_icon {
+    font-size: 15px;
+    color: #1c1c1c;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.detail_icon:hover {
+    color: #7d7d7d;
 }

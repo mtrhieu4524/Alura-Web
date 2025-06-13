@@ -1,14 +1,14 @@
-.account_list_container {
+.warehouse_list_container {
     padding: 20px;
 }
 
-.account_list_header {
+.warehouse_list_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.add_account_btn {
+.add_warehouse_btn {
     background-color: #1c1c1c;
     color: white;
     border: none;
@@ -20,7 +20,7 @@
     margin-bottom: 10px;
 }
 
-.add_account_btn:hover {
+.add_warehouse_btn:hover {
     background-color: #333;
 }
 
@@ -45,6 +45,7 @@
     width: 400px;
     max-width: 90%;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
 }
 
 .close_modal_btn {
@@ -54,5 +55,60 @@
     background: transparent;
     border: none;
     font-size: 20px;
+    cursor: pointer;
+}
+
+.action_icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.edit_icon,
+.delete_icon {
+    font-size: 15px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.edit_icon {
+    color: #1c1c1c;
+    margin-right: 10px;
+}
+
+.edit_icon:hover {
+    color: #7d7d7d;
+}
+
+.delete_icon {
+    color: #a00;
+}
+
+.delete_icon:hover {
+    color: #d00;
+}
+
+.modal_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm_delete_btn {
+    background-color: #a00;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel_btn {
+    background-color: #ccc;
+    color: black;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
 }

@@ -3,7 +3,7 @@ import './Table.css';
 
 const Table = ({ columns, data }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 6;
+    const rowsPerPage = 7;
 
     const totalPages = Math.ceil(data.length / rowsPerPage);
     const startIndex = (currentPage - 1) * rowsPerPage;
