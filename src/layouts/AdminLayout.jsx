@@ -5,7 +5,17 @@ import logo from '../assets/logo.png';
 
 const AdminLayout = ({ children }) => {
     const location = useLocation();
-    const showSearch = ["/admin/account-list", "/admin/warehouse-list", "/admin/product-list"].includes(location.pathname);
+
+    const showSearchPaths = ["/admin/account-list", "/admin/warehouse-list", "/admin/product-list"];
+    const showSearch = showSearchPaths.includes(location.pathname);
+
+    const placeholderMap = {
+        "/admin/account-list": "Search by email...",
+        "/admin/product-list": "Search by name...",
+        "/admin/warehouse-list": "Search by name...",
+    };
+
+    const placeholder = placeholderMap[location.pathname] || "Search...";
 
     return (
         <div className="admin_layout">
@@ -21,7 +31,7 @@ const AdminLayout = ({ children }) => {
                                 <input
                                     type="text"
                                     className="admin_search_bar"
-                                    placeholder="Search..."
+                                    placeholder={placeholder}
                                 />
                             </div>
                         </div>

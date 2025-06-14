@@ -291,8 +291,6 @@ body {
         }
     }
 
-
-
     .OrderDetail :where(.css-dev-only-do-not-override-1pg9a38).ant-image .ant-image-img {
         width: 130px;
         height: 130px;

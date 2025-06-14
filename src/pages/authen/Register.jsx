@@ -251,8 +251,8 @@ const Register = () => {
         cssEase: "linear",
     };
 
-    const handleGuestLogin = () => {
-        navigate("/admin/dashboard");
+    const handleGoogleLogin = () => {
+        navigate("");
     };
 
     return (
@@ -379,10 +379,10 @@ const Register = () => {
                             <div className="google_guest_section">
                                 <div
                                     className="guest_login_section"
-                                    onClick={handleGuestLogin}
+                                    onClick={handleGoogleLogin}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Navigate to admin
+                                    Login with Google
                                 </div>
                             </div>
                         </div>

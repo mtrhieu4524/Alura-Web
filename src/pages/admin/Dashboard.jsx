@@ -14,6 +14,7 @@ import {
     ArcElement,
 } from "chart.js";
 import '../../styles/admin/Dashboard.css';
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 ChartJS.register(
     CategoryScale,
@@ -92,11 +93,26 @@ function Dashboard() {
             <div className="dashboard_container">
                 <div className="dashboard_header">
                     <h2 className="admin_main_title">Dashboard</h2>
-                    <select className="month_select">
-                        {months.map((m, i) => (
-                            <option key={i} value={m}>{m}</option>
-                        ))}
-                    </select>
+                    <FormControl size="small" sx={{ minWidth: 130, height: 35 }}>
+                        <InputLabel id="month-select-label">Month</InputLabel>
+                        <Select
+                            labelId="month-select-label"
+                            id="month-select"
+                            value={months[months.length - 1] || ""}
+                            label="Month"
+                            onChange={() => { }}
+                            sx={{
+                                height: 35,
+                                fontSize: 14,
+                                padding: '0 8px',
+                            }}
+                        >
+                            {months.map((m, i) => (
+                                <MenuItem key={i} value={m}>{m}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
                 </div>
 
                 <div className="dashboard_cards">
