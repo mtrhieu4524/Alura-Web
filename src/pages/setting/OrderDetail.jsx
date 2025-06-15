@@ -239,7 +239,7 @@ function OrderDetail() {
                             </div>
                             <div className="order_detail_customer_item">
                                 <i className="fas fa-sticky-note"></i>
-                                <span>{orderDetails?.note}</span>
+                                <span>{orderDetails?.note || 'No additional notes'}</span>
                             </div>
                         </div>
                         <hr className="order_detail_line3"></hr>

@@ -82,11 +82,12 @@ function OrderList() {
                             }}
                         >
                             <MenuItem value="All">All</MenuItem>
-                            <MenuItem value="Pending">Pending</MenuItem>
+                            <MenuItem value="Unpaid">Unpaid</MenuItem>
                             <MenuItem value="Paid">Paid</MenuItem>
+                            <MenuItem value="Preparing">Preparing</MenuItem>
                             <MenuItem value="Delivering">Delivering</MenuItem>
-                            <MenuItem value="Success">Success</MenuItem>
-                            <MenuItem value="Canceled">Canceled</MenuItem>
+                            <MenuItem value="Completed">Completed</MenuItem>
+                            <MenuItem value="Cancelled">Cancelled</MenuItem>
                         </Select>
                     </FormControl>
                 </div>

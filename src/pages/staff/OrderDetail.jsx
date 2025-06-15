@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Image, Space } from 'antd';
 import '../../styles/staff/OrderDetail.css';
+import { Select, MenuItem, Button, InputLabel, FormControl } from '@mui/material';
+import '../../styles/staff/OrderDetail.css';
 
 function OrderDetail() {
     const { id } = useParams();
@@ -11,9 +13,9 @@ function OrderDetail() {
     const [orderDetails, setOrderDetails] = useState(null);
     const [orderProducts, setOrderProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [status, setStatus] = useState("");
 
     useEffect(() => {
-        // Mock API call simulation for order by id
         const mockOrder = {
             orderId: id,
             date: "2024-11-10",
@@ -30,7 +32,7 @@ function OrderDetail() {
             {
                 productId: "P001",
                 name: "Elegant Perfume",
-                imageLinkList: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
+                imageLinkList: "https://example.com/image1.jpg",
                 type: "Serum",
                 skinType: "Oily",
                 volume: "30ml",
@@ -40,7 +42,7 @@ function OrderDetail() {
             {
                 productId: "P002",
                 name: "Vaseline",
-                imageLinkList: "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdx50i6MASgGwbeRVz-tmaMQZpqV9zPCFL0L-maMlKmVJl6S2raO-uAw-zLeBa8Ypg68KAG6WAxEn4j5ZzwFriIpNZy71Gx4fF19eLA4FwAaavudpRkvK_aOBhJ5GyIbOy3BHx3nvuTH0ulERe4IA_JQGr_-1psB6YJJaZisw?key=-i2vSHdebLnLtn9l2EVGfg",
+                imageLinkList: "https://example.com/image2.jpg",
                 type: "Cream",
                 skinType: "Dry",
                 volume: "50ml",
@@ -50,6 +52,7 @@ function OrderDetail() {
         ];
 
         setOrderDetails(mockOrder);
+        setStatus(mockOrder.orderStatus);
         setOrderProducts(mockProducts);
         setLoading(false);
     }, [id]);
@@ -64,38 +67,67 @@ function OrderDetail() {
     }, [orderDetails]);
 
     useEffect(() => {
-        document.title = `Staff - Order Detail #${id}`;
-    }, [id]);
-
-    const navItems = [
-        { name: 'Dashboard', link: '/staff/dashboard' },
-        { name: 'Orders', link: '/staff/orders' },
-        { name: `Order ${id}`, link: '' },
-    ];
+        document.title = "Order Detail - Alurà System Management";
+    }, []);
 
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-GB', options);
     };
 
+    const handleStatusUpdate = () => {
+        // Simulate update logic
+        setOrderDetails((prev) => ({ ...prev, orderStatus: status }));
+        alert(`Order status updated to ${status}`);
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
 
     return (
         <div className="staff_order_detail">
+            <div className="staff_order_detail_container" ref={orderDetailContainerRef}>
+                <div className="staff_order_detail_wrapper">
+                    <div className="staff_back" onClick={() => navigate("/staff/order-list")}>
+                        &lt; Back to order list
+                    </div>
 
-            <div className="order_detail_container" ref={orderDetailContainerRef}>
-                <div className="order_detail_wrapper">
-                    <div className="order_detail_border">
-                        <div className="order_detail_header">
-                            <h4 className="order_detail_number">#{orderDetails.orderId}</h4>
-                            <span className={`order_detail_status status-${orderDetails.orderStatus.toLowerCase()}`}>
-                                {orderDetails.orderStatus}
-                            </span>
+                    <div className="staff_order_detail_border">
+                        <div className="staff_order_detail_header">
+                            <h4 className="staff_order_detail_number">#{orderDetails.orderId || 'ORDERID'}</h4>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <FormControl
+                                    size="small"
+                                    style={{ marginRight: '10px', width: '150px', height: '40px' }}
+                                >
+                                    <InputLabel id="orderFilterLabel">Status</InputLabel>
+                                    <Select
+                                        labelId="orderFilterLabel"
+                                        id="orderFilter"
+                                        value={status}
+                                        label="Status"
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        sx={{ height: '40px' }}
+                                    >
+                                        <MenuItem value="All">All</MenuItem>
+                                        <MenuItem value="Unpaid">Unpaid</MenuItem>
+                                        <MenuItem value="Paid">Paid</MenuItem>
+                                        <MenuItem value="Preparing">Preparing</MenuItem>
+                                        <MenuItem value="Delivering">Delivering</MenuItem>
+                                        <MenuItem value="Completed">Completed</MenuItem>
+                                        <MenuItem value="Cancelled">Cancelled</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <button className="staff_update_btn">
+                                    Update Status
+                                </button>
+                            </div>
                         </div>
-                        <hr className="order_detail_line1" />
+
+                        <hr className="staff_order_detail_line1" />
 
                         {orderProducts.map((product, index) => (
-                            <div key={index} className="order_detail_product">
+                            <div key={index} className="staff_order_detail_product">
                                 <Space size={12}>
                                     <Image
                                         width={150}
@@ -112,56 +144,49 @@ function OrderDetail() {
                                         }
                                     />
                                 </Space>
-                                <div className="order_detail_product_info">
-                                    <div className="order_detail_product_header">
-                                        <h5 className="order_detail_product_name">{product.name}</h5>
+                                <div className="staff_order_detail_product_info">
+                                    <div className="staff_order_detail_product_header">
+                                        <h5 className="staff_order_detail_product_name">{product.name}</h5>
                                     </div>
-                                    <p className="order_detail_product_size">Type: {product.type} for {product.skinType} skin</p>
-                                    <p className="order_detail_product_size">Volume: {product.volume}</p>
-                                    <p className="order_detail_product_size">Quantity: {product.quantity}</p>
-
-                                    <p className="order_detail_product_price">${product.lineTotal.toFixed(2)}</p>
+                                    <p className="staff_order_detail_product_size">Type: {product.type} for {product.skinType} skin</p>
+                                    <p className="staff_order_detail_product_size">Volume: {product.volume}</p>
+                                    <p className="staff_order_detail_product_size">Quantity: {product.quantity}</p>
+                                    <p className="staff_order_detail_product_price">${product.lineTotal.toFixed(2)}</p>
                                 </div>
                             </div>
                         ))}
 
-                        <hr className="order_detail_line2" />
+                        <hr className="staff_order_detail_line2" />
 
-                        <div className="order_detail_customer_info">
-                            <div className="order_detail_customer_item">
+                        <div className="staff_order_detail_customer_info">
+                            <div className="staff_order_detail_customer_item">
                                 <i className="fas fa-user"></i>
                                 <span>{orderDetails.customerName}</span>
                             </div>
-                            <div className="order_detail_customer_item">
+                            <div className="staff_order_detail_customer_item">
                                 <i className="fas fa-phone"></i>
                                 <span>{orderDetails.phoneNumber}</span>
                             </div>
-                            <div className="order_detail_customer_item">
+                            <div className="staff_order_detail_customer_item">
                                 <i className="fas fa-map-marker-alt"></i>
                                 <span>{orderDetails.shippingAddress}</span>
                             </div>
-                            <div className="order_detail_customer_item">
+                            <div className="staff_order_detail_customer_item">
                                 <i className="fas fa-credit-card"></i>
                                 <span>{orderDetails.paymentMethod}</span>
                             </div>
-                            <div className="order_detail_customer_item">
+                            <div className="staff_order_detail_customer_item">
                                 <i className="fas fa-sticky-note"></i>
                                 <span>{orderDetails.note || 'No additional notes'}</span>
                             </div>
                         </div>
 
-                        <hr className="order_detail_line3" />
+                        <hr className="staff_order_detail_line3" />
 
-                        <div className="order_detail_footer">
-                            <p className="order_detail_date">Order date: {formatDate(orderDetails.date)}</p>
-                            <p className="order_detail_total_price">Total price: ${orderDetails.totalPrice.toFixed(2)}</p>
+                        <div className="staff_order_detail_footer">
+                            <p className="staff_order_detail_date">Order date: {formatDate(orderDetails.date)}</p>
+                            <p className="staff_order_detail_total_price">Total price: ${orderDetails.totalPrice.toFixed(2)}</p>
                         </div>
-
-                        {/* Staff-specific controls could go here, e.g. status update buttons */}
-                        {/* <div className="order_detail_actions_staff">
-              <button>Mark as Shipped</button>
-              <button>Cancel Order</button>
-            </div> */}
                     </div>
                 </div>
             </div>
@@ -170,3 +195,4 @@ function OrderDetail() {
 }
 
 export default OrderDetail;
+
