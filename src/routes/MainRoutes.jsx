@@ -22,12 +22,15 @@ import OrderDetail from "../pages/setting/OrderDetail";
 
 import UserLayout from "../layouts/UserLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import StaffLayout from "../layouts/StaffLayout";
 
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminWarehouseList from "../pages/admin/warehouse/WarehouseList";
 import AdminProductList from "../pages/admin/product/ProductList";
 import AdminAccountList from "../pages/admin/account/AccountList";
 
+import StaffOrderList from "../pages/staff/OrderList";
+import StaffOrderDetail from "../pages/staff/OrderDetail";
 
 const MainRoutes = () => {
   return (
@@ -56,13 +59,15 @@ const MainRoutes = () => {
       <Route path="/order-detail/:id" element={<UserLayout><OrderDetail /></UserLayout>} />
 
       {/* Admin Routes */}
-      <Route path="/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-      <Route path="/account-list" element={<AdminLayout><AdminAccountList /></AdminLayout>} />
-      <Route path="/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
-      <Route path="/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
+      <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+      <Route path="/admin/account-list" element={<AdminLayout><AdminAccountList /></AdminLayout>} />
+      <Route path="/admin/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
+      <Route path="/admin/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
 
       {/* Staff Routes */}
-      {/* <Route path="/dashboard" element={<StaffLayout><AdminDashboard /></StaffLayout>} /> */}
+      <Route path="/staff/order-list" element={<StaffLayout><StaffOrderList /></StaffLayout>} />
+      {/* <Route path="/staff/order-detail/:id" element={<StaffLayout><StaffOrderDetail /></StaffLayout>} /> */}
+      <Route path="/staff/order-detail" element={<StaffLayout><StaffOrderDetail /></StaffLayout>} />
 
     </Routes>
   );

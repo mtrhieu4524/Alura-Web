@@ -318,6 +318,12 @@ const Login = () => {
     const handleGuestLogin = () => {
         navigate("/");
     };
+    const handleAdminLogin = () => {
+        navigate("/admin/dashboard");
+    };
+    const handleStaffLogin = () => {
+        navigate("/staff/order-list");
+    };
 
     return (
         <div className="container main_container">
@@ -420,6 +426,20 @@ const Login = () => {
                                     style={{ cursor: "pointer" }}
                                 >
                                     Navigate to home
+                                </div>
+                                <div
+                                    className="guest_login_section"
+                                    onClick={handleAdminLogin}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    Navigate to admin
+                                </div>
+                                <div
+                                    className="guest_login_section"
+                                    onClick={handleStaffLogin}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    Navigate to staff
                                 </div>
                             </div>
                         </div>

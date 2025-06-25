@@ -28,10 +28,10 @@ const AdminSidebar = () => {
     };
 
     const menuItems = [
-        { label: 'Dashboard', icon: 'fa-bar-chart', path: '/dashboard' },
-        { label: 'Manage Account', icon: 'fa-users', path: '/account-list' },
-        { label: 'Manage Product', icon: 'fa-paint-brush', path: '/product-list' },
-        { label: 'Manage Warehouse', icon: 'fa-cubes', path: '/warehouse-list' },
+        { label: 'Dashboard', icon: 'fa-bar-chart', path: '/admin/dashboard' },
+        { label: 'Manage Account', icon: 'fa-users', path: '/admin/account-list' },
+        { label: 'Manage Product', icon: 'fa-paint-brush', path: '/admin/product-list' },
+        { label: 'Manage Warehouse', icon: 'fa-cubes', path: '/admin/warehouse-list' },
     ];
 
     return (
