@@ -7,6 +7,8 @@ const HeaderComponent = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -16,8 +18,10 @@ const HeaderComponent = () => {
         setIsLoggedIn(!!token);
     }, []);
 
-    const [searchTerm, setSearchTerm] = useState("");
-
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+    };
     return (
         <header className="header">
             <div className="top_announcement">
@@ -97,7 +101,7 @@ const HeaderComponent = () => {
                                             <Link to="/order-history" className="user-dropdown-menu-link">
                                                 <i className="fas fa-history dropdown-icon"></i> Order history
                                             </Link>
-                                            <Link to="/sign-in" className="user-dropdown-menu-link">
+                                            <Link onClick={handleLogout} className="user-dropdown-menu-link">
                                                 <i className="fas fa-sign-in-alt dropdown-icon"></i> Sign out
                                             </Link>
                                         </div>

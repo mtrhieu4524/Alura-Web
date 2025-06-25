@@ -316,6 +316,10 @@ body {
     text-align: start;
 }
 
+.user-dropdown-menu-link:hover {
+    background-color: #f4f4f4;
+}
+
 .user-info {
     display: flex;
     align-items: center;
