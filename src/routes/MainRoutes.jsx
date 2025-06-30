@@ -48,9 +48,9 @@ const MainRoutes = () => {
       <Route path="/visual-search-result" element={<UserLayout><Result /></UserLayout>} />
       <Route path="/search" element={<UserLayout><ProductSearch /></UserLayout>} />
       <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} />
-      <Route path="/cosmetic" element={<UserLayout><CosmeticList /></UserLayout>} />
+      <Route path="/cosmetics" element={<UserLayout><CosmeticList /></UserLayout>} />
       <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} />
-      <Route path="/product-detail/:name" element={<UserLayout><ProductDetail /></UserLayout>} />
+      <Route path="/cosmetics/:id" element={<UserLayout><ProductDetail /></UserLayout>} />
       <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
       <Route path="/checkout" element={<UserLayout><Checkout /></UserLayout>} />
       <Route path="/invoice" element={<UserLayout><Invoice /></UserLayout>} />

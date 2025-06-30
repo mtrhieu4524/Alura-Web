@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
+import {
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Button,
+} from '@mui/material';
 import '../../styles/product/ProductList.css';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import Question from '../../components/Question/Question';
 import ProductList from '../../components/ProductCard/ProductCard';
-// import CollectionSlide from '../../components/CollectionSlide/CollectionSlide';
 import Insta from '../../components/Insta/Instagram';
 import banner from '../../assets/bannerCosmetic.png';
 
@@ -18,84 +23,75 @@ function CosmeticListPage() {
     const [resetKey, setResetKey] = useState(Date.now());
     const [transitionKey, setTransitionKey] = useState(Date.now());
 
-    const hardcodedProducts = [
-        {
-            productId: 1,
-            imageLinkList: 'https://i.pinimg.com/564x/70/e4/9c/70e49c4a2ea8af1f538cd0ea2c505db9.jpg',
-            name: 'Matte Lipstick',
-            price: 19.99,
-            type: 'Lipstick',
-            shade: 'Rose Pink',
-            volume: '3g',
-            sex: 'Women'
-        },
-        {
-            productId: 2,
-            imageLinkList: 'https://i.pinimg.com/564x/70/e4/9c/70e49c4a2ea8af1f538cd0ea2c505db9.jpg',
-            name: 'Hydrating Serum',
-            price: 29.99,
-            type: 'Serum',
-            shade: 'Clear',
-            volume: '50ml',
-            sex: 'Unisex'
-        },
-        {
-            productId: 3,
-            imageLinkList: 'https://i.pinimg.com/564x/70/e4/9c/70e49c4a2ea8af1f538cd0ea2c505db9.jpg',
-            name: 'Compact Powder',
-            price: 24.99,
-            type: 'Powder',
-            shade: 'Ivory',
-            volume: '10g',
-            sex: 'Women'
-        },
-        {
-            productId: 4,
-            imageLinkList: 'https://i.pinimg.com/564x/70/e4/9c/70e49c4a2ea8af1f538cd0ea2c505db9.jpg',
-            name: 'Hydrating Serum',
-            price: 29.99,
-            type: 'Serum',
-            shade: 'Clear',
-            volume: '50ml',
-            sex: 'Unisex'
-        },
-        {
-            productId: 5,
-            imageLinkList: 'https://i.pinimg.com/564x/70/e4/9c/70e49c4a2ea8af1f538cd0ea2c505db9.jpg',
-            name: 'Compact Powder',
-            price: 24.99,
-            type: 'Powder',
-            shade: 'Ivory',
-            volume: '10g',
-            sex: 'Women'
-        }
-    ];
-
     useEffect(() => {
-        document.title = "Alurà - Cosmetic";
+        document.title = 'Alurà - Cosmetic';
     }, []);
 
     useEffect(() => {
-        let filtered = [...hardcodedProducts];
+        const fetchProducts = async () => {
+            try {
+                const pageIndex = 1;
+                const pageSize = 100;
 
-        if (sex) filtered = filtered.filter(p => p.sex === sex);
-        if (type) filtered = filtered.filter(p => p.type === type);
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/products?pageIndex=${pageIndex}&pageSize=${pageSize}`
+                );
 
-        if (sort) {
-            filtered.sort((a, b) => {
-                switch (sort) {
-                    case 'Newest': return b.productId - a.productId;
-                    case 'Oldest': return a.productId - b.productId;
-                    case 'Price (Low to High)': return a.price - b.price;
-                    case 'Price (High to Low)': return b.price - a.price;
-                    default: return 0;
+                const data = await response.json();
+
+                if (data.success && data.products) {
+                    let filtered = [...data.products];
+
+                    // Apply filters
+                    if (sex) {
+                        filtered = filtered.filter((p) =>
+                            p.sex?.toLowerCase() === sex.toLowerCase()
+                        );
+                    }
+
+                    if (type) {
+                        filtered = filtered.filter((p) =>
+                            p.tags?.includes(type.toLowerCase())
+                        );
+                    }
+
+                    // Sort
+                    if (sort) {
+                        filtered.sort((a, b) => {
+                            switch (sort) {
+                                case 'Newest':
+                                    return new Date(b.createdAt) - new Date(a.createdAt);
+                                case 'Oldest':
+                                    return new Date(a.createdAt) - new Date(b.createdAt);
+                                case 'Price (Low to High)':
+                                    return a.price - b.price;
+                                case 'Price (High to Low)':
+                                    return b.price - a.price;
+                                default:
+                                    return 0;
+                            }
+                        });
+                    }
+
+                    setProducts(filtered);
+                    setResetKey(Date.now());
                 }
-            });
-        }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
 
-        setProducts(filtered);
-        setResetKey(Date.now());
+        fetchProducts();
     }, [sort, sex, type]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            document
+                .querySelector('.news_banner_main_wrapper')
+                .classList.add('visible');
+        }, 10);
+        return () => clearTimeout(timeout);
+    }, [transitionKey]);
 
     const handleRemoveFilters = () => {
         setSort('');
@@ -103,21 +99,22 @@ function CosmeticListPage() {
         setType('');
     };
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            document.querySelector('.news_banner_main_wrapper').classList.add('visible');
-        }, 10);
-        return () => clearTimeout(timeout);
-    }, [transitionKey]);
-
     return (
         <div className="ProductList">
-            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Product', link: '/product' }, { name: 'Cosmetic', link: '' }]} />
+            <Breadcrumb
+                items={[
+                    { name: 'Home', link: '/' },
+                    // { name: 'Product', link: '/product' },
+                    { name: 'Cosmetic', link: '' },
+                ]}
+            />
+
             <div key={transitionKey} className="news_banner_main_wrapper">
                 <div className="news_banner_image">
                     <img src={banner} alt="banner" />
                 </div>
             </div>
+
             <div className="filters_and_products">
                 <div className="filters_products">
                     {(sort || sex || type) && (
@@ -173,8 +170,8 @@ function CosmeticListPage() {
                             onChange={(e) => setSex(e.target.value)}
                         >
                             <MenuItem value="">None</MenuItem>
-                            <MenuItem value="Women">Women</MenuItem>
-                            <MenuItem value="Men">Men</MenuItem>
+                            <MenuItem value="Female">Female</MenuItem>
+                            <MenuItem value="Male">Male</MenuItem>
                             <MenuItem value="Unisex">Unisex</MenuItem>
                         </Select>
                     </FormControl>

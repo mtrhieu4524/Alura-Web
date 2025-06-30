@@ -7,8 +7,7 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
 
     const handleViewClick = (e) => {
         e.stopPropagation();
-        const productName = name.replace(/\s+/g, '-').toLowerCase();
-        navigate(`/product-detail/${productName}`, { state: { id } });
+        navigate(`/cosmetics/${id}`, { state: { id } });
     };
 
     return (
@@ -19,7 +18,7 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
             </div>
             <p className='product_card_detail'>{type} | {shade} | {volume} | {sex}</p>
             <h6 className='product_card_name'>{name}</h6>
-            <p className='product_card_price'>${price}</p>
+            <p className='product_card_price'>{price} VND</p>
         </div>
     );
 };
@@ -58,16 +57,17 @@ const ProductList = ({ products, resetKey }) => {
         <div className="product_list col-lg-12">
             {displayedProducts.map((product, index) => (
                 <ProductCard
-                    key={index}
-                    id={product.productId}
-                    image={product.imageLinkList}
+                    key={product._id}
+                    id={product._id}
+                    image={product.imgUrls?.[0] || ''}
                     name={product.name}
                     price={product.price}
-                    type={product.type}
-                    shade={product.shade}
+                    type={product.tags?.[0] || ''}
+                    shade=""
                     volume={product.volume}
                     sex={product.sex}
                 />
+
             ))}
             {visibleProducts < products.length ? (
                 <div className="product_see_more_container">

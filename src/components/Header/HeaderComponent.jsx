@@ -146,8 +146,8 @@ const HeaderComponent = () => {
                                 </Link>
                             </li>
                             <li className="nav-item dropdown-cosmetics">
-                                <Link className="home nav-link cosmetics-link" to="/cosmetic">
-                                    COSMETIC
+                                <Link className="home nav-link cosmetics-link" to="/cosmetics">
+                                    COSMETICS
                                     <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i>
                                 </Link>
                                 <div className="cosmetics-dropdown">
@@ -189,7 +189,7 @@ const HeaderComponent = () => {
                                 </div>
                             </li>
 
-                            <li className="nav-item dropdown-medical">
+                            {/* <li className="nav-item dropdown-medical">
                                 <Link className="home nav-link medical-link" to="/medical-treatment">
                                     MEDICAL & TREATMENT
                                     <i className="medical-arrow-icon fas fa-chevron-down arrow-icon"></i>
@@ -231,7 +231,7 @@ const HeaderComponent = () => {
                                         <Link to="/medical-treatment">View all →</Link>
                                     </div>
                                 </div>
-                            </li>
+                            </li> */}
 
                             <li className="nav-item">
                                 <Link className="home nav-link" to="/visual-search">
