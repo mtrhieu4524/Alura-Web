@@ -1,68 +1,33 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 import "../../styles/setting/Profile.css";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-// import {
-//     getUserInfo,
-//     updateCustomerInfo,
-//     changePasswordApi,
-// } from "../../services/UserService";
-// import { UserContext } from "../../services/UserContext";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Profile() {
     const navigate = useNavigate();
-    // const { user, setUser } = useContext(UserContext);
     const [isPasswordFormVisible, setPasswordFormVisible] = useState(false);
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [tempFirstName, setTempFirstName] = useState(""); // Temporary state for form input
-    const [tempLastName, setTempLastName] = useState(""); // Temporary state for form input
+
+    const [tempFirstName, setTempFirstName] = useState("");
     const [address, setAddress] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [phone, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [points, setPoints] = useState(0);
+    const [isGoogleUser, setIsGoogleUser] = useState(false);
+
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [storedPassword, setStoredPassword] = useState("");
-    const [isGoogleUser, setIsGoogleUser] = useState(false);
-    const [loading, setLoading] = useState(true);
 
-    // useEffect(() => {
-    //     const storedEmail = localStorage.getItem("email");
-    //     const isGoogle = localStorage.getItem("Google");
-    //     setIsGoogleUser(Boolean(isGoogle));
-    //     if (storedEmail) {
-    //         getUserInfo(storedEmail)
-    //             .then((response) => {
-    //                 const userData = response.data;
-    //                 setFirstName(userData.firstName || "");
-    //                 setLastName(userData.lastName || "");
-    //                 setTempFirstName(userData.firstName || ""); // Set temp state
-    //                 setTempLastName(userData.lastName || ""); // Set temp state
-    //                 setAddress(userData.address || "");
-    //                 setPhoneNumber(userData.phoneNumber || "");
-    //                 setEmail(userData.email || "");
-    //                 setPoints(userData.points || 0);
-    //                 setStoredPassword(userData.password || "");
-    //                 setLoading(false);
-    //             })
-    //             .catch((error) => {
-    //                 console.error("Error fetching user data:", error);
-    //                 setLoading(false);
-    //             });
-    //     }
-    // }, []);
-
-    useEffect(() => {
-        document.title = "Alurà - Profile";
-    }, []);
+    const [userId, setUserId] = useState(null);
 
     const navItems = [
         { name: "Home", link: "/" },
         { name: "Profile", link: "" },
     ];
+
     const menuItems = [
         {
             name: "Profile",
@@ -78,6 +43,47 @@ function Profile() {
         },
     ];
 
+    useEffect(() => {
+        document.title = "Alurà - Profile";
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                const userIdDecoded = decoded.userId;
+                setUserId(userIdDecoded);
+
+                fetch(`${API_URL}/profile/${userIdDecoded}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Unauthorized or failed request");
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data && data.success && data.user) {
+                            const user = data.user;
+                            setTempFirstName(user.name || "");
+                            setEmail(user.email || "");
+                            setPhoneNumber(user.phone || "");
+                            setAddress(user.address || "");
+                            setIsGoogleUser(user.isGoogle || false);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Failed to fetch profile:", err);
+                        toast.error("Failed to load profile data.");
+                    });
+            } catch (err) {
+                console.error("Token decode error:", err);
+                toast.error("Invalid session. Please login again.");
+            }
+        }
+    }, []);
+
     const togglePasswordForm = () => {
         setPasswordFormVisible(!isPasswordFormVisible);
     };
@@ -85,136 +91,51 @@ function Profile() {
     const togglePasswordVisibility = (id, eyeId) => {
         const passwordField = document.getElementById(id);
         const eyeIcon = document.getElementById(eyeId);
-        const type =
-            passwordField.getAttribute("type") === "password" ? "text" : "password";
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
         passwordField.setAttribute("type", type);
         eyeIcon.classList.toggle("fa-eye");
         eyeIcon.classList.toggle("fa-eye-slash");
     };
 
-    const isValidPhoneNumber = (phone) => {
-        const phonePattern = /^[0-9]{10,15}$/;
-        return phonePattern.test(phone);
-    };
-
-    const isValidPassword = (password) => {
-        const passwordPattern =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/;
-        return passwordPattern.test(password);
-    };
-
     const handleSaveProfileChanges = async () => {
-        if (!tempFirstName || !tempLastName) {
-            toast.error(
-                "Field cannot be empty! Please fill out all required fields.",
-                {
-                    position: "top-right",
-                    autoClose: 3000,
-                }
-            );
+        const token = localStorage.getItem("token");
+        if (!token || !userId) {
+            toast.error("You must be logged in to update your profile.");
             return;
         }
 
-        if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
-            toast.error("Phone number is invalid! Please try again.");
-            return;
-        }
-
-        const updatedData = {
-            email,
-            password: storedPassword,
-            lastName: tempLastName,
-            firstName: tempFirstName,
-            address,
-            phoneNumber,
-            points,
-            status: true,
+        const payload = {
+            name: tempFirstName,
+            email: email,
+            phone: phone,
+            address: address,
         };
 
         try {
-            const response = await updateCustomerInfo(email, updatedData);
-            if (response.status === 200) {
-                toast.success("Profile has been updated successfully.", {
-                    position: "top-right",
-                    autoClose: 3000,
-                });
-                setFirstName(tempFirstName);
-                setLastName(tempLastName);
-                localStorage.setItem("firstName", tempFirstName);
-                localStorage.setItem("lastName", tempLastName);
-                setUser({
-                    firstName: tempFirstName,
-                    lastName: tempLastName,
-                    email,
-                    points,
-                });
+            const res = await fetch(`${API_URL}/profile/${userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                toast.success("Profile updated successfully!");
+            } else {
+                throw new Error(data.message || "Failed to update profile");
             }
         } catch (error) {
-            toast.error("Failed to update profile! Please try again.");
+            console.error("Update error:", error);
+            toast.error("An error occurred while updating the profile.");
         }
     };
 
     const handleChangePassword = async () => {
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            toast.error(
-                "Please fill in all fields. All password fields are required.",
-                {
-                    position: "top-right",
-                    autoClose: 3000,
-                }
-            );
-            return;
-        }
-
-        if (!isValidPassword(newPassword)) {
-            toast.error(
-                "Password must be between 6 to 20 characters long and include lowercase with uppercase letter, number, and special character.",
-                {
-                    position: "top-right",
-                    autoClose: 3000,
-                }
-            );
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            toast.error(
-                "New password and confirm password do not match! Please try again.",
-                {
-                    position: "top-right",
-                    autoClose: 3000,
-                }
-            );
-            return;
-        }
-
-        try {
-            const changePasswordResponse = await changePasswordApi({
-                email,
-                oldPassword: currentPassword,
-                newPassword: newPassword,
-            });
-
-            if (
-                changePasswordResponse.data ===
-                "Cannot update password due to password is not match."
-            ) {
-                toast.error("Current password is incorrect! Please try again.", {
-                    position: "top-right",
-                    autoClose: 3000,
-                });
-            } else if (changePasswordResponse.data) {
-                toast.success("Password has been changed successfully.", {
-                    position: "top-right",
-                    autoClose: 3000,
-                });
-                setCurrentPassword("");
-                setNewPassword("");
-                setConfirmPassword("");
-            }
-        } catch (error) {
-            toast.error("Failed to change password! Please try again.");
-        }
+        // Add password change logic here
+        toast.success("Password changed (mock)");
     };
 
     return (
@@ -223,23 +144,15 @@ function Profile() {
             <div className="edit_profile_container">
                 <div className="setting_menu">
                     <div className="setting_menu_section">
-                        {/* <div className="setting_full_name">{`${firstName} ${lastName}`}</div> */}
-                        <div className="setting_full_name">Nguyen Tran</div>
-                        {/* <div className="setting_point">
-                            <p>{`${points} points`}</p>
-                        </div> */}
                     </div>
                     <div className="setting_menu_items">
                         {menuItems.map((item) => (
                             <div
                                 key={item.path}
-                                className={`setting_menu_item ${item.path === "/profile" ? "profile-item" : ""
-                                    }`}
+                                className={`setting_menu_item ${item.path === "/profile" ? "profile-item" : ""}`}
                                 onClick={() => navigate(item.path)}
                             >
-                                <i
-                                    className={`${item.icon} setting_menu_icon ${item.iconClass}`}
-                                ></i>
+                                <i className={`${item.icon} setting_menu_icon ${item.iconClass}`}></i>
                                 <span className="setting_menu_item_name">{item.name}</span>
                             </div>
                         ))}
@@ -272,7 +185,7 @@ function Profile() {
                             <label>Phone number</label>
                             <input
                                 type="text"
-                                value={phoneNumber}
+                                value={phone}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                             />
                         </div>
@@ -295,13 +208,10 @@ function Profile() {
 
                     {!isGoogleUser && (
                         <>
-                            <hr className="edit_profile_line"></hr>
+                            <hr className="edit_profile_line" />
                             <h2 onClick={togglePasswordForm} className="toggle_password_form">
                                 Change Password
-                                <i
-                                    className={`fas ${isPasswordFormVisible ? "fa-chevron-up" : "fa-chevron-down"
-                                        } toggle_icon`}
-                                ></i>
+                                <i className={`fas ${isPasswordFormVisible ? "fa-chevron-up" : "fa-chevron-down"} toggle_icon`}></i>
                             </h2>
                             {isPasswordFormVisible && (
                                 <form>
@@ -318,10 +228,7 @@ function Profile() {
                                                 className="far fa-eye"
                                                 id="edit_current_password_eye"
                                                 onClick={() =>
-                                                    togglePasswordVisibility(
-                                                        "current_password",
-                                                        "edit_current_password_eye"
-                                                    )
+                                                    togglePasswordVisibility("current_password", "edit_current_password_eye")
                                                 }
                                                 style={{ cursor: "pointer" }}
                                             ></i>
@@ -340,10 +247,7 @@ function Profile() {
                                                 className="far fa-eye"
                                                 id="edit_new_password_eye"
                                                 onClick={() =>
-                                                    togglePasswordVisibility(
-                                                        "new_password",
-                                                        "edit_new_password_eye"
-                                                    )
+                                                    togglePasswordVisibility("new_password", "edit_new_password_eye")
                                                 }
                                                 style={{ cursor: "pointer" }}
                                             ></i>
@@ -362,10 +266,7 @@ function Profile() {
                                                 className="far fa-eye"
                                                 id="edit_confirm_password_eye"
                                                 onClick={() =>
-                                                    togglePasswordVisibility(
-                                                        "confirm_password",
-                                                        "edit_confirm_password_eye"
-                                                    )
+                                                    togglePasswordVisibility("confirm_password", "edit_confirm_password_eye")
                                                 }
                                                 style={{ cursor: "pointer" }}
                                             ></i>
@@ -384,7 +285,6 @@ function Profile() {
                     )}
                 </div>
             </div>
-
         </div>
     );
 }

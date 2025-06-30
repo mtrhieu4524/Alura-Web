@@ -50,6 +50,7 @@ const HeaderComponent = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         setUserInfo(null);
+        navigate(`/sign-in`);
     };
 
     return (
