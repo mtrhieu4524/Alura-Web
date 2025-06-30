@@ -104,7 +104,6 @@ function CosmeticListPage() {
             <Breadcrumb
                 items={[
                     { name: 'Home', link: '/' },
-                    // { name: 'Product', link: '/product' },
                     { name: 'Cosmetic', link: '' },
                 ]}
             />

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../Header/Header.css";
 import logo from "../../assets/logo.png";
 import { jwtDecode } from "jwt-decode";
+import { useCart } from "../../context/CartContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -12,6 +13,8 @@ const HeaderComponent = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const { cartCount, setCartCount } = useCart();
+
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -23,34 +26,46 @@ const HeaderComponent = () => {
             setIsLoggedIn(true);
             try {
                 const decoded = jwtDecode(token);
-                console.log("Decoded JWT:", decoded);
                 const userId = decoded.userId;
 
                 fetch(`${API_URL}/profile/${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (data && data.success) {
-                            setUserInfo(data.user);
-                        }
+                        if (data?.success) setUserInfo(data.user);
                     })
-                    .catch(err => {
-                        console.error("Error fetching user profile:", err);
-                    });
+                    .catch(err => console.error("Error fetching user profile:", err));
+
+                fetchCartCount(token);
             } catch (err) {
                 console.error("Error decoding token:", err);
             }
         }
     }, []);
 
+    const fetchCartCount = async (token) => {
+        try {
+            const res = await fetch(`${API_URL}/cart`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) return;
+
+            const data = await res.json();
+            setCartCount(data?.items?.length || 0);
+        } catch (error) {
+            console.error("Error fetching cart count:", error);
+        }
+    };
+
     const handleLogout = () => {
+        navigate(`/sign-in`);
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         setUserInfo(null);
-        navigate(`/sign-in`);
     };
 
     return (
@@ -103,8 +118,11 @@ const HeaderComponent = () => {
                                     />
                                 </div>
                             </div>
-                            <Link to="/cart" className="cart_icon">
+                            <Link to="/cart" className="cart_icon position-relative">
                                 <i className="icon_cart fas fa-shopping-bag"></i>
+                                {cartCount > 0 && (
+                                    <span className="cart_count_badge">{cartCount}</span>
+                                )}
                             </Link>
 
                             <div className="account_dropdown_section">
@@ -117,9 +135,6 @@ const HeaderComponent = () => {
                                     {isLoggedIn ? (
                                         <div className="user-logged-in">
                                             <div className="user-info">
-                                                {/* <div className="avatar-circle">
-                                                    {userInfo?.name?.charAt(0) || "U"}
-                                                </div> */}
                                                 <p className="username">
                                                     {userInfo?.name || "User"} ({userInfo?.email || "Email"})
                                                 </p>
@@ -134,9 +149,9 @@ const HeaderComponent = () => {
                                             <Link to="/order-history" className="user-dropdown-menu-link">
                                                 <i className="fas fa-history dropdown-icon"></i> Order history
                                             </Link>
-                                            <Link onClick={handleLogout} className="user-dropdown-menu-link">
+                                            <div onClick={handleLogout} className="user-dropdown-menu-link handle-logout" style={{ cursor: "pointer" }}>
                                                 <i className="fas fa-sign-in-alt dropdown-icon"></i> Sign out
-                                            </Link>
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="user-not-logged-in">
@@ -150,12 +165,11 @@ const HeaderComponent = () => {
                                     )}
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-            {/* Keep the nav section untouched */}
+
             <nav className="navbar navbar-expand-lg navbar-light">
                 <div className="container-fluid">
                     <button
@@ -172,9 +186,7 @@ const HeaderComponent = () => {
                     <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/">
-                                    HOME
-                                </Link>
+                                <Link className="home nav-link" to="/">HOME</Link>
                             </li>
                             <li className="nav-item dropdown-cosmetics">
                                 <Link className="home nav-link cosmetics-link" to="/cosmetics">
@@ -184,65 +196,36 @@ const HeaderComponent = () => {
                                 <div className="cosmetics-dropdown">
                                     <div className="dropdown-column">
                                         <h6>Facial</h6>
-                                        <p>Cleanser</p>
-                                        <p>Toner</p>
-                                        <p>Serum</p>
-                                        <p>Face Mask</p>
-                                        <p>Cream</p>
+                                        <p>Cleanser</p><p>Toner</p><p>Serum</p><p>Face Mask</p><p>Cream</p>
                                     </div>
                                     <div className="dropdown-column">
                                         <h6>Hair</h6>
-                                        <p>Shampoo</p>
-                                        <p>Conditioner</p>
-                                        <p>Hair Serum</p>
-                                        <p>Hair Tonic</p>
-                                        <p>Scalp Treatment</p>
+                                        <p>Shampoo</p><p>Conditioner</p><p>Hair Serum</p><p>Hair Tonic</p><p>Scalp Treatment</p>
                                     </div>
                                     <div className="dropdown-column">
                                         <h6>Body</h6>
-                                        <p>Body Lotion</p>
-                                        <p>Body Wash</p>
-                                        <p>Deodorant</p>
-                                        <p>Sunscreen</p>
-                                        <p>Body Scrub</p>
+                                        <p>Body Lotion</p><p>Body Wash</p><p>Deodorant</p><p>Sunscreen</p><p>Body Scrub</p>
                                     </div>
                                     <div className="dropdown-column">
                                         <h6>Lips & Nails</h6>
-                                        <p>Lip Stick</p>
-                                        <p>Lip Scrub</p>
-                                        <p>Nail Strengthener</p>
-                                        <p>Cuticle Oil</p>
-                                        <p>Nail Treatment</p>
+                                        <p>Lip Stick</p><p>Lip Scrub</p><p>Nail Strengthener</p><p>Cuticle Oil</p><p>Nail Treatment</p>
                                     </div>
                                     <div className="dropdown-viewall">
                                         <Link to="/cosmetic">View all →</Link>
                                     </div>
                                 </div>
                             </li>
-
-                            {/* <li className="nav-item dropdown-medical">
-                                ...
-                            </li> */}
-
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/visual-search">
-                                    VISUAL SEARCH
-                                </Link>
+                                <Link className="home nav-link" to="/visual-search">VISUAL SEARCH</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/faqs">
-                                    FAQS
-                                </Link>
+                                <Link className="home nav-link" to="/faqs">FAQS</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/introduce">
-                                    INTRODUCE
-                                </Link>
+                                <Link className="home nav-link" to="/introduce">INTRODUCE</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="home nav-link" to="/contact">
-                                    CONTACT US
-                                </Link>
+                                <Link className="home nav-link" to="/contact">CONTACT US</Link>
                             </li>
                         </ul>
                     </div>

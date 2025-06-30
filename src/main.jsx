@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Toaster } from 'sonner';
 import { CssBaseline } from "@mui/material";
+import { CartProvider } from "./context/CartContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <>
         <CssBaseline />
         <Toaster richColors position="top-right" />
-        <App />
+        <CartProvider>
+          <App />
+        </CartProvider>
       </>
     </BrowserRouter>
   </React.StrictMode>

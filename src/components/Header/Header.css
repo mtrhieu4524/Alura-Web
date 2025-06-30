@@ -506,3 +506,20 @@ body {
     color: #333;
     text-decoration: underline;
 }
+
+.handle-logout {
+    padding: 9px !important
+}
+
+.cart_count_badge {
+    position: absolute;
+    top: -8px;
+    right: 3px;
+    background-color: #f8dcce;
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 4px 7px;
+    line-height: 1;
+}
