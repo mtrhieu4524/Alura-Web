@@ -269,7 +269,7 @@ body {
 .arrow-icon {
     transition: transform 0.3s ease;
     font-size: 10px !important;
-    margin-right: 25px;
+    /* margin-right: 25px; */
 
 }
 

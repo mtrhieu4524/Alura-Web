@@ -73,6 +73,7 @@ function ProductDetail() {
                             alt={product.name}
                             className="main_image"
                             width={415}
+                            height={516}
                         />
                     </Image.PreviewGroup>
                 </div>
@@ -83,10 +84,10 @@ function ProductDetail() {
                     </h2>
                     <p className="product_description_detail">{product.description}</p>
                     <p className="product_code_detail">
-                        <strong>Type:</strong> {product.productTypeId?.name || "N/A"}
+                        <strong>Type:</strong> {product.productTypeId?.name || "None"}
                     </p>
                     <p className="product_diamond_detail">
-                        <strong>Skin Type:</strong> {product.skinType || "N/A"}
+                        <strong>Skin Type:</strong> {product.skinType || "None"}
                     </p>
                     <p className="product_shell_detail">
                         <strong>Volume:</strong> {product.volume}
@@ -158,7 +159,7 @@ function ProductDetail() {
                 {showSpecifications && (
                     <>
                         <p><strong>Type:</strong> {product.productTypeId?.name}</p>
-                        <p><strong>Brand:</strong> {product.brand?.brandName}</p>
+                        <p><strong>Brand:</strong> {product.brand?.brandName || "None"}</p>
                         <p><strong>Sex:</strong> {product.sex}</p>
                         <p><strong>Skin Type:</strong> {product.skinType}</p>
                         <p><strong>Skin Color:</strong> {product.skinColor}</p>

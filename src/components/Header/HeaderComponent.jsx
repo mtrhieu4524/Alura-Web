@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../Header/Header.css";
 import logo from "../../assets/logo.png";
+import { jwtDecode } from "jwt-decode";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const HeaderComponent = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [userInfo, setUserInfo] = useState(null);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -15,24 +19,46 @@ const HeaderComponent = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        setIsLoggedIn(!!token);
+        if (token) {
+            setIsLoggedIn(true);
+            try {
+                const decoded = jwtDecode(token);
+                console.log("Decoded JWT:", decoded);
+                const userId = decoded.userId;
+
+                fetch(`${API_URL}/profile/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.success) {
+                            setUserInfo(data.user);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching user profile:", err);
+                    });
+            } catch (err) {
+                console.error("Error decoding token:", err);
+            }
+        }
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
+        setUserInfo(null);
     };
+
     return (
         <header className="header">
             <div className="top_announcement">
-
                 Free shipping nationwide in Vietnam for all orders. Order today for best service.
             </div>
             <div className="top_header container-fluid">
-                <div
-                    className="row align-items-center"
-                    style={{ backgroundColor: "white" }}
-                >
+                <div className="row align-items-center" style={{ backgroundColor: "white" }}>
                     <div className="col-md-5 col-lg-5 col-sm-12">
                         <div className="contact_info">
                             <Link to="tel:0795795959">
@@ -40,15 +66,13 @@ const HeaderComponent = () => {
                                     <i className="fas fa-phone-alt"></i>0795 795 959
                                 </p>
                             </Link>
-
                             <a
-                                href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+h%E1%BB%8Dc+FPT+TP.+HCM/@10.8411278,106.8092999,19z/data=!4m6!3m5!1s0x31752731176b07b1:0xb752b24b379bae5e!8m2!3d10.8411276!4d106.809883!16s%2Fg%2F11j2zx_fz_?entry=ttu"
+                                href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+h%E1%BB%8Dc+FPT+TP.+HCM"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 <p className="contact_address">
-                                    <i className="fas fa-map-marker-alt"></i> D1 Street, Long
-                                    Thanh My, Thu Duc City, Ho Chi Minh City
+                                    <i className="fas fa-map-marker-alt"></i> D1 Street, Long Thanh My, Thu Duc City, Ho Chi Minh City
                                 </p>
                             </a>
                         </div>
@@ -83,19 +107,27 @@ const HeaderComponent = () => {
                             </Link>
 
                             <div className="account_dropdown_section">
-                                <div className="dropdown-toggle-icon">
+                                <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                                     <i className="icon_account fas fa-user"></i>
-                                    <i className="fas fa-chevron-down arrow-icon"></i>
+                                    <i className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""}`}></i>
                                 </div>
 
-                                <div className="user-dropdown-menu">
+                                <div className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
                                     {isLoggedIn ? (
                                         <div className="user-logged-in">
                                             <div className="user-info">
-                                                <div className="avatar-circle">NT</div>
-                                                <p className="username">Nguyen Tran</p>
+                                                {/* <div className="avatar-circle">
+                                                    {userInfo?.name?.charAt(0) || "U"}
+                                                </div> */}
+                                                <p className="username">
+                                                    {userInfo?.name || "User"} ({userInfo?.email || "Email"})
+                                                </p>
                                             </div>
-                                            <Link to="/profile" className="user-dropdown-menu-link">
+                                            <Link
+                                                to="/profile"
+                                                state={{ userId: jwtDecode(localStorage.getItem("token")).userId }}
+                                                className="user-dropdown-menu-link"
+                                            >
                                                 <i className="fas fa-user-circle dropdown-icon"></i> Profile
                                             </Link>
                                             <Link to="/order-history" className="user-dropdown-menu-link">
@@ -122,6 +154,7 @@ const HeaderComponent = () => {
                     </div>
                 </div>
             </div>
+            {/* Keep the nav section untouched */}
             <nav className="navbar navbar-expand-lg navbar-light">
                 <div className="container-fluid">
                     <button
@@ -135,10 +168,7 @@ const HeaderComponent = () => {
                     >
                         <span className="navbar-toggler-icon"></span>
                     </button>
-                    <div
-                        className="collapse navbar-collapse justify-content-center"
-                        id="navbarNav"
-                    >
+                    <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
                         <ul className="navbar-nav">
                             <li className="nav-item">
                                 <Link className="home nav-link" to="/">
@@ -190,47 +220,7 @@ const HeaderComponent = () => {
                             </li>
 
                             {/* <li className="nav-item dropdown-medical">
-                                <Link className="home nav-link medical-link" to="/medical-treatment">
-                                    MEDICAL & TREATMENT
-                                    <i className="medical-arrow-icon fas fa-chevron-down arrow-icon"></i>
-                                </Link>
-                                <div className="medical-dropdown">
-                                    <div className="dropdown-column">
-                                        <h6>Medical Products</h6>
-                                        <p>Body Lotion</p>
-                                        <p>Body Wash</p>
-                                        <p>Deodorant</p>
-                                        <p>Sunscreen</p>
-                                        <p>Body Scrub</p>
-                                    </div>
-                                    <div className="dropdown-column">
-                                        <h6> </h6>
-                                        <p>Lip Balm</p>
-                                        <p>Lip Scrub</p>
-                                        <p>Nail Strengthener</p>
-                                        <p>Cuticle Oil</p>
-                                        <p>Nail Treatment</p>
-                                    </div>
-                                    <div className="dropdown-column">
-                                        <h6>Treatment Products</h6>
-                                        <p>Cleanser</p>
-                                        <p>Toner</p>
-                                        <p>Serum</p>
-                                        <p>Face Mask</p>
-                                        <p>Cream</p>
-                                    </div>
-                                    <div className="dropdown-column">
-                                        <h6> </h6>
-                                        <p>Shampoo</p>
-                                        <p>Conditioner</p>
-                                        <p>Hair Serum</p>
-                                        <p>Hair Tonic</p>
-                                        <p>Scalp Treatment</p>
-                                    </div>
-                                    <div className="dropdown-viewall">
-                                        <Link to="/medical-treatment">View all →</Link>
-                                    </div>
-                                </div>
+                                ...
                             </li> */}
 
                             <li className="nav-item">
