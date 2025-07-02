@@ -384,7 +384,7 @@ const Home = () => {
                                 <div key={index} className="trending_product_card card" onClick={() => handleProductClick(product)}>
                                     <img src={product.imgUrls?.[0] || ''} alt={product.name} className="product_image" />
                                     <p className="trending_product_name">{product.name}</p>
-                                    <p className="trending_product_price">${(product.price / 1000).toFixed(2)}</p>
+                                    <p className="trending_product_price">{product.price} VND</p>
                                 </div>
                             ))}
                         </div>

@@ -3,34 +3,46 @@ import { useNavigate } from "react-router-dom";
 import Table from '../../../components/Table/Table';
 import '../../../styles/admin/product/ProductList.css';
 
-function ProductList() {
+const API_URL = import.meta.env.VITE_API_URL;
+
+function ProductList({ searchQuery = "" }) {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
         document.title = "Manage Product - Alurà System Management";
     }, []);
 
-    const columns = ["Name", "Category", "Price", "Stock", "Detail"];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await fetch(
+                    `${API_URL}/products?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`
+                );
+                const data = await res.json();
+                if (data.success) {
+                    setProducts(data.products || []);
+                }
+            } catch (error) {
+                console.error("Failed to fetch products", error);
+            }
+        };
+        fetchProducts();
+    }, [searchQuery]);
 
-    const fakeData = [
-        { name: "Vitamin C Serum", category: "Skincare", price: "$25", stock: 120 },
-        { name: "Hyaluronic Acid", category: "Skincare", price: "$18", stock: 90 },
-        { name: "Sunscreen SPF50", category: "Sun Care", price: "$20", stock: 60 },
-        { name: "Retinol Cream", category: "Anti-Aging", price: "$30", stock: 35 },
-        { name: "Collagen Booster", category: "Supplements", price: "$45", stock: 75 },
-        { name: "Hyaluronic Acid", category: "Skincare", price: "$18", stock: 90 },
-        { name: "Sunscreen SPF50", category: "Sun Care", price: "$20", stock: 60 },
-        { name: "Retinol Cream", category: "Anti-Aging", price: "$30", stock: 35 },
-    ];
+    const columns = ["Name", "Type", "Price", "Stock", "Detail"];
 
-    const tableData = fakeData.map(product => ({
-        ...product,
+    const tableData = products.map(product => ({
+        name: product.name,
+        type: product.productTypeId?.name || "N/A",
+        price: `${product.price} VND`,
+        stock: product.stock,
         detail: (
             <i
                 className="fas fa-info-circle detail_icon"
                 title="View Details"
-                onClick={() => navigate(`/admin/products/${product.name.replace(/\s+/g, '-').toLowerCase()}`)}
+                onClick={() => navigate(`/admin/product-list/${product._id}`)}
             />
         )
     }));

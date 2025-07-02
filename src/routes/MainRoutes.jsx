@@ -27,6 +27,7 @@ import StaffLayout from "../layouts/StaffLayout";
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminWarehouseList from "../pages/admin/warehouse/WarehouseList";
 import AdminProductList from "../pages/admin/product/ProductList";
+import AdminProductDetail from "../pages/admin/product/ProductDetail";
 import AdminAccountList from "../pages/admin/account/AccountList";
 
 import StaffOrderList from "../pages/staff/OrderList";
@@ -62,6 +63,7 @@ const MainRoutes = () => {
       <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
       <Route path="/admin/account-list" element={<AdminLayout><AdminAccountList /></AdminLayout>} />
       <Route path="/admin/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
+      <Route path="/admin/product-list/:id" element={<AdminLayout><AdminProductDetail /></AdminLayout>} />
       <Route path="/admin/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
 
       {/* Staff Routes */}

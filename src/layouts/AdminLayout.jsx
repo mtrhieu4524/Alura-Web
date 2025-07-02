@@ -1,10 +1,13 @@
 import { useLocation } from "react-router-dom";
+import { useState, cloneElement } from "react";
 import AdminSidebar from "../components/Sidebar/AdminSidebar";
 import './AdminLayout.css';
 import logo from '../assets/logo.png';
 
 const AdminLayout = ({ children }) => {
     const location = useLocation();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchInput, setSearchInput] = useState("");
 
     const showSearchPaths = ["/admin/account-list", "/admin/warehouse-list", "/admin/product-list"];
     const showSearch = showSearchPaths.includes(location.pathname);
@@ -16,6 +19,13 @@ const AdminLayout = ({ children }) => {
     };
 
     const placeholder = placeholderMap[location.pathname] || "Search...";
+    const isProductPage = location.pathname === "/admin/product-list";
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            setSearchQuery(searchInput);
+        }
+    };
 
     return (
         <div className="admin_layout">
@@ -32,6 +42,9 @@ const AdminLayout = ({ children }) => {
                                     type="text"
                                     className="admin_search_bar"
                                     placeholder={placeholder}
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                 />
                             </div>
                         </div>
@@ -39,7 +52,9 @@ const AdminLayout = ({ children }) => {
                 </div>
 
                 <div className="admin_content_card">
-                    {children}
+                    {isProductPage
+                        ? cloneElement(children, { searchQuery })
+                        : children}
                 </div>
             </div>
         </div>

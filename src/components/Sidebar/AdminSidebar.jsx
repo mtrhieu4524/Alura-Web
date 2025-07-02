@@ -53,7 +53,7 @@ const AdminSidebar = () => {
                         {menuItems.map((item) => (
                             <li
                                 key={item.path}
-                                className={`admin_sidebar_menu_item ${currentPath === item.path ? 'selected' : ''}`}
+                                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? 'selected' : ''}`}
                                 onClick={() => navigate(item.path)}
                             >
                                 <i className={`fas ${item.icon}`}></i>
@@ -72,7 +72,7 @@ const AdminSidebar = () => {
                         {menuItems.map((item) => (
                             <li
                                 key={item.path}
-                                className={`admin_sidebar_menu_item ${currentPath === item.path ? 'selected' : ''}`}
+                                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? 'selected' : ''}`}
                                 data-tooltip={item.label}
                                 onClick={() => navigate(item.path)}
                             >

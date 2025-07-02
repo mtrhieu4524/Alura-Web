@@ -379,11 +379,13 @@ body {
 }
 
 .trending_product_card {
-    width: 200px !important;
+    width: 230px !important;
     height: 300px !important;
     margin: 0 10px;
     border: none;
-    background-color: transparent;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
     padding: 0;
@@ -406,9 +408,14 @@ body {
 }
 
 .trending_product_price {
-    margin-top: -10px;
-    font-size: 17px;
-    color: #797979;
+    margin-top: 0;
+    font-size: 16px;
+    color: white;
+    background-color: #1c1c1c;
+    margin-left: -15px;
+    margin-right: -15px;
+    padding-top: 5px;
+    padding-bottom: 10px;
 }
 
 .view_detail_button {
