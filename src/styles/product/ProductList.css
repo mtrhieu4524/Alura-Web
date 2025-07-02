@@ -1,3 +1,35 @@
+.filters_and_products_wrapper {
+    display: flex;
+    gap: 30px;
+    padding: 0 30px;
+    margin-top: 40px;
+}
+
+.filter_sidebar {
+    width: 280px;
+    position: sticky;
+    top: 70px;
+    align-self: flex-start;
+}
+
+.clear_filters_btn {
+    margin-bottom: 20px !important;
+    color: #1c1c1c !important;
+    border-color: #1c1c1c !important;
+    text-transform: none;
+    font-weight: 500;
+}
+
+.sort_select_box {
+    margin-bottom: 10px !important;
+}
+
+.product_main_list_area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .news_banner_main_wrapper {
     position: relative;
     opacity: 0;
@@ -7,7 +39,7 @@
 
 .news_banner_main_wrapper.visible {
     opacity: 1;
-    transform: translateY(20px);
+    transform: translateY(19px);
 }
 
 .news_banner_image img {
@@ -16,46 +48,6 @@
     margin-bottom: 40px;
 }
 
-
-.filters_and_products {
-    display: flex;
-    flex-direction: column;
-    margin-top: 90px;
-}
-
-.filters_products {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: -20px;
-}
-
-.filter_group {
-    margin: 0 5px !important;
-    width: 120px;
-
-    label {
-        margin-bottom: 5px;
-    }
-
-    .MuiFormControl-root {
-        width: 90%;
-    }
-}
-
-.filter_group_sort {
-    margin-right: 5px !important;
-    width: 150px;
-}
-
-.filter_group_remove {
-    margin-right: 20px !important;
-    color: #1c1c1c;
-    border: 1px solid #1c1c1c;
-}
-
-
-.product_list_note_wrapper {
-    text-align: center;
-    font-style: italic;
+.MuiAccordion-root {
+    margin-bottom: 10px;
 }

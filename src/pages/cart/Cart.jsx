@@ -27,8 +27,8 @@ function Cart() {
     if (!token) {
       toast.error("You must be logged in to view your cart.");
       navigate("/sign-in", {
-        replace: true, // This replaces cart in history
-        state: { from: "/" }, // Remember where to go back
+        replace: true,
+        state: { from: "/" },
       });
       return;
     }
@@ -38,7 +38,7 @@ function Cart() {
   const fetchCartItems = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be log in to view your cart.");
+      toast.error("You must be logged in to view your cart.");
       return;
     }
     try {

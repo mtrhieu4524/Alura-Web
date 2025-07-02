@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useState, useEffect } from 'react';
 import {
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Typography,
+    Chip,
+    Box,
+    IconButton,
     Select,
     MenuItem,
     InputLabel,
     FormControl,
-    Button,
-} from '@mui/material';
+    OutlinedInput,
+    Checkbox,
+    ListItemText,
+    Button
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import '../../styles/product/ProductList.css';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import Question from '../../components/Question/Question';
@@ -15,43 +24,97 @@ import ProductList from '../../components/ProductCard/ProductCard';
 import Insta from '../../components/Insta/Instagram';
 import banner from '../../assets/banner.png';
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
 function CosmeticListPage() {
     const [sort, setSort] = useState('');
-    const [sex, setSex] = useState('');
-    const [type, setType] = useState('');
+    const [sex, setSex] = useState([]);
+    const [type, setType] = useState([]);
+    const [brand, setBrand] = useState([]);
+    const [skinType, setSkinType] = useState([]);
+    const [skinColor, setSkinColor] = useState([]);
+    const [volume, setVolume] = useState([]);
+    const [stock, setStock] = useState([]);
+
     const [products, setProducts] = useState([]);
     const [resetKey, setResetKey] = useState(Date.now());
     const [transitionKey, setTransitionKey] = useState(Date.now());
 
     useEffect(() => {
-        document.title = 'Alurà - Cosmetic';
+        document.title = 'Alurà - Cosmetics';
     }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const pageIndex = 1;
-                const pageSize = 100;
-
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/products?pageIndex=${pageIndex}&pageSize=${pageSize}`
+                    `${import.meta.env.VITE_API_URL}/products?pageIndex=1&pageSize=100`
                 );
 
                 const data = await response.json();
 
                 if (data.success && data.products) {
                     let filtered = [...data.products];
+                    // let original = [...data.products];
 
-                    if (sex) {
+                    // let filtered = [];
+                    // while (filtered.length < 20) {
+                    //     filtered = [...filtered, ...original];
+                    // }
+                    // filtered = filtered.slice(0, 20);
+
+                    if (sex.length) {
                         filtered = filtered.filter((p) =>
-                            p.sex?.toLowerCase() === sex.toLowerCase()
+                            sex.includes(p.sex?.toLowerCase())
                         );
                     }
 
-                    if (type) {
+                    if (type.length) {
                         filtered = filtered.filter((p) =>
-                            p.tags?.includes(type.toLowerCase())
+                            p.tags?.some((tag) => type.includes(tag.toLowerCase()))
                         );
+                    }
+
+                    if (brand.length) {
+                        filtered = filtered.filter((p) =>
+                            brand.includes(p.brand?._id)
+                        );
+                    }
+
+                    if (skinType.length) {
+                        filtered = filtered.filter((p) =>
+                            p.skinType?.some((s) => skinType.includes(s.toLowerCase()))
+                        );
+                    }
+
+                    if (skinColor.length) {
+                        filtered = filtered.filter((p) =>
+                            skinColor.includes(p.skinColor?.toLowerCase())
+                        );
+                    }
+
+                    if (volume.length) {
+                        filtered = filtered.filter((p) =>
+                            volume.includes(p.volume)
+                        );
+                    }
+
+                    if (stock.length) {
+                        if (stock.includes("In Stock")) {
+                            filtered = filtered.filter(p => p.stock > 0);
+                        }
+                        if (stock.includes("Out of Stock")) {
+                            filtered = filtered.filter(p => p.stock === 0);
+                        }
                     }
 
                     if (sort) {
@@ -80,31 +143,30 @@ function CosmeticListPage() {
         };
 
         fetchProducts();
-    }, [sort, sex, type]);
+    }, [sort, sex, type, brand, skinType, skinColor, volume, stock]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            document
-                .querySelector('.news_banner_main_wrapper')
-                .classList.add('visible');
+            document.querySelector('.news_banner_main_wrapper')?.classList.add('visible');
         }, 10);
         return () => clearTimeout(timeout);
     }, [transitionKey]);
 
     const handleRemoveFilters = () => {
         setSort('');
-        setSex('');
-        setType('');
+        setSex([]);
+        setType([]);
+        setBrand([]);
+        setSkinType([]);
+        setSkinColor([]);
+        setVolume([]);
+        setStock([]);
     };
 
+    const anyFilterActive = sort || sex.length || type.length || brand.length || skinType.length || skinColor.length || volume.length || stock.length;
     return (
         <div className="ProductList">
-            <Breadcrumb
-                items={[
-                    { name: 'Home', link: '/' },
-                    { name: 'Cosmetic', link: '' },
-                ]}
-            />
+            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetics' }]} />
 
             <div key={transitionKey} className="news_banner_main_wrapper">
                 <div className="news_banner_image">
@@ -112,233 +174,93 @@ function CosmeticListPage() {
                 </div>
             </div>
 
-            <div className="filters_and_products">
-                <div className="filters_products">
-                    {(sort || sex || type) && (
-                        <Button
-                            onClick={handleRemoveFilters}
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<i className="fas fa-times"></i>}
-                            className='filter_group_remove'
-                        >
-                            Remove Filters
-                        </Button>
-                    )}
+            <div className="filters_and_products_wrapper">
+                {/* FILTER SIDEBAR */}
+                <div className="filter_sidebar">
+                    <Button
+                        onClick={handleRemoveFilters}
+                        variant="outlined"
+                        className="clear_filters_btn"
+                    >
+                        Clear All Filters
+                    </Button>
 
-                    <FormControl className="filter_group_sort" size="small">
-                        <InputLabel id="sortFilter-label" sx={{
-                            fontSize: '14px',
-                            paddingTop: '2px'
-                        }}
-                        >Sort</InputLabel>
+                    <FormControl fullWidth size="small" className="sort_select_box">
+                        <InputLabel id="sortFilter-label">Sort</InputLabel>
                         <Select
                             labelId="sortFilter-label"
-                            id="sortFilter"
                             value={sort}
-                            label="Sort"
                             onChange={(e) => setSort(e.target.value)}
+                            input={<OutlinedInput label="Sort" />}
                         >
                             <MenuItem value="">None</MenuItem>
                             <MenuItem value="Newest">Newest</MenuItem>
                             <MenuItem value="Oldest">Oldest</MenuItem>
-                            <MenuItem value="Price (Low to High)">
-                                Price <i className="fas fa-arrow-up" style={{ marginLeft: 8 }}></i>
-                            </MenuItem>
-                            <MenuItem value="Price (High to Low)">
-                                Price <i className="fas fa-arrow-down" style={{ marginLeft: 8 }}></i>
-                            </MenuItem>
+                            <MenuItem value="Price (Low to High)">Price ↑</MenuItem>
+                            <MenuItem value="Price (High to Low)">Price ↓</MenuItem>
                         </Select>
                     </FormControl>
 
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel id="sexFilter-label" sx={{
-                            fontSize: '14px',
-                            paddingTop: '2px'
-                        }}
-                        >Sex</InputLabel>
-                        <Select
-                            labelId="sexFilter-label"
-                            id="sexFilter"
-                            value={sex}
-                            label="Sex"
-                            onChange={(e) => setSex(e.target.value)}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="Female">Female</MenuItem>
-                            <MenuItem value="Male">Male</MenuItem>
-                            <MenuItem value="Unisex">Unisex</MenuItem>
-                        </Select>
-                    </FormControl>
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel
-                            id="typeFilter-label"
-                            sx={{
-                                fontSize: '14px',
-                                paddingTop: '2px'
-                            }}
-                        >
-                            Type
-                        </InputLabel>
-                        <Select
-                            labelId="typeFilter-label"
-                            id="typeFilter"
-                            value={type}
-                            label="Type"
-                            onChange={(e) => setType(e.target.value)}
-                        >
-                            <MenuItem value="">None</MenuItem>
-
-                            {/* Skincare */}
-                            <MenuItem value="Cleanser">Cleanser</MenuItem>
-                            <MenuItem value="Toner">Toner</MenuItem>
-                            <MenuItem value="Serum">Serum</MenuItem>
-                            <MenuItem value="Face Mask">Face Mask</MenuItem>
-                            <MenuItem value="Cream">Cream</MenuItem>
-
-                            {/* Haircare */}
-                            <MenuItem value="Shampoo">Shampoo</MenuItem>
-                            <MenuItem value="Conditioner">Conditioner</MenuItem>
-                            <MenuItem value="Hair Serum">Hair Serum</MenuItem>
-                            <MenuItem value="Hair Tonic">Hair Tonic</MenuItem>
-                            <MenuItem value="Scalp Treatment">Scalp Treatment</MenuItem>
-
-                            {/* Body Care */}
-                            <MenuItem value="Body Lotion">Body Lotion</MenuItem>
-                            <MenuItem value="Body Wash">Body Wash</MenuItem>
-                            <MenuItem value="Deodorant">Deodorant</MenuItem>
-                            <MenuItem value="Sunscreen">Sunscreen</MenuItem>
-                            <MenuItem value="Body Scrub">Body Scrub</MenuItem>
-
-                            {/* Lip & Nail */}
-                            <MenuItem value="Lip Balm">Lip Balm</MenuItem>
-                            <MenuItem value="Lip Stick">Lip Stick</MenuItem>
-                            <MenuItem value="Lip Scrub">Lip Scrub</MenuItem>
-                            <MenuItem value="Nail Strengthener">Nail Strengthener</MenuItem>
-                            <MenuItem value="Cuticle Oil">Cuticle Oil</MenuItem>
-                            <MenuItem value="Nail Treatment">Nail Treatment</MenuItem>
-                        </Select>
-                    </FormControl>
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel id="brandFilter-label"
-                            sx={{
-                                fontSize: '14px',
-                                paddingTop: '2px'
-                            }}>Brand</InputLabel>
-                        <Select
-                            labelId="brandFilter-label"
-                            id="brandFilter"
-                            label="Brand"
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="Naris Cosmetics">Naris Cosmetics</MenuItem>
-                            <MenuItem value="L'Oreal">L'Oreal</MenuItem>
-                            <MenuItem value="Eucerin">Eucerin</MenuItem>
-                            <MenuItem value="La Roche-Posay">La Roche-Posay</MenuItem>
-                            <MenuItem value="Cocoon">Cocoon</MenuItem>
-                            <MenuItem value="Bioderma">Bioderma</MenuItem>
-                            <MenuItem value="CeraVe">CeraVe</MenuItem>
-                            <MenuItem value="B.O.M">B.O.M</MenuItem>
-                            <MenuItem value="Angel's Liquid">Angel's Liquid</MenuItem>
-                            <MenuItem value="Swiss Image">Swiss Image</MenuItem>
-                            <MenuItem value="3CE">3CE</MenuItem>
-                            <MenuItem value="Vichy">Vichy</MenuItem>
-                            <MenuItem value="Maybelline">Maybelline</MenuItem>
-                            <MenuItem value="Vaseline">Vaseline</MenuItem>
-                        </Select>
-                    </FormControl>
-
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel
-                            id="skinTypeFilter-label"
-                            sx={{
-                                fontSize: '14px',
-                                paddingTop: '2px'
-                            }}
-                        >Skin Type</InputLabel>
-                        <Select
-                            labelId="skinTypeFilter-label"
-                            id="skinTypeFilter"
-                            label="Skin Type"
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="Normal">Normal</MenuItem>
-                            <MenuItem value="Dry">Dry</MenuItem>
-                            <MenuItem value="Oily">Oily</MenuItem>
-                            <MenuItem value="Combination">Combination</MenuItem>
-                            <MenuItem value="Sensitive">Sensitive</MenuItem>
-                        </Select>
-                    </FormControl>
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel id="skinColorFilter-label" sx={{
-                            fontSize: '14px',
-                            paddingTop: '2px'
-                        }}
-                        >Skin Color</InputLabel>
-                        <Select
-                            labelId="skinColorFilter-label"
-                            id="skinColorFilter"
-                            label="Skin Color"
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="Light">Light</MenuItem>
-                            <MenuItem value="Medium">Medium</MenuItem>
-                            <MenuItem value="Tan">Tan</MenuItem>
-                            <MenuItem value="Dark">Dark</MenuItem>
-                        </Select>
-                    </FormControl>
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel id="volumnFilter-label" sx={{
-                            fontSize: '14px',
-                            paddingTop: '2px'
-                        }}
-                        >Volumn</InputLabel>
-                        <Select
-                            labelId="volumnFilter-label"
-                            id="volumnFilter"
-                            label="Volumn"
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="10g">10g</MenuItem>
-                            <MenuItem value="30ml">30ml</MenuItem>
-                            <MenuItem value="50ml">50ml</MenuItem>
-                            <MenuItem value="100ml">100ml</MenuItem>
-                            <MenuItem value="Full Size">Full size</MenuItem>
-                        </Select>
-                    </FormControl>
-
-
-                    <FormControl className="filter_group" size="small">
-                        <InputLabel id="stockFilter-label" sx={{
-                            fontSize: '14px',
-                            paddingTop: '2px'
-                        }}
-                        >Stock</InputLabel>
-                        <Select
-                            labelId="stockFilter-label"
-                            id="stockStatusFilter"
-                            label="Stock"
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            <MenuItem value="In Stock">In Stock</MenuItem>
-                            <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-                        </Select>
-                    </FormControl>
-
-
+                    {[{
+                        label: "Type", state: type, setter: setType, options: [
+                            "Cleanser", "Toner", "Serum", "Face Mask", "Cream", "Shampoo",
+                            "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment",
+                            "Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub",
+                            "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"
+                        ]
+                    }, {
+                        label: "Brand", state: brand, setter: setBrand, options: [
+                            "Naris Cosmetics", "L'Oreal", "Eucerin", "La Roche-Posay", "Cocoon", "Bioderma",
+                            "CeraVe", "B.O.M", "Angel's Liquid", "Swiss Image", "3CE", "Vichy", "Maybelline", "Vaseline"
+                        ]
+                    }, {
+                        label: "Stock", state: stock, setter: setStock, options: ["In Stock", "Out of Stock"]
+                    }, {
+                        label: "Sex", state: sex, setter: setSex, options: ["Male", "Female", "Unisex"]
+                    }, {
+                        label: "Skin Type", state: skinType, setter: setSkinType,
+                        options: ["Normal", "Dry", "Oily", "Combination", "Sensitive"]
+                    }, {
+                        label: "Skin Color", state: skinColor, setter: setSkinColor,
+                        options: ["Light", "Medium", "Tan", "Dark", "Neutral", "Cool"]
+                    }, {
+                        label: "Volume", state: volume, setter: setVolume,
+                        options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
+                    }].map((filter, i) => (
+                        <Accordion key={i}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography>{filter.label}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <FormControl fullWidth size="small" className="filter_select_box">
+                                    <Select
+                                        labelId={`${filter.label}-label`}
+                                        multiple
+                                        value={filter.state}
+                                        onChange={(e) => filter.setter(e.target.value)}
+                                        input={<OutlinedInput />}
+                                        renderValue={(selected) => selected.join(', ')}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {filter.options.map((option) => (
+                                            <MenuItem key={option} value={option}>
+                                                <Checkbox checked={filter.state.indexOf(option) > -1} />
+                                                <ListItemText primary={option} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
                 </div>
 
-
-                <ProductList products={products} resetKey={resetKey} />
+                <div className="product_main_list_area">
+                    <ProductList products={products} resetKey={resetKey} />
+                </div>
             </div>
 
             <br /><br />
-
             <Question />
             <Insta />
         </div>

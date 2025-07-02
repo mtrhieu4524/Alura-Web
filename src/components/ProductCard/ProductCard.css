@@ -195,3 +195,28 @@
 .product_see_more_button:hover {
     color: #797979;
 }
+
+.stock_status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #f44336;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.low_stock {
+    background-color: #9e9e9e;
+}
+
+.sold_out {
+    background-color: #9e9e9e;
+}
+
+.image_wrapper {
+    position: relative;
+}

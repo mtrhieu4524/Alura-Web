@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 
-const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
+const ProductCard = ({ id, image, name, price, type, shade, volume, sex, stock }) => {
   const navigate = useNavigate();
 
   const handleViewClick = (e) => {
@@ -10,9 +10,25 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
     navigate(`/cosmetics/${id}`, { state: { id } });
   };
 
+  let stockLabel = "";
+  if (stock === 0) {
+    stockLabel = "Sold Out";
+  } else if (stock > 0 && stock < 10) {
+    stockLabel = `Only ${stock} left`;
+  }
+
   return (
     <div className="product_card" onClick={handleViewClick}>
-      <img src={image} alt={name} />
+      <div className="image_wrapper">
+        <img src={image} alt={name} />
+        {stockLabel && (
+          <span
+            className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"}`}>
+            {stockLabel}
+          </span>
+        )}
+      </div>
+
       <div className="product_view_icon_wrapper" data-tooltip="View detail">
         <i className="far fa-eye product_view_icon"></i>
       </div>
@@ -24,6 +40,7 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
     </div>
   );
 };
+
 
 const SpecialCard = () => {
   const navigate = useNavigate();
@@ -46,6 +63,8 @@ const SpecialCard = () => {
 
 const ProductList = ({ products, resetKey }) => {
   const [visibleProducts, setVisibleProducts] = useState(12);
+  const location = useLocation();
+  const isCosmeticsPage = location.pathname === "/cosmetics";
 
   useEffect(() => {
     setVisibleProducts(12);
@@ -70,6 +89,8 @@ const ProductList = ({ products, resetKey }) => {
           shade=""
           volume={product.volume}
           sex={product.sex}
+          // stock={5}
+          stock={product.stock || 0}
         />
       ))}
       {visibleProducts < products.length ? (
@@ -79,7 +100,7 @@ const ProductList = ({ products, resetKey }) => {
           </button>
         </div>
       ) : (
-        <SpecialCard />
+        !isCosmeticsPage && <SpecialCard />
       )}
     </div>
   );

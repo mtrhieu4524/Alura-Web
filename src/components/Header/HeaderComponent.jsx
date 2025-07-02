@@ -61,7 +61,7 @@ const HeaderComponent = () => {
     );
 
     if (!token && isProtected) {
-      navigate("/sign-in");
+      navigate("/");
     } else if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -69,11 +69,11 @@ const HeaderComponent = () => {
         if (decoded.exp && decoded.exp < now && isProtected) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          navigate("/sign-in");
+          navigate("/");
         }
       } catch (err) {
         console.error("Invalid token:", err);
-        navigate("/sign-in");
+        navigate("/");
       }
     }
   }, []);
