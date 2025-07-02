@@ -252,7 +252,7 @@ const HeaderComponent = () => {
                     <p>Nail Treatment</p>
                   </div>
                   <div className="dropdown-viewall">
-                    <Link to="/cosmetic">View all →</Link>
+                    <Link to="/cosmetics">View all →</Link>
                   </div>
                 </div>
               </li>

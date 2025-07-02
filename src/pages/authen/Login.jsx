@@ -31,7 +31,17 @@ const Login = () => {
       setPassword(savedPassword);
       setRememberMe(true);
     }
-  }, []);
+
+    const handlePopState = (event) => {
+      if (location.state?.from) {
+        event.preventDefault();
+        navigate(location.state.from);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate]);
 
   useEffect(() => {
     const togglePassword = document.getElementById("togglePassword");

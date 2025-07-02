@@ -19,16 +19,26 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const { setCartCount } = useCart();
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     document.title = "Alurà - Cart";
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to view your cart.");
+      navigate("/sign-in", {
+        replace: true, // This replaces cart in history
+        state: { from: "/" }, // Remember where to go back
+      });
+      return;
+    }
     fetchCartItems();
-  }, []);
+  }, [authChecked]);
 
   const fetchCartItems = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be logged in to view your cart.");
+      toast.error("You must be log in to view your cart.");
       return;
     }
     try {
@@ -57,7 +67,7 @@ function Cart() {
   const handleQuantityChange = async (cartItemId, newQuantity) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be logged in to change quantity.");
+      toast.error("You must be log in to change quantity.");
       return;
     }
     try {
@@ -88,7 +98,7 @@ function Cart() {
   const handleRemoveFromCart = async (itemId) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be logged in.");
+      toast.error("You must be log in.");
       return;
     }
 

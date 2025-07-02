@@ -102,7 +102,6 @@ function ProductDetail() {
     <div id="product_detail" className="product_detail">
       <Breadcrumb items={navItems} />
       <br />
-
       <div className="product_detail_container">
         <div className="product_images_detail">
           <div className="thumbnails">
@@ -224,7 +223,6 @@ function ProductDetail() {
           <hr className="product_detail_line" />
         </div>
       </div>
-
       <div className="product_specification_container">
         <h3
           className="product_specification_title"
@@ -238,44 +236,80 @@ function ProductDetail() {
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
-          <>
-            <p>
-              <strong>Type:</strong> {product.productTypeId?.name}
-            </p>
-            <p>
-              <strong>Brand:</strong> {product.brand?.brandName || "None"}
-            </p>
-            <p>
-              <strong>Sex:</strong> {product.sex}
-            </p>
-            <p>
-              <strong>Skin Type:</strong> {product.skinType}
-            </p>
-            <p>
-              <strong>Skin Color:</strong> {product.skinColor}
-            </p>
-            <p>
-              <strong>Volume:</strong> {product.volume}
-            </p>
-            <p>
-              <strong>Purpose:</strong> {product.purpose}
-            </p>
-            <p>
-              <strong>Instruction:</strong> {product.instructions}
-            </p>
-            <p>
-              <strong>Preserve:</strong> {product.preservation}
-            </p>
-            <p>
-              <strong>Key Ingredients:</strong> {product.keyIngredients}
-            </p>
-            <p>
-              <strong>Detail Ingredients:</strong> {product.detailInfredients}
-            </p>
-          </>
+          <div className="specifications_grid">
+            <div className="specification_item">
+              <span className="specification_label">Type:</span>
+              <p className="specification_value">
+                {product.productTypeId?.name || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Brand:</span>
+              <p className="specification_value">
+                {product.brand?.brandName || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Sex:</span>
+              <p className="specification_value">{product.sex || "None"}</p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Skin Type:</span>
+              <p className="specification_value">
+                {product.skinType || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Skin Color:</span>
+              <p className="specification_value">
+                {product.skinColor || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Volume:</span>
+              <p className="specification_value">{product.volume || "None"}</p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Purpose:</span>
+              <p className="specification_value">{product.purpose || "None"}</p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Key Ingredients:</span>
+              <p className="specification_value">
+                {product.keyIngredients || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Instruction:</span>
+              <p className="specification_value">
+                {product.instructions || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Preserve:</span>
+              <p className="specification_value">
+                {product.preservation || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Detail Ingredients:</span>
+              <p className="specification_value">
+                {product.detailInfredients || "None"}
+              </p>
+            </div>
+          </div>
         )}
       </div>
-
       <Insta />
     </div>
   );
