@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { Image } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Image } from 'antd';
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-import "../../styles/cart/Cart.css";
-import Insta from '../../components/Insta/Instagram';
+import Insta from "../../components/Insta/Instagram";
 import { useCart } from "../../context/CartContext";
+import "../../styles/cart/Cart.css";
 
 function Cart() {
   const navigate = useNavigate();
@@ -31,7 +31,6 @@ function Cart() {
       toast.error("You must be logged in to view your cart.");
       return;
     }
-
     try {
       const response = await fetch(`${API_URL}/cart`, {
         headers: {
@@ -50,23 +49,32 @@ function Cart() {
       setTotalAmount(data.totalAmount || 0);
       setCartCount(data.items?.length || 0);
     } catch (error) {
+      console.error("Error fetching cart items:", error);
       toast.error("An error occurred while loading the cart.");
     }
   };
 
-  const handleQuantityChange = (itemId, newQuantity) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item._id === itemId
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    );
-    setCartItems(prev => prev.filter(item => item._id !== itemId));
-    setCartCount(prev => Math.max(prev - 1, 0));
-
+  const handleQuantityChange = async (cartItemId, newQuantity) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to change quantity.");
+      return;
+    }
+    try {
+      await fetch(`${API_URL}/cart/item/${cartItemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quantity: newQuantity }),
+      });
+      fetchCartItems();
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      toast.error("An error occurred while updating the quantity.");
+    }
   };
-
   const handleViewProduct = (item) => {
     navigate(`/cosmetics/${item.productId._id}`, {
       state: { id: item.productId._id },
@@ -74,7 +82,7 @@ function Cart() {
   };
 
   const handleCheckoutPage = () => {
-    navigate("/checkout");
+    navigate("/checkout", { state: { cartItems, totalAmount } });
   };
 
   const handleRemoveFromCart = async (itemId) => {
@@ -99,11 +107,11 @@ function Cart() {
       }
 
       toast.success("Item removed from cart.");
-      setCartItems(prev => prev.filter(item => item._id !== itemId));
+      setCartItems((prev) => prev.filter((item) => item._id !== itemId));
 
-      // Optionally re-fetch to update totalAmount accurately
       fetchCartItems();
     } catch (error) {
+      console.error("Error removing item from cart:", error);
       toast.error("An error occurred while removing the item.");
     }
   };
@@ -117,7 +125,9 @@ function Cart() {
           <div className="cart_title">
             <i className="fas fa-shopping-cart"></i> Cart ({cartItems.length})
           </div>
-          <div className="continue_shopping">
+          <div
+            className="continue_shopping"
+            onClick={() => navigate("/cosmetics")}>
             &lt; Continue Shopping
           </div>
         </div>
@@ -137,7 +147,10 @@ function Cart() {
                   return (
                     <div className="cart_item" key={item._id}>
                       <Image
-                        src={product.imgUrl || product.image || "https://via.placeholder.com/175"}
+                        src={
+                          product.imgUrls[0] ||
+                          "https://via.placeholder.com/175"
+                        }
                         className="cart_item_image"
                         alt={product.name}
                         width={200}
@@ -147,13 +160,23 @@ function Cart() {
                         <div className="cart_item_header">
                           <h5 className="cart_item_name">{product.name}</h5>
                           <div className="cart_item_links">
-                            <span onClick={() => handleViewProduct(item)} className="cart_item_view">VIEW</span>
+                            <span
+                              onClick={() => handleViewProduct(item)}
+                              className="cart_item_view">
+                              VIEW
+                            </span>
                             <span> | </span>
-                            <a className="cart_item_remove" onClick={() => handleRemoveFromCart(item._id)}>REMOVE</a>
+                            <a
+                              className="cart_item_remove"
+                              onClick={() => handleRemoveFromCart(item._id)}>
+                              REMOVE
+                            </a>
                           </div>
                         </div>
 
-                        <p className="cart_item_description">Price: {price.toLocaleString()} VND</p>
+                        <p className="cart_item_description">
+                          Price: {price.toLocaleString()} VND
+                        </p>
 
                         <div className="cart_item_footer">
                           <div className="quantity_selector_container">
@@ -161,23 +184,30 @@ function Cart() {
                             <div className="quantity_controls">
                               <button
                                 className="quantity_btn"
-                                onClick={() => handleQuantityChange(item._id, Math.max(quantity - 1, 1))}
-                                disabled={quantity <= 1}
-                              >-</button>
+                                onClick={() =>
+                                  handleQuantityChange(
+                                    item._id,
+                                    Math.max(quantity - 1, 1)
+                                  )
+                                }
+                                disabled={quantity <= 1}>
+                                -
+                              </button>
                               <input
                                 type="number"
                                 className="quantity_input"
                                 value={quantity}
-                                min="1"
-                                onChange={(e) => {
-                                  const value = Math.max(1, parseInt(e.target.value) || 1);
-                                  handleQuantityChange(item._id, value);
-                                }}
+                                inputMode="none"
                               />
                               <button
                                 className="quantity_btn"
-                                onClick={() => handleQuantityChange(item._id, quantity + 1)}
-                              >+</button>
+                                onClick={() =>
+                                  handleQuantityChange(item._id, quantity + 1)
+                                }
+                                disabled={quantity >= product.stock} // Assuming max quantity is 99
+                              >
+                                +
+                              </button>
                             </div>
                           </div>
 
@@ -192,7 +222,6 @@ function Cart() {
               </Image.PreviewGroup>
             </div>
           )}
-
           <div className="cart_summary">
             <h5 className="cart_summary_title">
               <i className="fas fa-receipt"></i> Summary
@@ -212,7 +241,9 @@ function Cart() {
               </p>
             </div>
             <hr />
-            <button onClick={handleCheckoutPage} className="cart_summary_checkout">
+            <button
+              onClick={handleCheckoutPage}
+              className="cart_summary_checkout">
               Proceed to checkout
             </button>
             <div className="cart_summary_service">

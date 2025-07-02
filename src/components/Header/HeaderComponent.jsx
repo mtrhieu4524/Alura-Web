@@ -15,7 +15,6 @@ const HeaderComponent = () => {
   const [userInfo, setUserInfo] = useState(null);
   const { cartCount, setCartCount } = useCart();
 
-
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -29,13 +28,13 @@ const HeaderComponent = () => {
         const userId = decoded.userId;
 
         fetch(`${API_URL}/profile/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         })
-          .then(res => res.json())
-          .then(data => {
+          .then((res) => res.json())
+          .then((data) => {
             if (data?.success) setUserInfo(data.user);
           })
-          .catch(err => console.error("Error fetching user profile:", err));
+          .catch((err) => console.error("Error fetching user profile:", err));
 
         fetchCartCount(token);
       } catch (err) {
@@ -48,8 +47,8 @@ const HeaderComponent = () => {
     try {
       const res = await fetch(`${API_URL}/cart`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) return;
@@ -64,6 +63,7 @@ const HeaderComponent = () => {
   const handleLogout = () => {
     navigate(`/sign-in`);
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUserInfo(null);
   };
@@ -71,10 +71,13 @@ const HeaderComponent = () => {
   return (
     <header className="header">
       <div className="top_announcement">
-        Free shipping nationwide in Vietnam for all orders. Order today for best service.
+        Free shipping nationwide in Vietnam for all orders. Order today for best
+        service.
       </div>
       <div className="top_header container-fluid">
-        <div className="row align-items-center" style={{ backgroundColor: "white" }}>
+        <div
+          className="row align-items-center"
+          style={{ backgroundColor: "white" }}>
           <div className="col-md-5 col-lg-5 col-sm-12">
             <div className="contact_info">
               <Link to="tel:0795795959">
@@ -85,10 +88,10 @@ const HeaderComponent = () => {
               <a
                 href="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+h%E1%BB%8Dc+FPT+TP.+HCM"
                 target="_blank"
-                rel="noopener noreferrer"
-              >
+                rel="noopener noreferrer">
                 <p className="contact_address">
-                  <i className="fas fa-map-marker-alt"></i> D1 Street, Long Thanh My, Thu Duc City, Ho Chi Minh City
+                  <i className="fas fa-map-marker-alt"></i> D1 Street, Long
+                  Thanh My, Thu Duc City, Ho Chi Minh City
                 </p>
               </a>
             </div>
@@ -128,38 +131,57 @@ const HeaderComponent = () => {
               <div className="account_dropdown_section">
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
-                  <i className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""}`}></i>
+                  <i
+                    className={`fas fa-chevron-down arrow-icon ${
+                      isDropdownOpen ? "rotate" : ""
+                    }`}></i>
                 </div>
 
-                <div className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""}`}>
+                <div
+                  className={`user-dropdown-menu ${
+                    isDropdownOpen ? "open" : ""
+                  }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">
                         <p className="username">
-                          {userInfo?.name || "User"} ({userInfo?.email || "Email"})
+                          {userInfo?.name || "User"} (
+                          {userInfo?.email || "Email"})
                         </p>
                       </div>
                       <Link
                         to="/profile"
-                        state={{ userId: jwtDecode(localStorage.getItem("token")).userId }}
-                        className="user-dropdown-menu-link"
-                      >
-                        <i className="fas fa-user-circle dropdown-icon"></i> Profile
+                        state={{
+                          userId: jwtDecode(localStorage.getItem("token"))
+                            .userId,
+                        }}
+                        className="user-dropdown-menu-link">
+                        <i className="fas fa-user-circle dropdown-icon"></i>{" "}
+                        Profile
                       </Link>
-                      <Link to="/order-history" className="user-dropdown-menu-link">
-                        <i className="fas fa-history dropdown-icon"></i> Order history
+                      <Link
+                        to="/order-history"
+                        className="user-dropdown-menu-link">
+                        <i className="fas fa-history dropdown-icon"></i> Order
+                        history
                       </Link>
-                      <div onClick={handleLogout} className="user-dropdown-menu-link handle-logout" style={{ cursor: "pointer" }}>
-                        <i className="fas fa-sign-in-alt dropdown-icon"></i> Sign out
+                      <div
+                        onClick={handleLogout}
+                        className="user-dropdown-menu-link handle-logout"
+                        style={{ cursor: "pointer" }}>
+                        <i className="fas fa-sign-in-alt dropdown-icon"></i>{" "}
+                        Sign out
                       </div>
                     </div>
                   ) : (
                     <div className="user-not-logged-in">
                       <Link to="/sign-in" className="user-dropdown-menu-link">
-                        <i className="fas fa-sign-in-alt dropdown-icon"></i>  Sign in
+                        <i className="fas fa-sign-in-alt dropdown-icon"></i>{" "}
+                        Sign in
                       </Link>
                       <Link to="/sign-up" className="user-dropdown-menu-link">
-                        <i className="fas fa-user-plus dropdown-icon"></i> Sign up
+                        <i className="fas fa-user-plus dropdown-icon"></i> Sign
+                        up
                       </Link>
                     </div>
                   )}
@@ -179,14 +201,17 @@ const HeaderComponent = () => {
             data-bs-target="#navbarNav"
             aria-controls="navbarNav"
             aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
+            aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <div
+            className="collapse navbar-collapse justify-content-center"
+            id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link className="home nav-link" to="/">HOME</Link>
+                <Link className="home nav-link" to="/">
+                  HOME
+                </Link>
               </li>
               <li className="nav-item dropdown-cosmetics">
                 <Link className="home nav-link cosmetics-link" to="/cosmetics">
@@ -196,19 +221,35 @@ const HeaderComponent = () => {
                 <div className="cosmetics-dropdown">
                   <div className="dropdown-column">
                     <h6>Facial</h6>
-                    <p>Cleanser</p><p>Toner</p><p>Serum</p><p>Face Mask</p><p>Cream</p>
+                    <p>Cleanser</p>
+                    <p>Toner</p>
+                    <p>Serum</p>
+                    <p>Face Mask</p>
+                    <p>Cream</p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Hair</h6>
-                    <p>Shampoo</p><p>Conditioner</p><p>Hair Serum</p><p>Hair Tonic</p><p>Scalp Treatment</p>
+                    <p>Shampoo</p>
+                    <p>Conditioner</p>
+                    <p>Hair Serum</p>
+                    <p>Hair Tonic</p>
+                    <p>Scalp Treatment</p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Body</h6>
-                    <p>Body Lotion</p><p>Body Wash</p><p>Deodorant</p><p>Sunscreen</p><p>Body Scrub</p>
+                    <p>Body Lotion</p>
+                    <p>Body Wash</p>
+                    <p>Deodorant</p>
+                    <p>Sunscreen</p>
+                    <p>Body Scrub</p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Lips & Nails</h6>
-                    <p>Lip Stick</p><p>Lip Scrub</p><p>Nail Strengthener</p><p>Cuticle Oil</p><p>Nail Treatment</p>
+                    <p>Lip Stick</p>
+                    <p>Lip Scrub</p>
+                    <p>Nail Strengthener</p>
+                    <p>Cuticle Oil</p>
+                    <p>Nail Treatment</p>
                   </div>
                   <div className="dropdown-viewall">
                     <Link to="/cosmetic">View all →</Link>
@@ -216,16 +257,24 @@ const HeaderComponent = () => {
                 </div>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/visual-search">VISUAL SEARCH</Link>
+                <Link className="home nav-link" to="/visual-search">
+                  VISUAL SEARCH
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/faqs">FAQS</Link>
+                <Link className="home nav-link" to="/faqs">
+                  FAQS
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/introduce">INTRODUCE</Link>
+                <Link className="home nav-link" to="/introduce">
+                  INTRODUCE
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/contact">CONTACT US</Link>
+                <Link className="home nav-link" to="/contact">
+                  CONTACT US
+                </Link>
               </li>
             </ul>
           </div>

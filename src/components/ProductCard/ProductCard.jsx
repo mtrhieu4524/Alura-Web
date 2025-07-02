@@ -16,9 +16,11 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex }) => {
       <div className="product_view_icon_wrapper" data-tooltip="View detail">
         <i className="far fa-eye product_view_icon"></i>
       </div>
-      <p className='product_card_detail'>{type} | {shade} | {volume} | {sex}</p>
-      <h6 className='product_card_name'>{name}</h6>
-      <p className='product_card_price'>{price} VND</p>
+      <p className="product_card_detail">
+        {type} | {shade} | {volume} | {sex}
+      </p>
+      <h6 className="product_card_name">{name}</h6>
+      <p className="product_card_price">{price.toLocaleString()} VND</p>
     </div>
   );
 };
@@ -61,25 +63,25 @@ const ProductList = ({ products, resetKey }) => {
         <ProductCard
           key={product._id}
           id={product._id}
-          image={product.imgUrls?.[0] || ''}
+          image={product.imgUrls?.[0] || ""}
           name={product.name}
           price={product.price}
-          type={product.tags?.[0] || ''}
+          type={product.tags?.[0] || ""}
           shade=""
           volume={product.volume}
           sex={product.sex}
         />
-
       ))}
       {visibleProducts < products.length ? (
         <div className="product_see_more_container">
-          <button className="product_see_more_button" onClick={handleSeeMore}>View More</button>
+          <button className="product_see_more_button" onClick={handleSeeMore}>
+            View More
+          </button>
         </div>
       ) : (
         <SpecialCard />
       )}
     </div>
-
   );
 };
 

@@ -13,198 +13,222 @@ import rightImage3 from "../../assets/r3.jpg";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        document.title = "Alurà - Sign In";
+  useEffect(() => {
+    document.title = "Alurà - Sign In";
 
-        const savedEmail = localStorage.getItem("rememberEmail");
-        const savedPassword = localStorage.getItem("rememberPassword");
-        if (savedEmail && savedPassword) {
-            setEmail(savedEmail);
-            setPassword(savedPassword);
-            setRememberMe(true);
-        }
-    }, []);
+    const savedEmail = localStorage.getItem("rememberEmail");
+    const savedPassword = localStorage.getItem("rememberPassword");
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
-    useEffect(() => {
-        const togglePassword = document.getElementById("togglePassword");
-        const handleTogglePassword = () => {
-            const passwordField = document.getElementById("password");
-            const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-            passwordField.setAttribute("type", type);
-            togglePassword.classList.toggle("fa-eye");
-            togglePassword.classList.toggle("fa-eye-slash");
-        };
-        if (togglePassword) {
-            togglePassword.addEventListener("click", handleTogglePassword);
-        }
-        return () => {
-            if (togglePassword) {
-                togglePassword.removeEventListener("click", handleTogglePassword);
-            }
-        };
-    }, []);
-
-    const sliderSettings = {
-        dots: true,
-        infinite: true,
-        speed: 600,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 5000,
-        cssEase: "linear",
+  useEffect(() => {
+    const togglePassword = document.getElementById("togglePassword");
+    const handleTogglePassword = () => {
+      const passwordField = document.getElementById("password");
+      const type =
+        passwordField.getAttribute("type") === "password" ? "text" : "password";
+      passwordField.setAttribute("type", type);
+      togglePassword.classList.toggle("fa-eye");
+      togglePassword.classList.toggle("fa-eye-slash");
     };
-
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
-        try {
-            const resp = await fetch(`${VITE_API_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!resp.ok) {
-                throw new Error(`Wrong email or password.`);
-            }
-
-            const data = await resp.json();
-
-            localStorage.setItem("token", data.token);
-
-            if (rememberMe) {
-                localStorage.setItem("rememberEmail", email);
-                localStorage.setItem("rememberPassword", password);
-            } else {
-                localStorage.removeItem("rememberEmail");
-                localStorage.removeItem("rememberPassword");
-            }
-
-            toast.success("Login successful.");
-            navigate("/");
-        } catch (err) {
-            setError(err.message || "Something went wrong.");
-            toast.error(err.message || "Login failed.");
-        } finally {
-            setLoading(false);
-        }
+    if (togglePassword) {
+      togglePassword.addEventListener("click", handleTogglePassword);
+    }
+    return () => {
+      if (togglePassword) {
+        togglePassword.removeEventListener("click", handleTogglePassword);
+      }
     };
+  }, []);
 
-    const handleGuestLogin = () => navigate("/");
-    const handleAdminLogin = () => navigate("/admin/dashboard");
-    const handleStaffLogin = () => navigate("/staff/order-list");
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    cssEase: "linear",
+  };
 
-    return (
-        <div className="container main_container">
-            <div className="row login_wrapper">
-                <div className="col-lg-6 col-md-6 col-sm-12 left_side">
-                    <form className="sign_in_form" onSubmit={handleLogin}>
-                        <h3 className="sign_in_title">Sign in</h3>
-                        <div className="email_section">
-                            <label className="email_label" htmlFor="email">Email</label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                id="email"
-                                placeholder="Enter email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const resp = await fetch(`${VITE_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-                        <div className="password_section mb-3 position-relative">
-                            <label className="password_label" htmlFor="password">Password</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                id="password"
-                                placeholder="Enter password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <span className="password_eye">
-                                <i className="far fa-eye" id="togglePassword" style={{ cursor: "pointer" }}></i>
-                            </span>
-                        </div>
+      if (!resp.ok) {
+        throw new Error(`Wrong email or password.`);
+      }
 
-                        <div className="remember_forgot_section mb-3">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                            />
-                            <label className="remember_me">Remember me</label>
-                            <Link className="forgot_password_link" to="/forgot-password">
-                                Forgot password?
-                            </Link>
-                        </div>
+      const data = await resp.json();
 
-                        <div className="submit_section">
-                            <button
-                                type="submit"
-                                className="sign_in_button btn btn-block"
-                                disabled={loading}
-                            >
-                                {loading && <i className="fas fa-spinner fa-spin" style={{ marginRight: "5px" }}></i>}
-                                Sign in
-                            </button>
-                        </div>
+      localStorage.setItem("token", data.token);
 
-                        <div className="sign_up_section">
-                            <span>
-                                Don't have an account?{" "}
-                                <Link className="sign_up_link" to="/sign-up">Sign up</Link>
-                            </span>
-                        </div>
+      if (rememberMe) {
+        localStorage.setItem("rememberEmail", email);
+        localStorage.setItem("rememberPassword", password);
+      } else {
+        localStorage.removeItem("rememberEmail");
+        localStorage.removeItem("rememberPassword");
+      }
+      localStorage.setItem("user", data.accountId);
 
-                        <div className="google_section text-center">
-                            <div className="or_line_container">
-                                <hr className="line" />
-                                <span className="or_text">OR</span>
-                                <hr className="line" />
-                            </div>                            <div className="google_guest_section">
-                                <div className="guest_login_section" onClick={handleGuestLogin} style={{ cursor: "pointer" }}>
-                                    Navigate to home
-                                </div>
-                                <div className="guest_login_section" onClick={handleAdminLogin} style={{ cursor: "pointer" }}>
-                                    Navigate to admin
-                                </div>
-                                <div className="guest_login_section" onClick={handleStaffLogin} style={{ cursor: "pointer" }}>
-                                    Navigate to staff
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+      toast.success("Login successful.");
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+      toast.error(err.message || "Login failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <div className="col-lg-6 col-md-6 col-sm-12 right_side">
-                    <Slider {...sliderSettings}>
-                        <div>
-                            <img className="right_image" src={rightImage} alt="Ring photo" />
-                        </div>
-                        <div>
-                            <img className="right_image" src={rightImage2} alt="Ring photo" />
-                        </div>
-                        <div>
-                            <img className="right_image" src={rightImage3} alt="Ring photo" />
-                        </div>
-                    </Slider>
-                </div>
+  const handleGuestLogin = () => navigate("/");
+  const handleAdminLogin = () => navigate("/admin/dashboard");
+  const handleStaffLogin = () => navigate("/staff/order-list");
+
+  return (
+    <div className="container main_container">
+      <div className="row login_wrapper">
+        <div className="col-lg-6 col-md-6 col-sm-12 left_side">
+          <form className="sign_in_form" onSubmit={handleLogin}>
+            <h3 className="sign_in_title">Sign in</h3>
+            <div className="email_section">
+              <label className="email_label" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                placeholder="Enter email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
+
+            <div className="password_section mb-3 position-relative">
+              <label className="password_label" htmlFor="password">
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                placeholder="Enter password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span className="password_eye">
+                <i
+                  className="far fa-eye"
+                  id="togglePassword"
+                  style={{ cursor: "pointer" }}></i>
+              </span>
+            </div>
+
+            <div className="remember_forgot_section mb-3">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label className="remember_me">Remember me</label>
+              <Link className="forgot_password_link" to="/forgot-password">
+                Forgot password?
+              </Link>
+            </div>
+
+            <div className="submit_section">
+              <button
+                type="submit"
+                className="sign_in_button btn btn-block"
+                disabled={loading}>
+                {loading && (
+                  <i
+                    className="fas fa-spinner fa-spin"
+                    style={{ marginRight: "5px" }}></i>
+                )}
+                Sign in
+              </button>
+            </div>
+
+            <div className="sign_up_section">
+              <span>
+                Don't have an account?{" "}
+                <Link className="sign_up_link" to="/sign-up">
+                  Sign up
+                </Link>
+              </span>
+            </div>
+
+            <div className="google_section text-center">
+              <div className="or_line_container">
+                <hr className="line" />
+                <span className="or_text">OR</span>
+                <hr className="line" />
+              </div>{" "}
+              <div className="google_guest_section">
+                <div
+                  className="guest_login_section"
+                  onClick={handleGuestLogin}
+                  style={{ cursor: "pointer" }}>
+                  Navigate to home
+                </div>
+                <div
+                  className="guest_login_section"
+                  onClick={handleAdminLogin}
+                  style={{ cursor: "pointer" }}>
+                  Navigate to admin
+                </div>
+                <div
+                  className="guest_login_section"
+                  onClick={handleStaffLogin}
+                  style={{ cursor: "pointer" }}>
+                  Navigate to staff
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
-    );
+
+        <div className="col-lg-6 col-md-6 col-sm-12 right_side">
+          <Slider {...sliderSettings}>
+            <div>
+              <img className="right_image" src={rightImage} alt="Ring photo" />
+            </div>
+            <div>
+              <img className="right_image" src={rightImage2} alt="Ring photo" />
+            </div>
+            <div>
+              <img className="right_image" src={rightImage3} alt="Ring photo" />
+            </div>
+          </Slider>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Login;
