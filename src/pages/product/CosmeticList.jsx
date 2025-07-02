@@ -42,7 +42,6 @@ function CosmeticListPage() {
                 if (data.success && data.products) {
                     let filtered = [...data.products];
 
-                    // Apply filters
                     if (sex) {
                         filtered = filtered.filter((p) =>
                             p.sex?.toLowerCase() === sex.toLowerCase()
@@ -55,7 +54,6 @@ function CosmeticListPage() {
                         );
                     }
 
-                    // Sort
                     if (sort) {
                         filtered.sort((a, b) => {
                             switch (sort) {
@@ -128,7 +126,6 @@ function CosmeticListPage() {
                         </Button>
                     )}
 
-                    {/* Sort */}
                     <FormControl className="filter_group_sort" size="small">
                         <InputLabel id="sortFilter-label" sx={{
                             fontSize: '14px',
@@ -154,7 +151,6 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {/* Sex */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel id="sexFilter-label" sx={{
                             fontSize: '14px',
@@ -175,7 +171,6 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {/* Type */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel
                             id="typeFilter-label"
@@ -226,7 +221,6 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {/* Brand */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel id="brandFilter-label"
                             sx={{
@@ -257,7 +251,6 @@ function CosmeticListPage() {
                     </FormControl>
 
 
-                    {/* Skin Type */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel
                             id="skinTypeFilter-label"
@@ -280,7 +273,6 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {/* Skin Color */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel id="skinColorFilter-label" sx={{
                             fontSize: '14px',
@@ -300,7 +292,6 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {/* Capacity */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel id="volumnFilter-label" sx={{
                             fontSize: '14px',
@@ -322,7 +313,6 @@ function CosmeticListPage() {
                     </FormControl>
 
 
-                    {/* Stock Status */}
                     <FormControl className="filter_group" size="small">
                         <InputLabel id="stockFilter-label" sx={{
                             fontSize: '14px',
@@ -347,8 +337,6 @@ function CosmeticListPage() {
                 <ProductList products={products} resetKey={resetKey} />
             </div>
 
-            <br /><br />
-            {/* <CollectionSlide /> */}
             <br /><br />
 
             <Question />

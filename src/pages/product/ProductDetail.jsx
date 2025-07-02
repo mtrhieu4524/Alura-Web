@@ -110,9 +110,8 @@ function ProductDetail() {
                 key={idx}
                 src={image}
                 alt={`${product.name} ${idx + 1}`}
-                className={`thumbnail ${
-                  selectedImage === image ? "selected" : ""
-                }`}
+                className={`thumbnail ${selectedImage === image ? "selected" : ""
+                  }`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -230,9 +229,8 @@ function ProductDetail() {
           style={{ cursor: "pointer" }}>
           Specifications & Descriptions
           <i
-            className={`fas ${
-              showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
-            } specification_toggle_icon`}></i>
+            className={`fas ${showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
+              } specification_toggle_icon`}></i>
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
@@ -310,6 +308,7 @@ function ProductDetail() {
           </div>
         )}
       </div>
+      <br></br><br></br><br></br>
       <Insta />
     </div>
   );

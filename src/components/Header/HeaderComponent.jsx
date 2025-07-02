@@ -112,10 +112,34 @@ const HeaderComponent = () => {
                     placeholder="Search by name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        navigate(`/search`);
-                        setSearchTerm("");
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter" && searchTerm.trim() !== "") {
+                        try {
+                          const response = await fetch(
+                            `${API_URL}/products?searchByName=${encodeURIComponent(searchTerm)}&pageIndex=1&pageSize=100`
+                          );
+                          const data = await response.json();
+
+                          if (data.success && data.products) {
+                            navigate("/search", {
+                              state: {
+                                products: data.products,
+                                searchQuery: searchTerm
+                              },
+                            });
+                            setSearchTerm("");
+                          } else {
+                            navigate("/search", {
+                              state: {
+                                products: [],
+                                searchQuery: searchTerm
+                              },
+                            });
+                            setSearchTerm("");
+                          }
+                        } catch (error) {
+                          console.error("Search error:", error);
+                        }
                       }
                     }}
                   />
@@ -132,15 +156,13 @@ const HeaderComponent = () => {
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${
-                      isDropdownOpen ? "rotate" : ""
-                    }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
+                      }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${
-                    isDropdownOpen ? "open" : ""
-                  }`}>
+                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
+                    }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">
