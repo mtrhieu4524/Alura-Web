@@ -409,7 +409,7 @@ const Home = () => {
                         <h2 className="bb_title">Best & Beloved</h2>
                         <p className="bb_description">Our most loved skincare and beauty products, carefully selected based on what our customers adore the most.</p>
                     </div>
-                    <button onClick={() => handleNavigate('/product', { category: 'engagementRing' })} className="bb_shop_now_button">Shop now</button>
+                    <button onClick={() => handleNavigate('/cosmetics', { category: 'all' })} className="bb_shop_now_button">Shop now</button>
                 </div>
             </div>
 

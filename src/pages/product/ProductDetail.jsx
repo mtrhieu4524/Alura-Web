@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Image } from "antd";
-import GIA from "../../assets/certificate.webp";
 import Insta from "../../components/Insta/Instagram";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../styles/product/ProductDetail.css";
@@ -45,9 +44,10 @@ function ProductDetail() {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be logged in to add items to cart.");
+      toast.warning("Please sign in before add product to cart.");
       return;
     }
+
 
     try {
       const response = await fetch(`${API_URL}/cart/add`, {
@@ -279,9 +279,23 @@ function ProductDetail() {
             </div>
 
             <div className="specification_item">
+              <span className="specification_label">Preserve:</span>
+              <p className="specification_value">
+                {product.preservation || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
               <span className="specification_label">Key Ingredients:</span>
               <p className="specification_value">
                 {product.keyIngredients || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Detail Ingredients:</span>
+              <p className="specification_value">
+                {product.detailInfredients || "None"}
               </p>
             </div>
 
@@ -292,19 +306,6 @@ function ProductDetail() {
               </p>
             </div>
 
-            <div className="specification_item">
-              <span className="specification_label">Preserve:</span>
-              <p className="specification_value">
-                {product.preservation || "None"}
-              </p>
-            </div>
-
-            <div className="specification_item">
-              <span className="specification_label">Detail Ingredients:</span>
-              <p className="specification_value">
-                {product.detailInfredients || "None"}
-              </p>
-            </div>
           </div>
         )}
       </div>

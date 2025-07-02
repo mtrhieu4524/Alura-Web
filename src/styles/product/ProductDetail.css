@@ -282,7 +282,7 @@
 .specifications_grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
+  gap: 5px 40px;
   margin-top: 20px;
 }
 
@@ -615,9 +615,7 @@
   color: #797979;
 }
 
-.product_detail
-  :where(.css-dev-only-do-not-override-1pg9a38).ant-image
-  .ant-image-mask {
+.product_detail :where(.css-dev-only-do-not-override-1pg9a38).ant-image .ant-image-mask {
   width: 415px;
   height: 400px;
   border: 1px solid #d7d7d7;

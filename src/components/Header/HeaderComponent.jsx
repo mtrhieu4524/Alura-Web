@@ -43,6 +43,42 @@ const HeaderComponent = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const currentPath = window.location.pathname;
+
+    const protectedRoutes = [
+      "/cart",
+      "/checkout",
+      "/invoice",
+      "/profile",
+      "/order-history",
+      "/order-detail"
+    ];
+
+    const isProtected = protectedRoutes.some(route =>
+      currentPath.startsWith(route)
+    );
+
+    if (!token && isProtected) {
+      navigate("/sign-in");
+    } else if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const now = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp < now && isProtected) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/sign-in");
+        }
+      } catch (err) {
+        console.error("Invalid token:", err);
+        navigate("/sign-in");
+      }
+    }
+  }, []);
+
+
   const fetchCartCount = async (token) => {
     try {
       const res = await fetch(`${API_URL}/cart`, {
@@ -109,7 +145,7 @@ const HeaderComponent = () => {
                   <input
                     type="text"
                     className="search_bar"
-                    placeholder="Search by name..."
+                    placeholder="Search product by name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={async (e) => {
@@ -145,12 +181,24 @@ const HeaderComponent = () => {
                   />
                 </div>
               </div>
-              <Link to="/cart" className="cart_icon position-relative">
+              <div
+                className="cart_icon position-relative"
+                onClick={() => {
+                  const token = localStorage.getItem("token");
+                  if (!token) {
+                    navigate("/sign-in");
+                  } else {
+                    navigate("/cart");
+                  }
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <i className="icon_cart fas fa-shopping-bag"></i>
                 {cartCount > 0 && (
                   <span className="cart_count_badge">{cartCount}</span>
                 )}
-              </Link>
+              </div>
+
 
               <div className="account_dropdown_section">
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>

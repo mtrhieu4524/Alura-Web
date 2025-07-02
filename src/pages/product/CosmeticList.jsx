@@ -13,7 +13,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import Question from '../../components/Question/Question';
 import ProductList from '../../components/ProductCard/ProductCard';
 import Insta from '../../components/Insta/Instagram';
-import banner from '../../assets/bannerCosmetic.png';
+import banner from '../../assets/banner.png';
 
 function CosmeticListPage() {
     const [sort, setSort] = useState('');
