@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
     Typography,
-    Chip,
-    Box,
-    IconButton,
     Select,
     MenuItem,
     InputLabel,
@@ -36,6 +34,8 @@ const MenuProps = {
 };
 
 function CosmeticListPage() {
+    const location = useLocation();
+
     const [sort, setSort] = useState('');
     const [sex, setSex] = useState([]);
     const [type, setType] = useState([]);
@@ -54,6 +54,20 @@ function CosmeticListPage() {
     }, []);
 
     useEffect(() => {
+        if (location.state) {
+            if (location.state.sort) setSort(location.state.sort);
+
+            if (location.state.sex) setSex(Array.isArray(location.state.sex) ? location.state.sex : [location.state.sex]);
+            if (location.state.type) setType(Array.isArray(location.state.type) ? location.state.type : [location.state.type]);
+            if (location.state.brand) setBrand(Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand]);
+            if (location.state.skinType) setSkinType(Array.isArray(location.state.skinType) ? location.state.skinType : [location.state.skinType]);
+            if (location.state.skinColor) setSkinColor(Array.isArray(location.state.skinColor) ? location.state.skinColor : [location.state.skinColor]);
+            if (location.state.volume) setVolume(Array.isArray(location.state.volume) ? location.state.volume : [location.state.volume]);
+            if (location.state.stock) setStock(Array.isArray(location.state.stock) ? location.state.stock : [location.state.stock]);
+        }
+    }, []);
+
+    useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await fetch(
@@ -63,14 +77,16 @@ function CosmeticListPage() {
                 const data = await response.json();
 
                 if (data.success && data.products) {
-                    let filtered = [...data.products];
-                    // let original = [...data.products];
+                    // let filtered = [...data.products];
 
-                    // let filtered = [];
-                    // while (filtered.length < 20) {
-                    //     filtered = [...filtered, ...original];
-                    // }
-                    // filtered = filtered.slice(0, 20);
+                    //
+                    let original = [...data.products];
+                    let filtered = [];
+                    while (filtered.length < 15) {
+                        filtered = [...filtered, ...original];
+                    }
+                    filtered = filtered.slice(0, 15);
+                    //
 
                     if (sex.length) {
                         filtered = filtered.filter((p) =>
@@ -164,6 +180,7 @@ function CosmeticListPage() {
     };
 
     const anyFilterActive = sort || sex.length || type.length || brand.length || skinType.length || skinColor.length || volume.length || stock.length;
+
     return (
         <div className="ProductList">
             <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetics' }]} />
@@ -175,7 +192,6 @@ function CosmeticListPage() {
             </div>
 
             <div className="filters_and_products_wrapper">
-                {/* FILTER SIDEBAR */}
                 <div className="filter_sidebar">
                     <Button
                         onClick={handleRemoveFilters}

@@ -4,7 +4,6 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Reason from '../components/Reason/Reason';
-// import CollectionSlide from '../../components/CollectionSlide/CollectionSlide';
 import '../styles/Home.css';
 import brilliant1 from '../assets/bri1.png';
 import brilliant2 from '../assets/bri2.png';
@@ -14,16 +13,6 @@ import ringC from '../assets/cate1.webp';
 import necklaceC from '../assets/cate2.png';
 import earringC from '../assets/cate3.png';
 import braceletC from '../assets/cate4.png';
-import round from '../assets/round.png';
-import oval from '../assets/oval.png';
-import emerald from '../assets/emerald.png';
-import cushion from '../assets/cushion.png';
-import pear from '../assets/pear.png';
-import radiant from '../assets/radiant.png';
-import princess from '../assets/princess.png';
-import marquise from '../assets/marquise.png';
-import asscher from '../assets/asscher.png';
-import heart from '../assets/heart.png';
 import slide3 from '../assets/slide1.jpg';
 import slide2 from '../assets/slide2.png';
 import slide1 from '../assets/slide3.webp';
@@ -33,7 +22,6 @@ import slide1Small from '../assets/slide1Small.png';
 import sliderBackground from '../assets/homeBackground.png';
 import bb from '../assets/belove.jpg';
 import trending from '../assets/diff2.png';
-// import { getNewestProducts, getTopSellingProducts, getNewestCollections } from '../../services/ProductService.js';
 
 function NextArrow(props) {
     const { className, style, onClick } = props;
@@ -71,12 +59,12 @@ const Home = () => {
     const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [animate, setAnimate] = useState(false);
-    // const [activeTab, setActiveTab] = useState('newArrivals');
+    const [activeTab, setActiveTab] = useState('newArrivals');
     const [displayProducts, setDisplayProducts] = useState([]);
     const [newProducts, setNewProducts] = useState([]);
     const [topSellingProducts, setTopSellingProducts] = useState([]);
     const [trendingProducts, setTrendingProducts] = useState([]);
-    const [newestCollection, setNewestCollection] = useState(null);
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const settings = {
         dots: true,
@@ -103,6 +91,23 @@ const Home = () => {
     };
 
     useEffect(() => {
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                const data = await res.json();
+                if (data.success && data.products) {
+                    const firstTwo = data.products.slice(0, 2);
+                    setTrendingProducts(firstTwo);
+                }
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            }
+        }
+        fetchProducts();
+    }, [API_URL]);
+
+
+    useEffect(() => {
         const handleScroll = () => {
             const missionText = document.querySelector('.trending_text');
             if (missionText) {
@@ -117,62 +122,14 @@ const Home = () => {
         };
     }, []);
 
-    // useEffect(() => {
-    //     getNewestProducts().then(response => {
-    //         const productsWithOriginalPrice = response.data.map(product => ({
-    //             ...product,
-    //             originalPrice: product.price
-    //         }));
-    //         setNewProducts(productsWithOriginalPrice);
-    //         setDisplayProducts(productsWithOriginalPrice);
-    //     }).catch(error => {
-    //         console.error(error);
-    //     });
-
-    //     getTopSellingProducts().then(response => {
-    //         const productsWithOriginalPrice = response.data.map(product => ({
-    //             ...product,
-    //             originalPrice: product.price
-    //         }));
-    //         setTopSellingProducts(productsWithOriginalPrice);
-    //         setTrendingProducts(productsWithOriginalPrice.slice(-2));
-    //     }).catch(error => {
-    //         console.error(error);
-    //     });
-
-    //     getNewestCollections().then(response => {
-    //         const newestCollection = response.data;
-    //         setNewestCollection(newestCollection);
-    //     }).catch(error => {
-    //         console.error(error);
-    //     });
-    // }, []);
-
-    const handleTabClick = (tab) => {
-        setActiveTab(tab);
-        if (tab === 'newArrivals') {
-            setDisplayProducts(newProducts);
-        } else {
-            setDisplayProducts(topSellingProducts);
-        }
-    };
-
-    const getNavLinkClass = (tab) => {
-        return tab === activeTab ? 'home_feature_navlink active-tab' : 'home_feature_navlink';
-    };
-
     const handleProductClick = (product) => {
-        const productName = product.name.replace(/\s+/g, '-').toLowerCase();
+        const productName = product._id.replace(/\s+/g, '-').toLowerCase();
         const path = product.name.toLowerCase().includes('diamond')
             ? `/diamond-detail/${productName}`
-            : `/product-detail/${productName}`;
-        navigate(path, { state: { id: product.productId } });
+            : `/cosmetics/${productName}`;
+        navigate(path, { state: { id: product._id } });
     };
 
-    const handleCollectionClick = () => {
-        const collectionName = newestCollection.name.replace(/\s+/g, '-').toLowerCase();
-        navigate(`/collection/${collectionName}`, { state: { collectionId: newestCollection.collectionId } });
-    };
 
     return (
         <div className="Home">
@@ -191,7 +148,7 @@ const Home = () => {
                                 <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
                                     <img src={slide1Small} alt="Small Slide 1" />
-                                    <button onClick={() => handleNavigate('/cosmetics', { category: 'ring' })} className="slide-button">SHOP THIS CATEGORY</button>
+                                    <button onClick={() => handleNavigate('/cosmetics', { type: '' })} className="slide-button">SHOP NOW</button>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +164,7 @@ const Home = () => {
                                 <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
                                     <img src={slide2Small} alt="Small Slide 1" />
-                                    <button onClick={() => handleNavigate('/cosmetics', { category: 'ring' })} className="slide-button">SHOP THIS CATEGORY</button>
+                                    <button onClick={() => handleNavigate('/cosmetics', { type: '' })} className="slide-button">SHOP THIS CATEGORY</button>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +180,7 @@ const Home = () => {
                                 <p className="slide-text right-text">C  L  A  S  S  I  C     C  O  S  M  E  T  I  C</p>
                                 <div className="slide-small-image">
                                     <img src={slide3Small} alt="Small Slide 3" />
-                                    <button onClick={() => handleNavigate('/diamond-jewelry', { category: 'engagementRing' })} className="slide-button">SHOP THIS CATEGORY</button>
+                                    <button onClick={() => handleNavigate('/cosmetics', { type: '' })} className="slide-button">SHOP THIS CATEGORY</button>
                                 </div>
                             </div>
                         </div>
@@ -346,7 +303,7 @@ const Home = () => {
                                         <p className="category_name_large_hover">Skincare</p>
                                         <div className="category_hover_text">
                                             <span className="category_large_letter">S</span>
-                                            <span onClick={() => handleNavigate('/diamond-jewelry', { category: 'earrings' })} className="category_view_collection">VIEW CATEGORY</span>
+                                            <span onClick={() => handleNavigate('/cosmetics', { type: '' })} className="category_view_collection">VIEW CATEGORY</span>
                                         </div>
                                     </div>
                                 </div>
@@ -361,7 +318,7 @@ const Home = () => {
                                         <p className="category_name_small_hover">Fragrance </p>
                                         <div className="category_hover_text_small">
                                             <span className="category_large_letter_small">F</span>
-                                            <span onClick={() => handleNavigate('/diamond-jewelry', { category: 'ring' })} className="category_view_collection_small">VIEW CATEGORY</span>
+                                            <span onClick={() => handleNavigate('/cosmetics', { type: '' })} className="category_view_collection_small">VIEW CATEGORY</span>
                                         </div>
                                     </div>
                                 </div>
@@ -374,7 +331,7 @@ const Home = () => {
                                         <p className="category_name_small_hover">Treatment</p>
                                         <div className="category_hover_text_small">
                                             <span className="category_large_letter_small">T</span>
-                                            <span onClick={() => handleNavigate('/diamond-jewelry', { category: 'bracelet' })} className="category_view_collection_small">VIEW CATEGORY</span>
+                                            <span onClick={() => handleNavigate('/cosmetics', { type: '' })} className="category_view_collection_small">VIEW CATEGORY</span>
                                         </div>
                                     </div>
                                 </div>
@@ -389,7 +346,7 @@ const Home = () => {
                                         <p className="category_name_large_hover">Makeup</p>
                                         <div className="category_hover_text">
                                             <span className="category_large_letter">M</span>
-                                            <span onClick={() => handleNavigate('/diamond-jewelry', { category: 'necklace' })} className="category_view_collection">VIEW CATEGORY</span>
+                                            <span onClick={() => handleNavigate('/cosmetics', { type: '' })} className="category_view_collection">VIEW CATEGORY</span>
                                         </div>
                                     </div>
                                 </div>
@@ -399,7 +356,6 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* <CollectionSlide /> */}
 
             {/* Best & Beloved */}
             <div className="bb_container">
@@ -409,13 +365,13 @@ const Home = () => {
                         <h2 className="bb_title">Best & Beloved</h2>
                         <p className="bb_description">Our most loved skincare and beauty products, carefully selected based on what our customers adore the most.</p>
                     </div>
-                    <button onClick={() => handleNavigate('/cosmetics', { category: 'all' })} className="bb_shop_now_button">Shop now</button>
+                    <button onClick={() => handleNavigate('/cosmetics', { type: '' })} className="bb_shop_now_button">Shop now</button>
                 </div>
             </div>
 
             {/* Trending */}
             <div className="trending_container">
-                <div className="trending_text">newest collection</div>
+                <div className="trending_text">newest cosmetics</div>
                 <div className="trending_white">                                 </div>
                 <div className="row">
                     <div className="col-lg-5 col-md-6 ">
@@ -426,9 +382,9 @@ const Home = () => {
                         <div className="trending_product_card_section row">
                             {trendingProducts.map((product, index) => (
                                 <div key={index} className="trending_product_card card" onClick={() => handleProductClick(product)}>
-                                    <img src={product.imageLinkList} alt={product.name} className="product_image" />
+                                    <img src={product.imgUrls?.[0] || ''} alt={product.name} className="product_image" />
                                     <p className="trending_product_name">{product.name}</p>
-                                    <p className="trending_product_price">${product.price}</p>
+                                    <p className="trending_product_price">${(product.price / 1000).toFixed(2)}</p>
                                 </div>
                             ))}
                         </div>
@@ -436,41 +392,6 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Feature */}
-            {/* <div className='home_feature_container_wrapper'>
-                <div className="home_feature_container container">
-                    <div className="home_feature_navbar">
-                        <button
-                            className={getNavLinkClass('newArrivals')}
-                            onClick={() => handleTabClick('newArrivals')}
-                        >
-                            New arrivals
-                        </button>
-                        <button
-                            className={getNavLinkClass('bestSellers')}
-                            onClick={() => handleTabClick('bestSellers')}
-                        >
-                            Best sellers
-                        </button>
-                    </div>
-
-                    <div className="row">
-                        {displayProducts.map((product) => (
-                            <div key={product.productId} className="col-md-3">
-                                <div className="home_feature_product_card" onClick={() => handleProductClick(product)}>
-                                    <div className="home_feature_product_icon_wrapper" data-tooltip="View detail">
-                                        <i className="far fa-eye home_feature_product_icon_eye" ></i>
-                                    </div>
-                                    <img src={product.imageLinkList} alt={product.name} className="home_feature_product_image" />
-                                    <p className='home_feature_product_detail'>{product.clarity} | {product.carat} | {product.color}</p>
-                                    <p className="home_feature_product_name">{product.name}</p>
-                                    <p className="home_feature_product_price">${product.price}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div> */}
             <br></br><br></br>
 
             {/* Reason */}

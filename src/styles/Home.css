@@ -379,7 +379,8 @@ body {
 }
 
 .trending_product_card {
-    width: 30%;
+    width: 200px !important;
+    height: 300px !important;
     margin: 0 10px;
     border: none;
     background-color: transparent;
@@ -388,11 +389,13 @@ body {
     padding: 0;
     border-radius: 0;
     cursor: pointer;
+    border-radius: 0 !important;
 }
 
 .trending_product_card img {
     transition: all 0.3s ease-in-out;
     transform-origin: bottom;
+    width: 100%;
 }
 
 .trending_product_name {
