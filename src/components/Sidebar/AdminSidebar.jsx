@@ -33,6 +33,12 @@ const AdminSidebar = () => {
         { label: 'Manage Product', icon: 'fa-paint-brush', path: '/admin/product-list' },
         { label: 'Manage Warehouse', icon: 'fa-cubes', path: '/admin/warehouse-list' },
         { label: 'Manage Batch', icon: 'fa-cubes', path: '/admin/batch-list' },
+        { label: 'Manage Batch Certificate', icon: 'fa-cubes', path: '/admin/batch-certificate-list' },
+        { label: 'Manage Distributor', icon: 'fa-cubes', path: '/admin/distributor-list' },
+        { label: 'Manage Batch Stock', icon: 'fa-cubes', path: '/admin/batch-stock-list' },
+
+
+
     ];
 
     return (
