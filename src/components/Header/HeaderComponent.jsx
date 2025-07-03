@@ -30,7 +30,21 @@ const HeaderComponent = () => {
         fetch(`${API_URL}/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-          .then((res) => res.json())
+          .then((res) => {
+            if (res.status === 401) {
+              console.log("401 Unauthorized - Token may be expired or invalid");
+              setIsLoggedIn(false);
+              handleLogout();
+              return null; // Return null to prevent further processing
+            }
+
+            if (!res.ok) {
+              console.log(`HTTP Error: ${res.status} - ${res.statusText}`);
+              throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+
+            return res.json();
+          })
           .then((data) => {
             if (data?.success) setUserInfo(data.user);
           })
@@ -38,6 +52,7 @@ const HeaderComponent = () => {
 
         fetchCartCount(token);
       } catch (err) {
+        setIsLoggedIn(false);
         console.error("Error decoding token:", err);
       }
     }
