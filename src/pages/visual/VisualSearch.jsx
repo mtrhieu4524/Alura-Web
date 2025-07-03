@@ -67,10 +67,14 @@ const VisualSearch = () => {
         const response = await fetch(imagePreview);
         if (!response.ok) throw new Error("Failed to fetch image");
         const blob = await response.blob();
-        imgToSearch = new File([blob], "image.jpg", { type: blob.type });
+        imgToSearch = new File([blob], "image.jpg, image.png, image.jpeg", {
+          type: blob.type,
+        });
       } catch (error) {
         console.error("Error fetching image from link:", error);
-        alert("Invalid image link. We only accept png, jpg and jpeg, please try another image.");
+        alert(
+          "Invalid image link. We only accept png, jpg and jpeg, please try another image."
+        );
         return;
       }
     }
