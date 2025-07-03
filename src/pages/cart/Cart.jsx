@@ -30,7 +30,7 @@ function Cart() {
         replace: true,
         state: { from: "/" },
       });
-      return;
+      return; 
     }
     fetchCartItems();
   }, [authChecked]);

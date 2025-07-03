@@ -2,6 +2,7 @@ import { Image } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import vnpay from "../../assets/vnpay.webp";
+import cash from "../../assets/cashLogo.png";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Insta from "../../components/Insta/Instagram";
 import "../../styles/cart/Checkout.css";
@@ -18,6 +19,8 @@ function Checkout() {
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [shippingMethod, setShippingMethod] = useState("STANDARD");
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -72,13 +75,85 @@ function Checkout() {
     navigate("/cart");
   };
 
-  const handleInvoice = () => {
-    // Validate fields here if needed
+  const handlePlaceOrder = async () => {
     if (!fullName.trim() || !phone.trim() || !address.trim()) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    navigate("/invoice");
+
+    // Validate payment method selection
+    if (!paymentMethod) {
+      toast.error("Please select a payment method.");
+      return;
+    }
+
+    // Validate shipping method selection
+    if (!shippingMethod) {
+      toast.error("Please select a shipping method.");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to place an order.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const orderData = {
+        shippingAddress: address,
+        shippingMethod: shippingMethod,
+        productId: userId,
+        note: note || "after 5 PM",
+        paymentMethod: paymentMethod,
+        selectedCartItemIds: cartItems.map((item) => item._id || item.id),
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/order/place`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to place order");
+      }
+
+      const result = await response.json();
+
+      toast.success("Order placed successfully!");
+
+      // Handle based on payment method
+      if (paymentMethod === "COD") {
+        navigate("/", {
+          state: {
+            orderId: result.orderId,
+            message: result.message,
+          },
+        });
+      } else if (paymentMethod === "VNPAY") {
+        toast.info("Redirecting to payment gateway...");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast.error("An error occurred while placing your order.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -204,8 +279,17 @@ function Checkout() {
             <i className="fas fa-credit-card"></i>Payment method
           </h5>
           <div className="payment_methods">
-            <div className="payment_method">
-              <input type="radio" id="vnpay" name="paymentMethod" />
+            <div
+              className="payment_method"
+              onClick={() => setPaymentMethod("VNPAY")}>
+              <input
+                type="radio"
+                id="vnpay"
+                name="paymentMethod"
+                value="VNPAY"
+                checked={paymentMethod === "VNPAY"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
               <div className="payment_vnpay_wrapper">
                 <p className="payment_label" htmlFor="vnpay">
                   VNPAY
@@ -220,6 +304,76 @@ function Checkout() {
                   }}
                   alt="VNPAY"
                 />
+              </div>
+            </div>
+            {/* payment COD */}
+            <div
+              className="payment_method"
+              onClick={() => setPaymentMethod("COD")}>
+              <input
+                type="radio"
+                id="cod"
+                name="paymentMethod"
+                value="COD"
+                checked={paymentMethod === "COD"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
+              <div className="payment_vnpay_wrapper">
+                <p className="payment_label" htmlFor="cod">
+                  COD
+                </p>
+                <img
+                  src={cash}
+                  style={{
+                    width: "30px",
+                    marginTop: "-34px",
+                    marginBottom: "10px",
+                    marginLeft: "-17px",
+                  }}
+                  alt="COD"
+                />
+              </div>
+            </div>
+          </div>
+
+          <h5 className="checkout_summary_shipping_title">
+            <i className="fas fa-shipping-fast"></i>Shipping method
+          </h5>
+          <div className="shipping_methods">
+            <div
+              className="shipping_method"
+              onClick={() => setShippingMethod("STANDARD")}>
+              <input
+                type="radio"
+                id="standard"
+                name="shippingMethod"
+                value="STANDARD"
+                checked={shippingMethod === "STANDARD"}
+                onChange={(e) => setShippingMethod(e.target.value)}
+              />
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="standard">
+                  Standard Shipping
+                </label>
+                <p className="shipping_description">(3-5 days)</p>
+              </div>
+            </div>
+            <div
+              className="shipping_method"
+              onClick={() => setShippingMethod("EXPRESS")}>
+              <input
+                type="radio"
+                id="express"
+                name="shippingMethod"
+                value="EXPRESS"
+                checked={shippingMethod === "EXPRESS"}
+                onChange={(e) => setShippingMethod(e.target.value)}
+              />
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="express">
+                  Express Shipping
+                </label>
+                <p className="shipping_description">(1-2 days)</p>
               </div>
             </div>
           </div>
@@ -239,7 +393,7 @@ function Checkout() {
             </p>
           </div>
           <button
-            onClick={handleInvoice}
+            onClick={handlePlaceOrder}
             className="checkout_summary_checkout"
             disabled={loading}>
             {loading && (
