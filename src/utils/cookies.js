@@ -1,4 +1,6 @@
-export const setCookie = (name, value, days = 1) => {
+import { decryptText, encryptText } from "./crypto";
+
+const setCookie = (name, value, days = 1) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${encodeURIComponent(
@@ -6,7 +8,7 @@ export const setCookie = (name, value, days = 1) => {
   )};expires=${expires.toUTCString()};path=/;secure;samesite=strict`;
 };
 
-export const getCookie = (name) => {
+const getCookie = (name) => {
   const nameEQ = name + "=";
   const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
@@ -23,25 +25,31 @@ export const deleteCookie = (name) => {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;secure;samesite=strict`;
 };
 
-export const setTokenCookie = (token, days = 7) => {
-  setCookie("token", token, days);
+export const setSavedEmail = (email, days = 30) => {
+  setCookie("rememberEmail", email, days);
 };
 
-export const setUserCookie = (userId, days = 7) => {
-  setCookie("user", userId, days);
+export const getSavedEmail = () => {
+  return getCookie("rememberEmail");
 };
 
-export const getTokenFromCookie = () => {
-  return getCookie("token");
-};
-
-export const getUserFromCookie = () => {
-  return getCookie("user");
-};
-
-export const clearAuthCookies = () => {
-  deleteCookie("token");
-  deleteCookie("user");
+export const clearSavedEmail = () => {
   deleteCookie("rememberEmail");
+};
+
+export const setSavedPassword = (password, days = 30) => {
+  const encryptedPassword = encryptText(password);
+  setCookie("rememberPassword", encryptedPassword, days);
+};
+
+export const getSavedPassword = () => {
+  const encryptedPassword = getCookie("rememberPassword");
+  if (encryptedPassword) {
+    return decryptText(encryptedPassword);
+  }
+  return null;
+};
+
+export const clearSavedPassword = () => {
   deleteCookie("rememberPassword");
 };

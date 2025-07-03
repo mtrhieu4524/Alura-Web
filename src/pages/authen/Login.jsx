@@ -1,26 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { loginSuccess } from "../../store/authSlice";
+import { useDispatch } from "react-redux";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../../styles/authen/Login.css";
+import "slick-carousel/slick/slick.css";
 import rightImage from "../../assets/r1.jpeg";
 import rightImage2 from "../../assets/r2.jpg";
 import rightImage3 from "../../assets/r3.jpg";
+import "../../styles/authen/Login.css";
 import {
-  deleteCookie,
-  getCookie,
-  setCookie,
-  setTokenCookie,
-  setUserCookie,
+  clearSavedEmail,
+  clearSavedPassword,
+  getSavedEmail,
+  getSavedPassword,
+  setSavedEmail,
+  setSavedPassword,
 } from "../../utils/cookies";
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,8 +34,8 @@ const Login = () => {
   useEffect(() => {
     document.title = "Alurà - Sign In";
 
-    const savedEmail = getCookie("rememberEmail");
-    const savedPassword = getCookie("rememberPassword");
+    const savedEmail = getSavedEmail();
+    const savedPassword = getSavedPassword();
     if (savedEmail && savedPassword) {
       setEmail(savedEmail);
       setPassword(savedPassword);
@@ -100,16 +103,17 @@ const Login = () => {
 
       const data = await resp.json();
 
-      if (rememberMe) {
-        setCookie("rememberEmail", email, 15); // hết hạn sau 15 ngày
-        setCookie("rememberPassword", password, 15);
-      } else {
-        deleteCookie("rememberEmail");
-        deleteCookie("rememberPassword");
-      }
+      console.log("Login response:", data);
 
-      setTokenCookie(data.token, 7);
-      setUserCookie(data.accountId, 7);
+      dispatch(loginSuccess({ token: data.token, user: data.accountId }));
+
+      if (rememberMe) {
+        setSavedEmail(email, 15);
+        setSavedPassword(password, 15);
+      } else {
+        clearSavedEmail();
+        clearSavedPassword();
+      }
 
       toast.success("Login successful.");
       navigate("/");
