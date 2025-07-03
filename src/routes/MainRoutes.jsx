@@ -29,6 +29,7 @@ import AdminWarehouseList from "../pages/admin/warehouse/WarehouseList";
 import AdminProductList from "../pages/admin/product/ProductList";
 import AdminProductDetail from "../pages/admin/product/ProductDetail";
 import AdminAccountList from "../pages/admin/account/AccountList";
+import AdminBatchList from "../pages/admin/batch/BatchListTemp";
 
 import StaffOrderList from "../pages/staff/OrderList";
 import StaffOrderDetail from "../pages/staff/OrderDetail";
@@ -65,6 +66,7 @@ const MainRoutes = () => {
       <Route path="/admin/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
       <Route path="/admin/product-list/:id" element={<AdminLayout><AdminProductDetail /></AdminLayout>} />
       <Route path="/admin/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
+      <Route path="/admin/batch-list" element={<AdminLayout><AdminBatchList /></AdminLayout>} />
 
       {/* Staff Routes */}
       <Route path="/staff/order-list" element={<StaffLayout><StaffOrderList /></StaffLayout>} />

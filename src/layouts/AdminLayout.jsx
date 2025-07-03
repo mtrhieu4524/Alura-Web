@@ -9,13 +9,15 @@ const AdminLayout = ({ children }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
 
-    const showSearchPaths = ["/admin/account-list", "/admin/warehouse-list", "/admin/product-list"];
+    const showSearchPaths = ["/admin/account-list", "/admin/warehouse-list", "/admin/product-list",  "/admin/batch-list"];
     const showSearch = showSearchPaths.includes(location.pathname);
 
     const placeholderMap = {
         "/admin/account-list": "Search by email...",
         "/admin/product-list": "Search by name...",
         "/admin/warehouse-list": "Search by name...",
+
+        "/admin/batch-list": "Search by name...",
     };
 
     const placeholder = placeholderMap[location.pathname] || "Search...";
