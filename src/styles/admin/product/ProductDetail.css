@@ -160,3 +160,11 @@
 .product-detail-field input {
     height: 40px !important;
 }
+
+.delete_icon {
+    color: #a00 !important;
+}
+
+.delete_icon:hover {
+    color: #d00 !important;
+}

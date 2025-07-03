@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../Header/Header.css";
-import logo from "../../assets/logo.png";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
 import { useCart } from "../../context/CartContext";
+import { logout } from "../../store/authSlice";
+// import { waitForRehydration } from "../../store/store";
+import "../Header/Header.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,95 +17,113 @@ const HeaderComponent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [userInfo, setUserInfo] = useState(null);
   const { cartCount, setCartCount } = useCart();
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-      try {
-        const decoded = jwtDecode(token);
-        const userId = decoded.userId;
+    const checkAuth = async () => {
+      console.log("token:", token);
 
-        fetch(`${API_URL}/profile/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then((res) => {
-            if (res.status === 401) {
-              console.log("401 Unauthorized - Token may be expired or invalid");
-              setIsLoggedIn(false);
-              handleLogout();
-              return null; // Return null to prevent further processing
-            }
+      if (token) {
+        setIsLoggedIn(true);
+        try {
+          const decoded = jwtDecode(token);
+          const now = Math.floor(Date.now() / 1000);
+          if (decoded.exp && decoded.exp < now + 300) {
+            console.log("Token will expire soon or has expired");
+            dispatch(logout());
+            setIsLoggedIn(false);
+            navigate("/sign-in");
+            return;
+          }
 
-            if (!res.ok) {
-              console.log(`HTTP Error: ${res.status} - ${res.statusText}`);
-              throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-            }
+          const userId = decoded.userId;
+          const res = await fetch(`${API_URL}/profile/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-            return res.json();
-          })
-          .then((data) => {
-            if (data?.success) setUserInfo(data.user);
-          })
-          .catch((err) => console.error("Error fetching user profile:", err));
+          if (res.status === 401) {
+            console.log("401 Unauthorized - Token may be expired or invalid");
+            dispatch(logout());
+            setIsLoggedIn(false);
+            navigate("/sign-in");
+            return;
+          }
 
-        fetchCartCount(token);
-      } catch (err) {
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+          }
+
+          const data = await res.json();
+          if (data?.success) {
+            setUserInfo(data.user);
+            await fetchCartCount(token);
+          }
+        } catch (err) {
+          console.error("Error fetching user profile:", err);
+          dispatch(logout());
+          setIsLoggedIn(false);
+          navigate("/sign-in");
+        }
+      } else {
         setIsLoggedIn(false);
-        console.error("Error decoding token:", err);
+        setCartCount(0);
       }
-    }
-  }, []);
+    };
+
+    checkAuth();
+  }, [token, dispatch, navigate]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const currentPath = window.location.pathname;
+    const checkProtectedRoutes = async () => {
+      const currentPath = window.location.pathname;
+      const protectedRoutes = [
+        "/cart",
+        "/checkout",
+        "/invoice",
+        "/profile",
+        "/order-history",
+        "/order-detail",
+      ];
 
-    const protectedRoutes = [
-      "/cart",
-      "/checkout",
-      "/invoice",
-      "/profile",
-      "/order-history",
-      "/order-detail"
-    ];
+      const isProtected = protectedRoutes.some((route) =>
+        currentPath.startsWith(route)
+      );
 
-    const isProtected = protectedRoutes.some(route =>
-      currentPath.startsWith(route)
-    );
-
-    if (!token && isProtected) {
-      navigate("/");
-    } else if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const now = Math.floor(Date.now() / 1000);
-        if (decoded.exp && decoded.exp < now && isProtected) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          navigate("/");
+      if (!token && isProtected) {
+        navigate("/sign-in");
+      } else if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const now = Math.floor(Date.now() / 1000);
+          if (decoded.exp && decoded.exp < now && isProtected) {
+            dispatch(logout());
+            setIsLoggedIn(false);
+            navigate("/sign-in");
+          }
+        } catch (err) {
+          console.error("Invalid token:", err);
+          dispatch(logout());
+          setIsLoggedIn(false);
+          navigate("/sign-in");
         }
-      } catch (err) {
-        console.error("Invalid token:", err);
-        navigate("/");
       }
-    }
-  }, []);
+    };
 
+    checkProtectedRoutes();
+  }, [token, dispatch, navigate]);
 
   const fetchCartCount = async (token) => {
     try {
       const res = await fetch(`${API_URL}/cart`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) return;
+      if (res.status !== 200) return;
 
       const data = await res.json();
       setCartCount(data?.items?.length || 0);
@@ -112,11 +133,11 @@ const HeaderComponent = () => {
   };
 
   const handleLogout = () => {
-    navigate(`/sign-in`);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    dispatch(logout());
     setIsLoggedIn(false);
     setUserInfo(null);
+    setCartCount(0);
+    navigate("/sign-in");
   };
 
   return (
@@ -167,7 +188,9 @@ const HeaderComponent = () => {
                       if (e.key === "Enter" && searchTerm.trim() !== "") {
                         try {
                           const response = await fetch(
-                            `${API_URL}/products?searchByName=${encodeURIComponent(searchTerm)}&pageIndex=1&pageSize=100`
+                            `${API_URL}/products?searchByName=${encodeURIComponent(
+                              searchTerm
+                            )}&pageIndex=1&pageSize=100`
                           );
                           const data = await response.json();
 
@@ -175,7 +198,7 @@ const HeaderComponent = () => {
                             navigate("/search", {
                               state: {
                                 products: data.products,
-                                searchQuery: searchTerm
+                                searchQuery: searchTerm,
                               },
                             });
                             setSearchTerm("");
@@ -183,7 +206,7 @@ const HeaderComponent = () => {
                             navigate("/search", {
                               state: {
                                 products: [],
-                                searchQuery: searchTerm
+                                searchQuery: searchTerm,
                               },
                             });
                             setSearchTerm("");
@@ -199,33 +222,32 @@ const HeaderComponent = () => {
               <div
                 className="cart_icon position-relative"
                 onClick={() => {
-                  const token = localStorage.getItem("token");
                   if (!token) {
                     navigate("/sign-in");
                   } else {
                     navigate("/cart");
                   }
                 }}
-                style={{ cursor: "pointer" }}
-              >
+                style={{ cursor: "pointer" }}>
                 <i className="icon_cart fas fa-shopping-bag"></i>
                 {cartCount > 0 && (
                   <span className="cart_count_badge">{cartCount}</span>
                 )}
               </div>
 
-
               <div className="account_dropdown_section">
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
-                      }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${
+                      isDropdownOpen ? "rotate" : ""
+                    }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
-                    }`}>
+                  className={`user-dropdown-menu ${
+                    isDropdownOpen ? "open" : ""
+                  }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">
@@ -237,8 +259,7 @@ const HeaderComponent = () => {
                       <Link
                         to="/profile"
                         state={{
-                          userId: jwtDecode(localStorage.getItem("token"))
-                            .userId,
+                          userId: jwtDecode(token).userId,
                         }}
                         className="user-dropdown-menu-link">
                         <i className="fas fa-user-circle dropdown-icon"></i>{" "}

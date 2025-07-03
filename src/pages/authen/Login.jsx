@@ -1,31 +1,41 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { loginSuccess } from "../../store/authSlice";
+import { useDispatch } from "react-redux";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../../styles/authen/Login.css";
+import "slick-carousel/slick/slick.css";
 import rightImage from "../../assets/r1.jpeg";
 import rightImage2 from "../../assets/r2.jpg";
 import rightImage3 from "../../assets/r3.jpg";
+import "../../styles/authen/Login.css";
+import {
+  clearSavedEmail,
+  clearSavedPassword,
+  getSavedEmail,
+  getSavedPassword,
+  setSavedEmail,
+  setSavedPassword,
+} from "../../utils/cookies";
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.title = "Alurà - Sign In";
 
-    const savedEmail = localStorage.getItem("rememberEmail");
-    const savedPassword = localStorage.getItem("rememberPassword");
+    const savedEmail = getSavedEmail();
+    const savedPassword = getSavedPassword();
     if (savedEmail && savedPassword) {
       setEmail(savedEmail);
       setPassword(savedPassword);
@@ -76,12 +86,14 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    // setError("");
     setLoading(true);
     try {
       const resp = await fetch(`${VITE_API_URL}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -91,21 +103,22 @@ const Login = () => {
 
       const data = await resp.json();
 
-      localStorage.setItem("token", data.token);
+      console.log("Login response:", data);
+
+      dispatch(loginSuccess({ token: data.token, user: data.accountId }));
 
       if (rememberMe) {
-        localStorage.setItem("rememberEmail", email);
-        localStorage.setItem("rememberPassword", password);
+        setSavedEmail(email, 15);
+        setSavedPassword(password, 15);
       } else {
-        localStorage.removeItem("rememberEmail");
-        localStorage.removeItem("rememberPassword");
+        clearSavedEmail();
+        clearSavedPassword();
       }
-      localStorage.setItem("user", data.accountId);
 
       toast.success("Login successful.");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Something went wrong.");
+      // setError(err.message || "Something went wrong.");
       toast.error(err.message || "Login failed.");
     } finally {
       setLoading(false);
