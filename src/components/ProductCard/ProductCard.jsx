@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 
-const ProductCard = ({ id, image, name, price, type, shade, volume, sex, stock }) => {
+const ProductCard = ({
+  id,
+  image,
+  name,
+  price,
+  type,
+  shade,
+  volume,
+  sex,
+  stock,
+}) => {
   const navigate = useNavigate();
 
   const handleViewClick = (e) => {
@@ -23,7 +33,9 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex, stock }
         <img src={image} alt={name} />
         {stockLabel && (
           <span
-            className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"}`}>
+            className={`stock_status ${
+              stock === 0 ? "sold_out" : "low_stock"
+            }`}>
             {stockLabel}
           </span>
         )}
@@ -40,7 +52,6 @@ const ProductCard = ({ id, image, name, price, type, shade, volume, sex, stock }
     </div>
   );
 };
-
 
 const SpecialCard = () => {
   const navigate = useNavigate();
@@ -78,7 +89,7 @@ const ProductList = ({ products, resetKey }) => {
 
   return (
     <div className="product_list col-lg-12">
-      {displayedProducts.map((product, index) => (
+      {displayedProducts.map((product) => (
         <ProductCard
           key={product._id}
           id={product._id}

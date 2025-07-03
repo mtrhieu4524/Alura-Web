@@ -9,6 +9,13 @@ import "../../styles/authen/Login.css";
 import rightImage from "../../assets/r1.jpeg";
 import rightImage2 from "../../assets/r2.jpg";
 import rightImage3 from "../../assets/r3.jpg";
+import {
+  deleteCookie,
+  getCookie,
+  setCookie,
+  setTokenCookie,
+  setUserCookie,
+} from "../../utils/cookies";
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,14 +25,14 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.title = "Alurà - Sign In";
 
-    const savedEmail = localStorage.getItem("rememberEmail");
-    const savedPassword = localStorage.getItem("rememberPassword");
+    const savedEmail = getCookie("rememberEmail");
+    const savedPassword = getCookie("rememberPassword");
     if (savedEmail && savedPassword) {
       setEmail(savedEmail);
       setPassword(savedPassword);
@@ -76,12 +83,14 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    // setError("");
     setLoading(true);
     try {
       const resp = await fetch(`${VITE_API_URL}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -91,21 +100,21 @@ const Login = () => {
 
       const data = await resp.json();
 
-      localStorage.setItem("token", data.token);
-
       if (rememberMe) {
-        localStorage.setItem("rememberEmail", email);
-        localStorage.setItem("rememberPassword", password);
+        setCookie("rememberEmail", email, 15); // hết hạn sau 15 ngày
+        setCookie("rememberPassword", password, 15);
       } else {
-        localStorage.removeItem("rememberEmail");
-        localStorage.removeItem("rememberPassword");
+        deleteCookie("rememberEmail");
+        deleteCookie("rememberPassword");
       }
-      localStorage.setItem("user", data.accountId);
+
+      setTokenCookie(data.token, 7);
+      setUserCookie(data.accountId, 7);
 
       toast.success("Login successful.");
       navigate("/");
     } catch (err) {
-      setError(err.message || "Something went wrong.");
+      // setError(err.message || "Something went wrong.");
       toast.error(err.message || "Login failed.");
     } finally {
       setLoading(false);

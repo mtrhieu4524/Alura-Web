@@ -83,9 +83,12 @@ const VisualSearch = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/api/products/find-by-image",
+        `${import.meta.env.VITE_API_URL}/products/find-by-image`,
         {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           body: formData,
         }
       );
@@ -103,7 +106,9 @@ const VisualSearch = () => {
       } else {
         const errorData = await response.json();
         alert(
-          `Error searching for products: ${errorData.error || "Unknown error"}`
+          `Error searching for products: ${
+            errorData.message || "Unknown error"
+          }`
         );
       }
     } catch (error) {

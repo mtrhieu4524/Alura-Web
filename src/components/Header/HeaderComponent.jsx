@@ -4,6 +4,7 @@ import "../Header/Header.css";
 import logo from "../../assets/logo.png";
 import { jwtDecode } from "jwt-decode";
 import { useCart } from "../../context/CartContext";
+import { deleteCookie, getTokenFromCookie } from "../../utils/cookies";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,7 +21,7 @@ const HeaderComponent = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getTokenFromCookie();
     if (token) {
       setIsLoggedIn(true);
       try {
@@ -47,19 +48,20 @@ const HeaderComponent = () => {
           })
           .then((data) => {
             if (data?.success) setUserInfo(data.user);
+            fetchCartCount(token);
           })
           .catch((err) => console.error("Error fetching user profile:", err));
-
-        fetchCartCount(token);
       } catch (err) {
         setIsLoggedIn(false);
         console.error("Error decoding token:", err);
       }
+    } else {
+      setCartCount(0);
     }
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getTokenFromCookie();
     const currentPath = window.location.pathname;
 
     const protectedRoutes = [
@@ -68,10 +70,10 @@ const HeaderComponent = () => {
       "/invoice",
       "/profile",
       "/order-history",
-      "/order-detail"
+      "/order-detail",
     ];
 
-    const isProtected = protectedRoutes.some(route =>
+    const isProtected = protectedRoutes.some((route) =>
       currentPath.startsWith(route)
     );
 
@@ -82,8 +84,8 @@ const HeaderComponent = () => {
         const decoded = jwtDecode(token);
         const now = Math.floor(Date.now() / 1000);
         if (decoded.exp && decoded.exp < now && isProtected) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+          deleteCookie("token");
+          deleteCookie("user");
           navigate("/");
         }
       } catch (err) {
@@ -91,8 +93,7 @@ const HeaderComponent = () => {
         navigate("/");
       }
     }
-  }, []);
-
+  }, [navigate]);
 
   const fetchCartCount = async (token) => {
     try {
@@ -102,7 +103,7 @@ const HeaderComponent = () => {
         },
       });
 
-      if (!res.ok) return;
+      if (res.status !== 200) return;
 
       const data = await res.json();
       setCartCount(data?.items?.length || 0);
@@ -113,8 +114,8 @@ const HeaderComponent = () => {
 
   const handleLogout = () => {
     navigate(`/sign-in`);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    deleteCookie("token");
+    deleteCookie("user");
     setIsLoggedIn(false);
     setUserInfo(null);
   };
@@ -167,7 +168,9 @@ const HeaderComponent = () => {
                       if (e.key === "Enter" && searchTerm.trim() !== "") {
                         try {
                           const response = await fetch(
-                            `${API_URL}/products?searchByName=${encodeURIComponent(searchTerm)}&pageIndex=1&pageSize=100`
+                            `${API_URL}/products?searchByName=${encodeURIComponent(
+                              searchTerm
+                            )}&pageIndex=1&pageSize=100`
                           );
                           const data = await response.json();
 
@@ -175,7 +178,7 @@ const HeaderComponent = () => {
                             navigate("/search", {
                               state: {
                                 products: data.products,
-                                searchQuery: searchTerm
+                                searchQuery: searchTerm,
                               },
                             });
                             setSearchTerm("");
@@ -183,7 +186,7 @@ const HeaderComponent = () => {
                             navigate("/search", {
                               state: {
                                 products: [],
-                                searchQuery: searchTerm
+                                searchQuery: searchTerm,
                               },
                             });
                             setSearchTerm("");
@@ -199,33 +202,33 @@ const HeaderComponent = () => {
               <div
                 className="cart_icon position-relative"
                 onClick={() => {
-                  const token = localStorage.getItem("token");
+                  const token = getTokenFromCookie();
                   if (!token) {
                     navigate("/sign-in");
                   } else {
                     navigate("/cart");
                   }
                 }}
-                style={{ cursor: "pointer" }}
-              >
+                style={{ cursor: "pointer" }}>
                 <i className="icon_cart fas fa-shopping-bag"></i>
                 {cartCount > 0 && (
                   <span className="cart_count_badge">{cartCount}</span>
                 )}
               </div>
 
-
               <div className="account_dropdown_section">
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
-                      }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${
+                      isDropdownOpen ? "rotate" : ""
+                    }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
-                    }`}>
+                  className={`user-dropdown-menu ${
+                    isDropdownOpen ? "open" : ""
+                  }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">
@@ -237,8 +240,7 @@ const HeaderComponent = () => {
                       <Link
                         to="/profile"
                         state={{
-                          userId: jwtDecode(localStorage.getItem("token"))
-                            .userId,
+                          userId: jwtDecode(getTokenFromCookie()).userId,
                         }}
                         className="user-dropdown-menu-link">
                         <i className="fas fa-user-circle dropdown-icon"></i>{" "}
