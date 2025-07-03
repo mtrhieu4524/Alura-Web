@@ -72,7 +72,7 @@ function ProductDetail() {
                     <h2 className="admin_main_title">{product.name}</h2>
                     <div className="product-detail-controls">
                         <i className="fas fa-pen" title="Edit" onClick={() => setIsEditing(true)}></i>
-                        <i className="fas fa-trash-alt" title="Delete" onClick={() => setShowDeleteModal(true)}></i>
+                        <i className="delete_icon fas fa-trash-alt" title="Delete" onClick={() => setShowDeleteModal(true)}></i>
                     </div>
                 </div>
 
