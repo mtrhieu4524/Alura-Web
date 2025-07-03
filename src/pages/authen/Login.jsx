@@ -28,7 +28,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  // const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -86,7 +85,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // setError("");
     setLoading(true);
     try {
       const resp = await fetch(`${VITE_API_URL}/auth/login`, {
@@ -98,7 +96,7 @@ const Login = () => {
       });
 
       if (!resp.ok) {
-        throw new Error(`Wrong email or password.`);
+        throw new Error("Wrong email or password.");
       }
 
       const data = await resp.json();
@@ -116,9 +114,20 @@ const Login = () => {
       }
 
       toast.success("Login successful.");
-      navigate("/");
+
+      const role = data.role?.toUpperCase();
+      switch (role) {
+        case "ADMIN":
+          navigate("/admin/dashboard");
+          break;
+        case "STAFF":
+          navigate("/staff/dashboard");
+          break;
+        default:
+          navigate("/");
+          break;
+      }
     } catch (err) {
-      // setError(err.message || "Something went wrong.");
       toast.error(err.message || "Login failed.");
     } finally {
       setLoading(false);
@@ -127,7 +136,7 @@ const Login = () => {
 
   const handleGuestLogin = () => navigate("/");
   const handleAdminLogin = () => navigate("/admin/dashboard");
-  const handleStaffLogin = () => navigate("/staff/order-list");
+  const handleStaffLogin = () => navigate("/staff/dashboard");
 
   return (
     <div className="container main_container">
@@ -136,9 +145,7 @@ const Login = () => {
           <form className="sign_in_form" onSubmit={handleLogin}>
             <h3 className="sign_in_title">Sign in</h3>
             <div className="email_section">
-              <label className="email_label" htmlFor="email">
-                Email
-              </label>
+              <label className="email_label" htmlFor="email">Email</label>
               <input
                 type="email"
                 className="form-control"
@@ -151,9 +158,7 @@ const Login = () => {
             </div>
 
             <div className="password_section mb-3 position-relative">
-              <label className="password_label" htmlFor="password">
-                Password
-              </label>
+              <label className="password_label" htmlFor="password">Password</label>
               <input
                 type="password"
                 className="form-control"
@@ -164,10 +169,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <span className="password_eye">
-                <i
-                  className="far fa-eye"
-                  id="togglePassword"
-                  style={{ cursor: "pointer" }}></i>
+                <i className="far fa-eye" id="togglePassword" style={{ cursor: "pointer" }}></i>
               </span>
             </div>
 
@@ -178,9 +180,7 @@ const Login = () => {
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label className="remember_me">Remember me</label>
-              <Link className="forgot_password_link" to="/forgot-password">
-                Forgot password?
-              </Link>
+              <Link className="forgot_password_link" to="/forgot-password">Forgot password?</Link>
             </div>
 
             <div className="submit_section">
@@ -188,11 +188,7 @@ const Login = () => {
                 type="submit"
                 className="sign_in_button btn btn-block"
                 disabled={loading}>
-                {loading && (
-                  <i
-                    className="fas fa-spinner fa-spin"
-                    style={{ marginRight: "5px" }}></i>
-                )}
+                {loading && <i className="fas fa-spinner fa-spin" style={{ marginRight: "5px" }}></i>}
                 Sign in
               </button>
             </div>
@@ -200,9 +196,7 @@ const Login = () => {
             <div className="sign_up_section">
               <span>
                 Don't have an account?{" "}
-                <Link className="sign_up_link" to="/sign-up">
-                  Sign up
-                </Link>
+                <Link className="sign_up_link" to="/sign-up">Sign up</Link>
               </span>
             </div>
 
@@ -211,26 +205,11 @@ const Login = () => {
                 <hr className="line" />
                 <span className="or_text">OR</span>
                 <hr className="line" />
-              </div>{" "}
+              </div>
               <div className="google_guest_section">
-                <div
-                  className="guest_login_section"
-                  onClick={handleGuestLogin}
-                  style={{ cursor: "pointer" }}>
-                  Navigate to home
-                </div>
-                <div
-                  className="guest_login_section"
-                  onClick={handleAdminLogin}
-                  style={{ cursor: "pointer" }}>
-                  Navigate to admin
-                </div>
-                <div
-                  className="guest_login_section"
-                  onClick={handleStaffLogin}
-                  style={{ cursor: "pointer" }}>
-                  Navigate to staff
-                </div>
+                <div className="guest_login_section" onClick={handleGuestLogin} style={{ cursor: "pointer" }}>Navigate to home</div>
+                <div className="guest_login_section" onClick={handleAdminLogin} style={{ cursor: "pointer" }}>Navigate to admin</div>
+                <div className="guest_login_section" onClick={handleStaffLogin} style={{ cursor: "pointer" }}>Navigate to staff</div>
               </div>
             </div>
           </form>
