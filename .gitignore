@@ -102,3 +102,4 @@ test-results/
 # Local dev SSL keys
 *.pem
 *.key
+.vercel
