@@ -250,6 +250,7 @@
   margin: 0px 10% 5% 50px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   max-width: 87%;
+  height: 100%;
 }
 
 .checkout_form {

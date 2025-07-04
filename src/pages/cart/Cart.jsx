@@ -160,6 +160,7 @@ function Cart() {
                   const product = item.productId;
                   const quantity = item.quantity;
                   const price = item.unitPrice;
+                  const type = item.type;
                   return (
                     <div className="cart_item" key={item._id}>
                       <Image
@@ -189,6 +190,9 @@ function Cart() {
                             </a>
                           </div>
                         </div>
+                        <p className="cart_item_description">
+                          Type: {type}
+                        </p>
 
                         <p className="cart_item_description">
                           Price: {price.toLocaleString()} VND

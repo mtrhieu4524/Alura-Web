@@ -461,7 +461,7 @@ const Home = () => {
                     className="product_image"
                   />
                   <p className="trending_product_name">{product.name}</p>
-                  <p className="trending_product_price">{product.price} VND</p>
+                  <p className="trending_product_price">{product.price.toLocaleString() || "100,000"} VND</p>
                 </div>
               ))}
             </div>

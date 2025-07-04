@@ -77,15 +77,15 @@ function CosmeticListPage() {
                 const data = await response.json();
 
                 if (data.success && data.products) {
-                    // let filtered = [...data.products];
+                    let filtered = [...data.products];
 
                     //
-                    let original = [...data.products];
-                    let filtered = [];
-                    while (filtered.length < 15) {
-                        filtered = [...filtered, ...original];
-                    }
-                    filtered = filtered.slice(0, 15);
+                    // let original = [...data.products];
+                    // let filtered = [];
+                    // while (filtered.length < 15) {
+                    //     filtered = [...filtered, ...original];
+                    // }
+                    // filtered = filtered.slice(0, 15);
                     //
 
                     if (sex.length) {

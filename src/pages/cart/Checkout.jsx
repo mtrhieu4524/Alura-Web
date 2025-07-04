@@ -484,10 +484,8 @@ function Checkout() {
                         </div>
                         <div className="checkout_item_row">
                           <p>
-                            <strong>Skin type: </strong>
-                            {Array.isArray(product.skinType)
-                              ? product.skinType.join(", ")
-                              : product.skinType || ""}
+                            <strong>Type: </strong>
+                            {product.type}
                           </p>
                           <p>
                             <strong>Volume:</strong> {product.volume}

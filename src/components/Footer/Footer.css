@@ -123,17 +123,21 @@ body.modal-open {
     overflow-y: auto;
 }
 
-.modal-content {
+.modal-content-footer {
     border-radius: 0 !important;
     background-color: #fefefe;
     margin: 50px auto;
-    padding: 20px 30px 70px 30px;
+    padding: 50px 50px 70px 50px;
     border: 1px solid #888;
     width: 80%;
     max-width: 900px;
     max-height: 80%;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.footer_close {
+    margin-top: -30px !important;
 }
 
 .close {
