@@ -129,7 +129,7 @@ const FooterComponent = () => {
                             <h6 className='footer_last_column_title_2'>Secure payment</h6>
                             <ul className="footer_content">
                                 <img className='footer_vnpay' src={vnpay} alt="VNPAY Logo" />
-                                <img className='footer_bank' src={bank} alt="Bank Logo" />
+                                {/* <img className='footer_bank' src={bank} alt="Bank Logo" /> */}
                                 <img className='footer_cash' src={cash} alt="Cash Logo" />
                             </ul>
                         </div>

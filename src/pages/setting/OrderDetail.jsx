@@ -153,7 +153,7 @@ function OrderDetail() {
 
                 <div className="order_detail_wrapper">
                     <div className="user_back_order_list" onClick={() => navigate("/order-history")}>
-                        &lt; Back
+                        &lt; Back To Order History
                     </div>
                     <div className="order_detail_border">
                         {loading ? (
@@ -189,7 +189,7 @@ function OrderDetail() {
                                             <p className="order_detail_product_size">Type: {product.type}</p>
                                             <p className="order_detail_product_size">Skin Type: {product.skinType}</p>
                                             <p className="order_detail_product_size">Volume: {product.volume}</p>
-                                            <p className="order_detail_product_price">{product.lineTotal} VND</p>
+                                            <p className="order_detail_product_price">{product.lineTotal.toLocaleString()} VND</p>
                                         </div>
                                     </div>
                                 ))}
@@ -212,7 +212,7 @@ function OrderDetail() {
                                         </div>
                                         <div className="order_detail_customer_item">
                                             <i className="fas fa-shipping-fast"></i>
-                                            <span><strong>Shipping ({orderDetails?.shippingMethod}): </strong>{orderDetails?.shippingFee} VND</span>
+                                            <span><strong>Shipping ({orderDetails?.shippingMethod}): </strong>{orderDetails?.shippingFee.toLocaleString()} VND</span>
                                         </div>
                                     </div>
                                     <div className="order_detail_customer_row">
@@ -230,7 +230,7 @@ function OrderDetail() {
                                 <div className="order_detail_footer">
                                     <p className="order_detail_date">Order date: {formatDate(orderDetails?.date)}</p>
                                     <p className="order_detail_total_price">
-                                        Total price: {orderDetails?.totalPrice} VND
+                                        Total price: {orderDetails?.totalPrice.toLocaleString()} VND
                                     </p>
                                 </div>
                                 <div className="order_detail_actions">

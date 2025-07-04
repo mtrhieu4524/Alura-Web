@@ -47,7 +47,7 @@ const ProductCard = ({
         {type} | {shade} | {volume} | {sex}
       </p>
       <h6 className="product_card_name">{name}</h6>
-      <p className="product_card_price">{price} VND</p>
+      <p className="product_card_price">{price.toLocaleString()} VND</p>
     </div>
   );
 };

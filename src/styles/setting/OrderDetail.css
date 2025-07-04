@@ -218,7 +218,8 @@ body {
         align-items: center;
         font-size: 15px;
         margin-bottom: 5px;
-        width: 50%;
+        margin-right: 5%;
+        width: 45%;
         box-sizing: border-box;
     }
 

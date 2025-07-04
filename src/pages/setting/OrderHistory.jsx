@@ -148,9 +148,8 @@ function OrderHistory() {
             {menuItems.map((item) => (
               <div
                 key={item.path}
-                className={`order_history_setting_menu_item ${
-                  item.path === "/order-history" ? "order-history-item" : ""
-                }`}
+                className={`order_history_setting_menu_item ${item.path === "/order-history" ? "order-history-item" : ""
+                  }`}
                 onClick={() => navigate(item.path)}>
                 <i
                   className={`${item.icon} order_history_setting_menu_icon ${item.iconClass}`}></i>
@@ -223,7 +222,7 @@ function OrderHistory() {
                     <tr key={order.orderId}>
                       <td>{formatDate(order.date)}</td>
                       <td>{order.orderId}</td>
-                      <td>{order.totalPrice} VND</td>
+                      <td>{order.totalPrice.toLocaleString()} VND</td>
                       <td>{order.orderStatus}</td>
                       <td>
                         <i

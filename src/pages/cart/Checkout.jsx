@@ -84,7 +84,6 @@ function Checkout() {
     return params.toString();
   };
 
-  // Handle VNPAY return
   const handleVNPayReturn = async (vnpayData) => {
     const {
       vnpResponseCode,
@@ -95,15 +94,12 @@ function Checkout() {
     } = vnpayData;
 
     try {
-      // Create query string from current search params
       const queryString = createQueryString(searchParams);
 
-      const api = `${
-        import.meta.env.VITE_API_URL
-      }/payment/vnpay/return?${queryString}`;
+      const api = `${import.meta.env.VITE_API_URL
+        }/payment/vnpay/return?${queryString}`;
       console.log("API URL:", api);
 
-      // Call backend API to verify payment
       const response = await fetch(api, {
         method: "GET",
         headers: {
@@ -118,11 +114,9 @@ function Checkout() {
 
       const result = await response.json();
 
-      // Check if payment was successful
       if (vnpResponseCode === "00" && vnpTransactionStatus === "00") {
         toast.success("Payment successful!");
 
-        // Navigate to success page
         navigate("/order-success", {
           state: {
             orderId: vnpTxnRef,
@@ -134,7 +128,6 @@ function Checkout() {
           },
         });
       } else {
-        // Handle payment failure
         let errorMessage = "Payment failed!";
 
         switch (vnpResponseCode) {
@@ -184,7 +177,6 @@ function Checkout() {
 
     document.title = "Alurà - Checkout";
 
-    // Check for VNPAY return parameters
     const vnpResponseCode = searchParams.get("vnp_ResponseCode");
     const vnpTransactionStatus = searchParams.get("vnp_TransactionStatus");
     const vnpOrderInfo = searchParams.get("vnp_OrderInfo");
@@ -248,7 +240,6 @@ function Checkout() {
 
   const handleShippingMethodChange = (newShippingMethod) => {
     setShippingMethod(newShippingMethod);
-    // This will trigger the useEffect above to fetch new preview data
   };
 
   const handleBackToCart = () => {
@@ -261,13 +252,11 @@ function Checkout() {
       return;
     }
 
-    // Validate payment method selection
     if (!paymentMethod) {
       toast.error("Please select a payment method.");
       return;
     }
 
-    // Validate shipping method selection
     if (!shippingMethod) {
       toast.error("Please select a shipping method.");
       return;
@@ -286,9 +275,7 @@ function Checkout() {
     setLoading(true);
 
     try {
-      // Step 1: Prepare order for VNPay (if payment method is VNPAY)
       if (paymentMethod === "VNPAY") {
-        // First, prepare the order for VNPay payment
         const prepareOrderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -318,11 +305,10 @@ function Checkout() {
 
         const prepareResult = await prepareResponse.json();
 
-        // Step 2: Create VNPay payment URL
         const createPaymentData = {
           orderId: prepareResult.orderId,
           amount: prepareResult.amount,
-          bankCode: prepareResult.bankCode, // You can make this dynamic if needed
+          bankCode: prepareResult.bankCode,
         };
 
         const paymentResponse = await fetch(
@@ -346,14 +332,12 @@ function Checkout() {
 
         toast.success("Order prepared successfully! Redirecting to VNPay...");
 
-        // Redirect to VNPay payment page
         if (paymentResult.paymentUrl) {
           window.location.href = paymentResult.paymentUrl;
         } else {
           throw new Error("Payment URL not received");
         }
       } else {
-        // Handle COD payment (original logic)
         const orderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -500,7 +484,7 @@ function Checkout() {
                         </div>
                         <div className="checkout_item_row">
                           <p>
-                            <strong>Type: </strong>
+                            <strong>Skin type: </strong>
                             {Array.isArray(product.skinType)
                               ? product.skinType.join(", ")
                               : product.skinType || ""}
@@ -525,7 +509,7 @@ function Checkout() {
           </h5>
           <div className="payment_methods">
             <div
-              className="payment_method"
+              className="shipping_method"
               onClick={() => setPaymentMethod("VNPAY")}>
               <input
                 type="radio"
@@ -535,25 +519,25 @@ function Checkout() {
                 checked={paymentMethod === "VNPAY"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <div className="payment_vnpay_wrapper">
-                <p className="payment_label" htmlFor="vnpay">
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="vnpay">
                   VNPAY
-                </p>
+                </label>
+                <p className="shipping_description">(Transfer before receiving)</p>
                 <img
                   src={vnpay}
                   style={{
                     width: "30px",
-                    marginTop: "-34px",
-                    marginBottom: "10px",
-                    marginLeft: "-17px",
+                    marginTop: "-43px",
+                    marginBottom: "23px",
+                    marginLeft: "55px",
                   }}
                   alt="VNPAY"
                 />
               </div>
             </div>
-            {/* payment COD */}
             <div
-              className="payment_method"
+              className="shipping_method"
               onClick={() => setPaymentMethod("COD")}>
               <input
                 type="radio"
@@ -563,17 +547,18 @@ function Checkout() {
                 checked={paymentMethod === "COD"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <div className="payment_vnpay_wrapper">
-                <p className="payment_label" htmlFor="cod">
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="cod">
                   COD
-                </p>
+                </label>
+                <p className="shipping_description">(Transfer after receiving)</p>
                 <img
                   src={cash}
                   style={{
                     width: "30px",
-                    marginTop: "-34px",
-                    marginBottom: "10px",
-                    marginLeft: "-17px",
+                    marginTop: "-40px",
+                    marginBottom: "20px",
+                    marginLeft: "55px",
                   }}
                   alt="COD"
                 />

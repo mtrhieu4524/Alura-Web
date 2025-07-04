@@ -220,7 +220,7 @@ function Cart() {
                                 onClick={() =>
                                   handleQuantityChange(item._id, quantity + 1)
                                 }
-                                disabled={quantity >= product.stock} // Assuming max quantity is 99
+                                disabled={quantity >= product.stock}
                               >
                                 +
                               </button>
