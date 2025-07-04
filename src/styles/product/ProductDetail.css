@@ -680,3 +680,14 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.user_back_order_list {
+  font-size: 15px;
+  padding-top: 2px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.user_back_order_list:hover {
+  color: #797979;
+}

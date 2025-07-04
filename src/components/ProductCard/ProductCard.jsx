@@ -33,9 +33,8 @@ const ProductCard = ({
         <img src={image} alt={name} />
         {stockLabel && (
           <span
-            className={`stock_status ${
-              stock === 0 ? "sold_out" : "low_stock"
-            }`}>
+            className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"
+              }`}>
             {stockLabel}
           </span>
         )}
@@ -48,7 +47,7 @@ const ProductCard = ({
         {type} | {shade} | {volume} | {sex}
       </p>
       <h6 className="product_card_name">{name}</h6>
-      <p className="product_card_price">{price.toLocaleString()} VND</p>
+      <p className="product_card_price">{price} VND</p>
     </div>
   );
 };

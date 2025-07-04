@@ -90,7 +90,7 @@ body {
 
 .order_detail_wrapper {
     width: calc(100% - 253px);
-    padding: 80px 13% 80px 13%;
+    padding: 80px 13% 120px 13%;
 
     .order_detail_line1 {
         margin: 0 0 30px 0;
@@ -208,39 +208,35 @@ body {
         gap: 10px;
     }
 
+    .order_detail_customer_row {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
     .order_detail_customer_item {
         display: flex;
         align-items: center;
         font-size: 15px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        width: 50%;
+        box-sizing: border-box;
     }
 
-    .order_detail_customer_item .fa-user {
-        margin-right: 18px;
-        font-size: 16px;
+    .order_detail_customer_item i {
+        margin-right: 10px;
     }
 
-    .order_detail_customer_item .fa-phone {
-        margin-right: 17px;
-        font-size: 16px;
+    .order_detail_customer_item .fa-credit-card,
+    .order_detail_customer_item .fa-shipping-fast {
+        margin-right: 10px;
     }
 
+    .order_detail_customer_item .fa-user,
+    .order_detail_customer_item .fa-phone,
+    .order_detail_customer_item .fa-sticky-note,
     .order_detail_customer_item .fa-map-marker-alt {
-        margin-right: 20px;
-        font-size: 17px;
+        margin-right: 14px;
     }
-
-    .order_detail_customer_item .fa-credit-card {
-        margin-right: 15px;
-        font-size: 16px;
-    }
-
-    .order_detail_customer_item .fa-sticky-note {
-        margin-right: 18px;
-        font-size: 17px;
-    }
-
 
 
     .order_detail_footer {

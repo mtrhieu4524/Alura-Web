@@ -2,15 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/setting/OrderHistory.css';
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
-// import { getAllOrders } from '../../services/TrackingOrderService';
-// import { getUserInfo } from '../../services/UserService';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { CircularProgress } from '@mui/material';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function OrderHistory() {
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [points, setPoints] = useState(0);
     const [orders, setOrders] = useState([]);
     const [filteredOrders, setFilteredOrders] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -18,84 +17,62 @@ function OrderHistory() {
     const [sortOrder, setSortOrder] = useState('Newest');
     const [loading, setLoading] = useState(true);
     const ordersPerPage = 6;
+    const { user } = useSelector((state) => state.auth);
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
-        // Comment out real API calls
-        // const storedEmail = localStorage.getItem('email');
-        // const customerId = localStorage.getItem('customerId');
+        const fetchOrders = async () => {
+            try {
+                if (!user || !token) {
+                    console.error("User or token not found in Redux store");
+                    return;
+                }
 
-        // if (storedEmail) {
-        //     getUserInfo(storedEmail).then(response => {
-        //         const userData = response.data;
-        //         setFirstName(userData.firstName);
-        //         setLastName(userData.lastName);
-        //         setPoints(userData.points);
-        //     }).catch(error => {
-        //         console.error('Error fetching user data:', error);
-        //     });
-        // }
 
-        // if (customerId) {
-        //     getAllOrders(customerId).then(data => {
-        //         setOrders(data);
-        //         setFilteredOrders(data);
-        //         setLoading(false);
-        //     }).catch(error => {
-        //         console.error('Error fetching orders:', error);
-        //         setLoading(false);
-        //     });
-        // }
+                const res = await fetch(`${API_URL}/order/by-user/${user}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-        // Hardcoded sample data
-        const mockOrders = [
-            {
-                orderId: "A1001",
-                date: "2024-11-10",
-                totalPrice: 59.99,
-                orderStatus: "Paid"
-            },
-            {
-                orderId: "A1002",
-                date: "2024-11-12",
-                totalPrice: 25.00,
-                orderStatus: "Preparing"
-            },
-            {
-                orderId: "A1003",
-                date: "2024-11-15",
-                totalPrice: 89.50,
-                orderStatus: "Delivering"
-            },
-            {
-                orderId: "A1004",
-                date: "2024-11-20",
-                totalPrice: 12.75,
-                orderStatus: "Unpaid"
-            },
-            {
-                orderId: "A1005",
-                date: "2024-11-25",
-                totalPrice: 102.00,
-                orderStatus: "Completed"
-            },
-            {
-                orderId: "A1006",
-                date: "2024-11-28",
-                totalPrice: 44.30,
-                orderStatus: "Cancelled"
-            },
-            {
-                orderId: "A1007",
-                date: "2024-12-01",
-                totalPrice: 150.99,
-                orderStatus: "Paid"
+                const contentType = res.headers.get("content-type");
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${text}`);
+                }
+
+                if (!contentType || !contentType.includes("application/json")) {
+                    const raw = await res.text();
+                    throw new Error(`Expected JSON but received: ${raw}`);
+                }
+
+                const data = await res.json();
+
+                if (!Array.isArray(data)) {
+                    console.error("Unexpected response:", data);
+                    return;
+                }
+
+                const formattedOrders = data.map(order => ({
+                    orderId: order._id,
+                    date: order.orderDate,
+                    totalPrice: order.totalAmount,
+                    orderStatus: order.paymentStatus || order.orderStatus || 'Unknown'
+                }));
+
+                setOrders(formattedOrders);
+                setFilteredOrders(formattedOrders);
+            } catch (error) {
+                console.error("Failed to fetch orders:", error.message);
+            } finally {
+                setLoading(false);
             }
-        ];
+        };
 
-        setOrders(mockOrders);
-        setFilteredOrders(mockOrders);
-        setLoading(false);
-    }, []);
+        fetchOrders();
+    }, [token, user]);
+
+
 
     useEffect(() => {
         let filtered = [...orders];
@@ -150,15 +127,13 @@ function OrderHistory() {
         setSortOrder(event.target.value);
     };
 
-
     return (
         <div className="OrderHistory">
             <Breadcrumb items={navItems} />
 
             <div className="order_history_container">
                 <div className="order_history_setting_menu">
-                    <div className="order_history_setting_menu_section">
-                    </div>
+                    <div className="order_history_setting_menu_section"></div>
                     <div className="order_history_setting_menu_items">
                         {menuItems.map(item => (
                             <div
@@ -204,54 +179,66 @@ function OrderHistory() {
                                 <MenuItem value="Delivering">Delivering</MenuItem>
                                 <MenuItem value="Completed">Completed</MenuItem>
                                 <MenuItem value="Cancelled">Cancelled</MenuItem>
+                                <MenuItem value="Pending">Pending</MenuItem>
                             </Select>
                         </FormControl>
                     </div>
 
-                    <table className="order_history_table table">
-                        <thead>
-                            <tr>
-                                <th>Order Date</th>
-                                <th>Order ID</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentOrders.map((order) => (
-                                <tr key={order.orderId}>
-                                    <td>{formatDate(order.date)}</td>
-                                    <td>{order.orderId}</td>
-                                    <td>${order.totalPrice}</td>
-                                    <td>{order.orderStatus}</td>
-                                    <td>
-                                        <i className="order_history_detail_icon fas fa-external-link-alt" onClick={() => handleDetailClick(order.orderId)} style={{ cursor: 'pointer' }}></i>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="order_history_pagination">
-                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                            &lt;
-                        </button>
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => handlePageChange(index + 1)}
-                                className={index + 1 === currentPage ? 'order_active' : ''}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                            &gt;
-                        </button>
-                    </div>
+                    {loading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}>
+                            <CircularProgress style={{ color: '#1c1c1c' }} />
+                        </div>
+                    ) : (
+                        <>
+                            <table className="order_history_table table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Date</th>
+                                        <th>Order ID</th>
+                                        <th>Total Price</th>
+                                        <th>Status</th>
+                                        <th>Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentOrders.map((order) => (
+                                        <tr key={order.orderId}>
+                                            <td>{formatDate(order.date)}</td>
+                                            <td>{order.orderId}</td>
+                                            <td>{order.totalPrice} VND</td>
+                                            <td>{order.orderStatus}</td>
+                                            <td>
+                                                <i
+                                                    className="order_history_detail_icon fas fa-external-link-alt"
+                                                    onClick={() => handleDetailClick(order.orderId)}
+                                                    style={{ cursor: 'pointer' }}
+                                                ></i>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <div className="order_history_pagination">
+                                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                                    &lt;
+                                </button>
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        onClick={() => handlePageChange(index + 1)}
+                                        className={index + 1 === currentPage ? 'order_active' : ''}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+                                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                                    &gt;
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
-
         </div>
     );
 }

@@ -26,8 +26,6 @@ const HeaderComponent = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      console.log("token:", token);
-
       if (token) {
         setIsLoggedIn(true);
         try {
@@ -143,7 +141,7 @@ const HeaderComponent = () => {
   return (
     <header className="header">
       <div className="top_announcement">
-        Free shipping nationwide in Vietnam for all orders. Order today for best
+        Standard shipping nationwide in Vietnam for all orders. Order today for best
         service.
       </div>
       <div className="top_header container-fluid">
@@ -239,15 +237,13 @@ const HeaderComponent = () => {
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${
-                      isDropdownOpen ? "rotate" : ""
-                    }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
+                      }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${
-                    isDropdownOpen ? "open" : ""
-                  }`}>
+                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
+                    }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">

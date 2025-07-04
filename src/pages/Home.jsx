@@ -228,7 +228,7 @@ const Home = () => {
         <div className="under_slider_column">
           <i className="fas fa-shipping-fast under_slider_icon"></i>
           <div className="under_slider_text_container">
-            <h4 className="under_slider_title">Free shipping</h4>
+            <h4 className="under_slider_title">Fast shipping</h4>
             <p className="under_slider_text">For all orders</p>
           </div>
         </div>
