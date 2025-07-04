@@ -247,6 +247,7 @@ body.modal-open {
 .footer_last_column .footer_cash {
     width: 40px;
     margin-top: -11px;
+    margin-left: 10px;
 }
 
 .end_footer {
