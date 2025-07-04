@@ -6,10 +6,12 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Insta from "../../components/Insta/Instagram";
 import { useCart } from "../../context/CartContext";
 import "../../styles/cart/Cart.css";
+import { useSelector } from "react-redux";
 
 function Cart() {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
+  const { token } = useSelector((state) => state.auth);
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -23,15 +25,15 @@ function Cart() {
 
   useEffect(() => {
     document.title = "Alurà - Cart";
-    const token = localStorage.getItem("token");
     if (!token) {
       toast.error("You must be logged in to view your cart.");
       navigate("/sign-in", {
         replace: true,
         state: { from: "/" },
       });
-      return; 
+      return;
     }
+    setAuthChecked(true);
     fetchCartItems();
   }, [authChecked]);
 
@@ -92,6 +94,10 @@ function Cart() {
   };
 
   const handleCheckoutPage = () => {
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty. Please add items before checking out.");
+      return;
+    }
     navigate("/checkout", { state: { cartItems, totalAmount } });
   };
 
