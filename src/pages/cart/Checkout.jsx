@@ -1,18 +1,19 @@
 import { Image } from "antd";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import vnpay from "../../assets/vnpay.webp";
 import cash from "../../assets/cashLogo.png";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Insta from "../../components/Insta/Instagram";
 import "../../styles/cart/Checkout.css";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 function Checkout() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const cartItems = state?.cartItems || [];
-  const totalAmount = state?.totalAmount || 0;
+  const [searchParams] = useSearchParams();
   const userId = localStorage.getItem("user");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -21,6 +22,13 @@ function Checkout() {
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [shippingMethod, setShippingMethod] = useState("STANDARD");
+  const [previewDetails, setPreviewDetails] = useState({
+    subTotal: 0,
+    shippingFee: 0,
+    total: 0,
+    items: [],
+  });
+  const { token } = useSelector((state) => state.auth);
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -28,13 +36,174 @@ function Checkout() {
     { name: "Checkout", link: "" },
   ];
 
+  const fetchCartPreview = async (selectedShippingMethod) => {
+    if (!token || cartItems.length === 0) return;
+
+    try {
+      const selectedCartItemIds = cartItems.map((item) => item._id || item.id);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/cart/preview`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            selectedCartItemIds,
+            promotionId: null,
+            shippingMethod: selectedShippingMethod,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        console.error("Failed to fetch cart preview:", errData?.message);
+        return;
+      }
+
+      const data = await response.json();
+      setPreviewDetails({
+        subTotal: data.subTotal || 0,
+        shippingFee: data.shippingFee || 0,
+        total: data.total || 0,
+        items: data.items || [],
+      });
+    } catch (error) {
+      console.error("Error fetching cart preview:", error);
+    }
+  };
+
+  const createQueryString = (searchParams) => {
+    const params = new URLSearchParams();
+    for (let [key, value] of searchParams) {
+      params.append(key, value);
+    }
+    return params.toString();
+  };
+
+  // Handle VNPAY return
+  const handleVNPayReturn = async (vnpayData) => {
+    const {
+      vnpResponseCode,
+      vnpTransactionStatus,
+      vnpOrderInfo,
+      vnpAmount,
+      vnpTxnRef,
+    } = vnpayData;
+
+    try {
+      // Create query string from current search params
+      const queryString = createQueryString(searchParams);
+
+      const api = `${
+        import.meta.env.VITE_API_URL
+      }/payment/vnpay/return?${queryString}`;
+      console.log("API URL:", api);
+
+      // Call backend API to verify payment
+      const response = await fetch(api, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to verify payment");
+      }
+
+      const result = await response.json();
+
+      // Check if payment was successful
+      if (vnpResponseCode === "00" && vnpTransactionStatus === "00") {
+        toast.success("Payment successful!");
+
+        // Navigate to success page
+        navigate("/order-success", {
+          state: {
+            orderId: vnpTxnRef,
+            amount: vnpAmount,
+            orderInfo: vnpOrderInfo,
+            paymentMethod: "VNPAY",
+            paymentStatus: "Success",
+            result: result,
+          },
+        });
+      } else {
+        // Handle payment failure
+        let errorMessage = "Payment failed!";
+
+        switch (vnpResponseCode) {
+          case "24":
+            errorMessage = "Transaction was cancelled by user";
+            break;
+          case "09":
+            errorMessage =
+              "Card/Account is not registered for InternetBanking service";
+            break;
+          case "10":
+            errorMessage =
+              "Card/Account authentication failed more than 3 times";
+            break;
+          case "11":
+            errorMessage = "Payment timeout. Please try again";
+            break;
+          case "12":
+            errorMessage = "Card/Account is locked";
+            break;
+          case "13":
+            errorMessage = "Invalid OTP";
+            break;
+          case "51":
+            errorMessage = "Account balance is not enough";
+            break;
+          case "65":
+            errorMessage = "Account has exceeded daily transaction limit";
+            break;
+          default:
+            errorMessage = `Payment failed with code: ${vnpResponseCode}`;
+        }
+
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error handling VNPAY return:", error);
+      toast.error("An error occurred while processing payment kakak");
+    }
+  };
+
   useEffect(() => {
+    if (cartItems.length === 0 || !cartItems) {
+      navigate("/cart");
+      return;
+    }
+
     document.title = "Alurà - Checkout";
-  }, []);
+
+    // Check for VNPAY return parameters
+    const vnpResponseCode = searchParams.get("vnp_ResponseCode");
+    const vnpTransactionStatus = searchParams.get("vnp_TransactionStatus");
+    const vnpOrderInfo = searchParams.get("vnp_OrderInfo");
+    const vnpAmount = searchParams.get("vnp_Amount");
+    const vnpTxnRef = searchParams.get("vnp_TxnRef");
+
+    if (vnpResponseCode && vnpTransactionStatus) {
+      handleVNPayReturn({
+        vnpResponseCode,
+        vnpTransactionStatus,
+        vnpOrderInfo,
+        vnpAmount,
+        vnpTxnRef,
+      });
+    }
+  }, [searchParams, token]);
 
   useEffect(() => {
     const fetchUserInformation = async () => {
-      const token = localStorage.getItem("token");
       if (!token || !userId) {
         toast.error("You must be logged in to checkout.");
         return;
@@ -69,7 +238,18 @@ function Checkout() {
     };
 
     fetchUserInformation();
-  }, [userId]);
+  }, [userId, token, cartItems]);
+
+  useEffect(() => {
+    if (token) {
+      fetchCartPreview(shippingMethod);
+    }
+  }, [shippingMethod, token, cartItems]);
+
+  const handleShippingMethodChange = (newShippingMethod) => {
+    setShippingMethod(newShippingMethod);
+    // This will trigger the useEffect above to fetch new preview data
+  };
 
   const handleBackToCart = () => {
     navigate("/cart");
@@ -98,7 +278,6 @@ function Checkout() {
       return;
     }
 
-    const token = localStorage.getItem("token");
     if (!token) {
       toast.error("You must be logged in to place an order.");
       return;
@@ -107,50 +286,116 @@ function Checkout() {
     setLoading(true);
 
     try {
-      const orderData = {
-        shippingAddress: address,
-        shippingMethod: shippingMethod,
-        productId: userId,
-        note: note || "after 5 PM",
-        paymentMethod: paymentMethod,
-        selectedCartItemIds: cartItems.map((item) => item._id || item.id),
-      };
+      // Step 1: Prepare order for VNPay (if payment method is VNPAY)
+      if (paymentMethod === "VNPAY") {
+        // First, prepare the order for VNPay payment
+        const prepareOrderData = {
+          shippingAddress: address,
+          shippingMethod: shippingMethod,
+          promotionId: null,
+          note: note || "after 5 PM",
+          selectedCartItemIds: cartItems.map((item) => item._id || item.id),
+        };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/order/place`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(orderData),
+        const prepareResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/order/prepare-vnpay`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(prepareOrderData),
+          }
+        );
+
+        if (!prepareResponse.ok) {
+          const errorData = await prepareResponse.json();
+          throw new Error(
+            errorData.message || "Failed to prepare order for VNPay"
+          );
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to place order");
-      }
+        const prepareResult = await prepareResponse.json();
 
-      const result = await response.json();
+        // Step 2: Create VNPay payment URL
+        const createPaymentData = {
+          orderId: prepareResult.orderId,
+          amount: prepareResult.amount,
+          bankCode: prepareResult.bankCode, // You can make this dynamic if needed
+        };
 
-      toast.success("Order placed successfully!");
+        const paymentResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/payment/vnpay/createPaymentUrl`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(createPaymentData),
+          }
+        );
 
-      // Handle based on payment method
-      if (paymentMethod === "COD") {
+        if (!paymentResponse.ok) {
+          const errorData = await paymentResponse.json();
+          throw new Error(errorData.message || "Failed to create payment URL");
+        }
+
+        const paymentResult = await paymentResponse.json();
+
+        toast.success("Order prepared successfully! Redirecting to VNPay...");
+
+        // Redirect to VNPay payment page
+        if (paymentResult.paymentUrl) {
+          window.location.href = paymentResult.paymentUrl;
+        } else {
+          throw new Error("Payment URL not received");
+        }
+      } else {
+        // Handle COD payment (original logic)
+        const orderData = {
+          shippingAddress: address,
+          shippingMethod: shippingMethod,
+          productId: userId,
+          note: note || "after 5 PM",
+          paymentMethod: paymentMethod,
+          selectedCartItemIds: cartItems.map((item) => item._id || item.id),
+        };
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/order/place`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(orderData),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to place order");
+        }
+
+        const result = await response.json();
+
+        toast.success("Order placed successfully!");
+
         navigate("/", {
           state: {
             orderId: result.orderId,
             message: result.message,
           },
         });
-      } else if (paymentMethod === "VNPAY") {
-        toast.info("Redirecting to payment gateway...");
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      toast.error("An error occurred while placing your order.");
+      toast.error(
+        error.message || "An error occurred while placing your order."
+      );
     } finally {
       setLoading(false);
     }
@@ -342,14 +587,14 @@ function Checkout() {
           <div className="shipping_methods">
             <div
               className="shipping_method"
-              onClick={() => setShippingMethod("STANDARD")}>
+              onClick={() => handleShippingMethodChange("STANDARD")}>
               <input
                 type="radio"
                 id="standard"
                 name="shippingMethod"
                 value="STANDARD"
                 checked={shippingMethod === "STANDARD"}
-                onChange={(e) => setShippingMethod(e.target.value)}
+                onChange={(e) => handleShippingMethodChange(e.target.value)}
               />
               <div className="shipping_method_wrapper">
                 <label className="shipping_label" htmlFor="standard">
@@ -360,14 +605,14 @@ function Checkout() {
             </div>
             <div
               className="shipping_method"
-              onClick={() => setShippingMethod("EXPRESS")}>
+              onClick={() => handleShippingMethodChange("EXPRESS")}>
               <input
                 type="radio"
                 id="express"
                 name="shippingMethod"
                 value="EXPRESS"
                 checked={shippingMethod === "EXPRESS"}
-                onChange={(e) => setShippingMethod(e.target.value)}
+                onChange={(e) => handleShippingMethodChange(e.target.value)}
               />
               <div className="shipping_method_wrapper">
                 <label className="shipping_label" htmlFor="express">
@@ -382,13 +627,27 @@ function Checkout() {
             <i className="fas fa-receipt"></i>Total price
           </h5>
           <div className="checkout_summary_details">
+            <p className="checkout_summary_subtotal">
+              <span>Subtotal:</span>
+              <span>
+                <strong>{previewDetails.subTotal.toLocaleString()} VND</strong>
+              </span>
+            </p>
+            <p className="checkout_summary_subtotal">
+              <span>Shipping Fee:</span>
+              <span>
+                <strong>
+                  {previewDetails.shippingFee.toLocaleString()} VND
+                </strong>
+              </span>
+            </p>
             <hr />
             <p className="checkout_summary_total">
               <span>
                 <strong>Total:</strong>
               </span>
               <span>
-                <strong>{totalAmount.toLocaleString()} VND</strong>
+                <strong>{previewDetails.total.toLocaleString()} VND</strong>
               </span>
             </p>
           </div>
