@@ -6,10 +6,12 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Insta from "../../components/Insta/Instagram";
 import { useCart } from "../../context/CartContext";
 import "../../styles/cart/Cart.css";
+import { useSelector } from "react-redux";
 
 function Cart() {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
+  const { token } = useSelector((state) => state.auth);
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -23,7 +25,6 @@ function Cart() {
 
   useEffect(() => {
     document.title = "Alurà - Cart";
-    const token = localStorage.getItem("token");
     if (!token) {
       toast.error("You must be logged in to view your cart.");
       navigate("/sign-in", {
@@ -32,6 +33,7 @@ function Cart() {
       });
       return;
     }
+    setAuthChecked(true);
     fetchCartItems();
   }, [authChecked]);
 
@@ -92,6 +94,10 @@ function Cart() {
   };
 
   const handleCheckoutPage = () => {
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty. Please add items before checking out.");
+      return;
+    }
     navigate("/checkout", { state: { cartItems, totalAmount } });
   };
 
@@ -154,6 +160,7 @@ function Cart() {
                   const product = item.productId;
                   const quantity = item.quantity;
                   const price = item.unitPrice;
+                  const type = item.type;
                   return (
                     <div className="cart_item" key={item._id}>
                       <Image
@@ -183,6 +190,9 @@ function Cart() {
                             </a>
                           </div>
                         </div>
+                        <p className="cart_item_description">
+                          Type: {type}
+                        </p>
 
                         <p className="cart_item_description">
                           Price: {price.toLocaleString()} VND
@@ -214,7 +224,7 @@ function Cart() {
                                 onClick={() =>
                                   handleQuantityChange(item._id, quantity + 1)
                                 }
-                                disabled={quantity >= product.stock} // Assuming max quantity is 99
+                                disabled={quantity >= product.stock}
                               >
                                 +
                               </button>

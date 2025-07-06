@@ -28,7 +28,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  // const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -86,7 +85,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // setError("");
     setLoading(true);
     try {
       const resp = await fetch(`${VITE_API_URL}/auth/login`, {
@@ -98,7 +96,7 @@ const Login = () => {
       });
 
       if (!resp.ok) {
-        throw new Error(`Wrong email or password.`);
+        throw new Error("Wrong email or password.");
       }
 
       const data = await resp.json();
@@ -116,9 +114,20 @@ const Login = () => {
       }
 
       toast.success("Login successful.");
-      navigate("/");
+
+      const role = data.role?.toUpperCase();
+      switch (role) {
+        case "ADMIN":
+          navigate("/admin/dashboard");
+          break;
+        case "STAFF":
+          navigate("/staff/dashboard");
+          break;
+        default:
+          navigate("/");
+          break;
+      }
     } catch (err) {
-      // setError(err.message || "Something went wrong.");
       toast.error(err.message || "Login failed.");
     } finally {
       setLoading(false);
@@ -127,7 +136,7 @@ const Login = () => {
 
   const handleGuestLogin = () => navigate("/");
   const handleAdminLogin = () => navigate("/admin/dashboard");
-  const handleStaffLogin = () => navigate("/staff/order-list");
+  const handleStaffLogin = () => navigate("/staff/dashboard");
 
   return (
     <div className="container main_container">
@@ -211,7 +220,7 @@ const Login = () => {
                 <hr className="line" />
                 <span className="or_text">OR</span>
                 <hr className="line" />
-              </div>{" "}
+              </div>
               <div className="google_guest_section">
                 <div
                   className="guest_login_section"
@@ -219,18 +228,8 @@ const Login = () => {
                   style={{ cursor: "pointer" }}>
                   Navigate to home
                 </div>
-                <div
-                  className="guest_login_section"
-                  onClick={handleAdminLogin}
-                  style={{ cursor: "pointer" }}>
-                  Navigate to admin
-                </div>
-                <div
-                  className="guest_login_section"
-                  onClick={handleStaffLogin}
-                  style={{ cursor: "pointer" }}>
-                  Navigate to staff
-                </div>
+                {/* <div className="guest_login_section" onClick={handleAdminLogin} style={{ cursor: "pointer" }}>Navigate to admin</div>
+                <div className="guest_login_section" onClick={handleStaffLogin} style={{ cursor: "pointer" }}>Navigate to staff</div> */}
               </div>
             </div>
           </form>

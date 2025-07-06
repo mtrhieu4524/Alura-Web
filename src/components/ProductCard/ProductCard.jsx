@@ -33,9 +33,8 @@ const ProductCard = ({
         <img src={image} alt={name} />
         {stockLabel && (
           <span
-            className={`stock_status ${
-              stock === 0 ? "sold_out" : "low_stock"
-            }`}>
+            className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"
+              }`}>
             {stockLabel}
           </span>
         )}

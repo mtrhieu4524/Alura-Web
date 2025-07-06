@@ -6,6 +6,7 @@ import Insta from "../../components/Insta/Instagram";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../styles/product/ProductDetail.css";
 import { useCart } from "../../context/CartContext";
+import { CircularProgress } from '@mui/material';
 
 function ProductDetail() {
   const location = useLocation();
@@ -88,7 +89,11 @@ function ProductDetail() {
 
   const toggleSpecifications = () => setShowSpecifications((prev) => !prev);
 
-  if (!product) return <div className="loading">Loading...</div>;
+  if (!product) return <div className="loading">
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}>
+      <CircularProgress style={{ color: '#1c1c1c' }} />
+    </div>
+  </div>;
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -212,7 +217,7 @@ function ProductDetail() {
               <a href="tel:0795795959">0795 795 959</a>
             </p>
             <p>
-              <i className="fas fa-shipping-fast"></i> Free nationwide shipping
+              <i className="fas fa-shipping-fast"></i> Nationwide shipping
             </p>
             <p>
               <i className="fas fa-calendar-alt"></i> Estimated delivery in 3–5
@@ -236,75 +241,84 @@ function ProductDetail() {
         {showSpecifications && (
           <div className="specifications_grid">
             <div className="specification_item">
-              <span className="specification_label">Type:</span>
+              <span className="specification_label">Name: </span>
+              <p className="specification_value">
+                {product.name || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Type: </span>
               <p className="specification_value">
                 {product.productTypeId?.name || "None"}
               </p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Brand:</span>
-              <p className="specification_value">
-                {product.brand?.brandName || "None"}
-              </p>
-            </div>
-
-            <div className="specification_item">
-              <span className="specification_label">Sex:</span>
-              <p className="specification_value">{product.sex || "None"}</p>
-            </div>
-
-            <div className="specification_item">
-              <span className="specification_label">Skin Type:</span>
+              <span className="specification_label">Skin Type: </span>
               <p className="specification_value">
                 {product.skinType || "None"}
               </p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Skin Color:</span>
+              <span className="specification_label">Skin Color: </span>
               <p className="specification_value">
                 {product.skinColor || "None"}
               </p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Volume:</span>
+              <span className="specification_label">Sex: </span>
+              <p className="specification_value">{product.sex || "None"}</p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Volume: </span>
               <p className="specification_value">{product.volume || "None"}</p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Purpose:</span>
+              <span className="specification_label">Brand: </span>
+              <p className="specification_value">
+                {product.brand?.brandName || "None"}
+              </p>
+            </div>
+
+
+            <div className="specification_item">
+              <span className="specification_label">Purpose: </span>
               <p className="specification_value">{product.purpose || "None"}</p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Preserve:</span>
+              <span className="specification_label">Instruction: </span>
+              <p className="specification_value">
+                {product.instructions || "None"}
+              </p>
+            </div>
+
+            <div className="specification_item">
+              <span className="specification_label">Preserve: </span>
               <p className="specification_value">
                 {product.preservation || "None"}
               </p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Key Ingredients:</span>
+              <span className="specification_label">Key Ingredients: </span>
               <p className="specification_value">
                 {product.keyIngredients || "None"}
               </p>
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Detail Ingredients:</span>
+              <span className="specification_label">Detail Ingredients: </span>
               <p className="specification_value">
                 {product.detailInfredients || "None"}
               </p>
             </div>
 
-            <div className="specification_item">
-              <span className="specification_label">Instruction:</span>
-              <p className="specification_value">
-                {product.instructions || "None"}
-              </p>
-            </div>
 
           </div>
         )}

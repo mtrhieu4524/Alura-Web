@@ -33,10 +33,11 @@ const AdminLayout = ({ children }) => {
 
     const placeholder = placeholderMap[location.pathname] || "Search...";
     const isProductPage = location.pathname === "/admin/product-list";
+    const isAccountPage = location.pathname === "/admin/account-list";
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
-            setSearchQuery(searchInput);
+            setSearchQuery(searchInput.trim());
         }
     };
 
@@ -46,7 +47,6 @@ const AdminLayout = ({ children }) => {
             <div className="admin_content_wrapper">
                 <div className="admin_top_card">
                     <img src={logo} alt="Logo" className="admin_logo" />
-
                     {showSearch && (
                         <div className="admin_search_section">
                             <div className="admin_search_bar_container">
@@ -65,7 +65,7 @@ const AdminLayout = ({ children }) => {
                 </div>
 
                 <div className="admin_content_card">
-                    {isProductPage
+                    {(isProductPage || isAccountPage)
                         ? cloneElement(children, { searchQuery })
                         : children}
                 </div>

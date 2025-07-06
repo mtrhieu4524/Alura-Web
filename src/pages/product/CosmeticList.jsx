@@ -33,6 +33,15 @@ const MenuProps = {
     },
 };
 
+const CATEGORY_TYPE_MAP = {
+    Face: ["Cleanser", "Toner", "Serum", "Face Mask", "Cream"],
+    Hair: ["Shampoo", "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment"],
+    Body: ["Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub"],
+    Makeup: ["Cleanser", "Toner", "Serum", "Face Mask", "Cream", "Fragrance", "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"],
+    Lip: ["Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"],
+    Treatment: ["Serum", "Face Mask", "Cream", "Hair Serum", "Hair Tonic", "Scalp Treatment", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"]
+};
+
 function CosmeticListPage() {
     const location = useLocation();
 
@@ -58,14 +67,24 @@ function CosmeticListPage() {
             if (location.state.sort) setSort(location.state.sort);
 
             if (location.state.sex) setSex(Array.isArray(location.state.sex) ? location.state.sex : [location.state.sex]);
-            if (location.state.type) setType(Array.isArray(location.state.type) ? location.state.type : [location.state.type]);
+
+            if (location.state.type) {
+                const shortcutType = location.state.type;
+                const mapped = CATEGORY_TYPE_MAP[shortcutType];
+                if (mapped) {
+                    setType(mapped);
+                } else {
+                    setType(Array.isArray(location.state.type) ? location.state.type : [location.state.type]);
+                }
+            }
+
             if (location.state.brand) setBrand(Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand]);
             if (location.state.skinType) setSkinType(Array.isArray(location.state.skinType) ? location.state.skinType : [location.state.skinType]);
             if (location.state.skinColor) setSkinColor(Array.isArray(location.state.skinColor) ? location.state.skinColor : [location.state.skinColor]);
             if (location.state.volume) setVolume(Array.isArray(location.state.volume) ? location.state.volume : [location.state.volume]);
             if (location.state.stock) setStock(Array.isArray(location.state.stock) ? location.state.stock : [location.state.stock]);
         }
-    }, []);
+    }, [location.state]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -77,16 +96,7 @@ function CosmeticListPage() {
                 const data = await response.json();
 
                 if (data.success && data.products) {
-                    // let filtered = [...data.products];
-
-                    //
-                    let original = [...data.products];
-                    let filtered = [];
-                    while (filtered.length < 15) {
-                        filtered = [...filtered, ...original];
-                    }
-                    filtered = filtered.slice(0, 15);
-                    //
+                    let filtered = [...data.products];
 
                     if (sex.length) {
                         filtered = filtered.filter((p) =>
@@ -179,7 +189,34 @@ function CosmeticListPage() {
         setStock([]);
     };
 
-    const anyFilterActive = sort || sex.length || type.length || brand.length || skinType.length || skinColor.length || volume.length || stock.length;
+    const filterConfigs = [{
+        label: "Type", state: type, setter: setType, options: [
+            "Cleanser", "Toner", "Serum", "Face Mask", "Cream",
+            "Shampoo", "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment",
+            "Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub",
+            "Fragrance", "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"
+        ]
+    }, {
+        label: "Brand", state: brand, setter: setBrand, options: [
+            "Naris Cosmetics", "L'Oreal", "Eucerin", "La Roche-Posay", "Cocoon", "Bioderma",
+            "CeraVe", "B.O.M", "Angel's Liquid", "Swiss Image", "3CE", "Vichy", "Maybelline", "Vaseline"
+        ]
+    }, {
+        label: "Stock", state: stock, setter: setStock, options: ["In Stock", "Out of Stock"]
+    }, {
+        label: "Sex", state: sex, setter: setSex, options: ["Male", "Female", "Unisex"]
+    }, {
+        label: "Skin Type", state: skinType, setter: setSkinType,
+        options: ["Normal", "Dry", "Oily", "Combination", "Sensitive"]
+    }, {
+        label: "Skin Color", state: skinColor, setter: setSkinColor,
+        options: ["Light", "Medium", "Tan", "Dark", "Neutral", "Cool"]
+    }, {
+        label: "Volume", state: volume, setter: setVolume,
+        options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
+    }];
+
+    const [expandedPanel, setExpandedPanel] = useState(null);
 
     return (
         <div className="ProductList">
@@ -217,58 +254,45 @@ function CosmeticListPage() {
                         </Select>
                     </FormControl>
 
-                    {[{
-                        label: "Type", state: type, setter: setType, options: [
-                            "Cleanser", "Toner", "Serum", "Face Mask", "Cream", "Shampoo",
-                            "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment",
-                            "Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub",
-                            "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"
-                        ]
-                    }, {
-                        label: "Brand", state: brand, setter: setBrand, options: [
-                            "Naris Cosmetics", "L'Oreal", "Eucerin", "La Roche-Posay", "Cocoon", "Bioderma",
-                            "CeraVe", "B.O.M", "Angel's Liquid", "Swiss Image", "3CE", "Vichy", "Maybelline", "Vaseline"
-                        ]
-                    }, {
-                        label: "Stock", state: stock, setter: setStock, options: ["In Stock", "Out of Stock"]
-                    }, {
-                        label: "Sex", state: sex, setter: setSex, options: ["Male", "Female", "Unisex"]
-                    }, {
-                        label: "Skin Type", state: skinType, setter: setSkinType,
-                        options: ["Normal", "Dry", "Oily", "Combination", "Sensitive"]
-                    }, {
-                        label: "Skin Color", state: skinColor, setter: setSkinColor,
-                        options: ["Light", "Medium", "Tan", "Dark", "Neutral", "Cool"]
-                    }, {
-                        label: "Volume", state: volume, setter: setVolume,
-                        options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
-                    }].map((filter, i) => (
-                        <Accordion key={i}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>{filter.label}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <FormControl fullWidth size="small" className="filter_select_box">
-                                    <Select
-                                        labelId={`${filter.label}-label`}
-                                        multiple
-                                        value={filter.state}
-                                        onChange={(e) => filter.setter(e.target.value)}
-                                        input={<OutlinedInput />}
-                                        renderValue={(selected) => selected.join(', ')}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {filter.options.map((option) => (
-                                            <MenuItem key={option} value={option}>
-                                                <Checkbox checked={filter.state.indexOf(option) > -1} />
-                                                <ListItemText primary={option} />
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))}
+                    {filterConfigs.map((filter, i) => {
+                        const isActive = filter.state.length > 0;
+
+                        return (
+                            <Accordion
+                                key={i}
+                                expanded={isActive || expandedPanel === filter.label}
+                                onChange={(_, isExpanded) => {
+                                    if (!isActive) {
+                                        setExpandedPanel(isExpanded ? filter.label : null);
+                                    }
+                                }}
+                            >
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>{filter.label}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <FormControl fullWidth size="small" className="filter_select_box">
+                                        <Select
+                                            labelId={`${filter.label}-label`}
+                                            multiple
+                                            value={filter.state}
+                                            onChange={(e) => filter.setter(e.target.value)}
+                                            input={<OutlinedInput />}
+                                            renderValue={(selected) => selected.join(', ')}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {filter.options.map((option) => (
+                                                <MenuItem key={option} value={option}>
+                                                    <Checkbox checked={filter.state.indexOf(option) > -1} />
+                                                    <ListItemText primary={option} />
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+                    })}
                 </div>
 
                 <div className="product_main_list_area">

@@ -23,15 +23,6 @@ const FooterComponent = () => {
             document.body.classList.remove("modal-open");
         };
 
-        const handleClickOutside = (event) => {
-            modals.forEach(({ modalId }) => {
-                const modal = document.getElementById(modalId);
-                if (modal && event.target === modal) {
-                    closeModal(modal);
-                }
-            });
-        };
-
         modals.forEach(({ modalId, linkId }) => {
             const modal = document.getElementById(modalId);
             const btn = document.getElementById(linkId);
@@ -48,11 +39,6 @@ const FooterComponent = () => {
             }
         });
 
-        window.addEventListener('click', handleClickOutside);
-
-        return () => {
-            window.removeEventListener('click', handleClickOutside);
-        };
     }, []);
 
     const navigate = useNavigate();
@@ -85,19 +71,19 @@ const FooterComponent = () => {
                         <div className="col-sm-6 col-md-2 footer_2_column">
                             <h6>Categories</h6>
                             <ul className="footer_content">
-                                <li onClick={() => handleNavigate('/cosmetics', { category: 'all' })}>
+                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Face' })}>
                                     <Link to="/cosmetics">Facial cosmetics</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { category: 'all' })}>
+                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Hair' })}>
                                     <Link to="/cosmetics">Hair cosmetics</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { category: 'all' })}>
+                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Body' })}>
                                     <Link to="/cosmetics">Body cosmetics</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { category: 'all' })}>
+                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Lip' })}>
                                     <Link to="/cosmetics">Lips & Nails cosmetics</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { category: 'all' })}>
+                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Treatment' })}>
                                     <Link to="/cosmetics">Medical & Treatment</Link>
                                 </li>
                             </ul>
@@ -105,7 +91,7 @@ const FooterComponent = () => {
                         <div className="col-sm-6 col-md-2 footer_3_column">
                             <h6>Services</h6>
                             <ul className="footer_content">
-                                <li><Link to="/edit-profile" onClick={(e) => handleLinkClick(e, 160)}>My profile</Link></li>
+                                <li><Link to="/profile" onClick={(e) => handleLinkClick(e, 160)}>My profile</Link></li>
                                 <li><Link to="/order-history" onClick={(e) => handleLinkClick(e, 160)}>Order history</Link></li>
                                 <li><Link to="/visual-search" onClick={(e) => handleLinkClick(e, 160)}>Visual search</Link></li>
                             </ul>
@@ -129,7 +115,7 @@ const FooterComponent = () => {
                             <h6 className='footer_last_column_title_2'>Secure payment</h6>
                             <ul className="footer_content">
                                 <img className='footer_vnpay' src={vnpay} alt="VNPAY Logo" />
-                                <img className='footer_bank' src={bank} alt="Bank Logo" />
+                                {/* <img className='footer_bank' src={bank} alt="Bank Logo" /> */}
                                 <img className='footer_cash' src={cash} alt="Cash Logo" />
                             </ul>
                         </div>
@@ -147,8 +133,14 @@ const FooterComponent = () => {
             </footer>
 
             <div id="tosModal" className="modal">
-                <div className="modal-content">
-                    <span className="close" style={{ textAlign: 'end' }}>&times;</span>
+                <div className="modal-content-footer">
+                    {/* <span className="close" style={{ textAlign: 'end' }}>&times;</span> */}
+                    <span
+                        className="close footer_close"
+                        style={{ textAlign: "end", cursor: "pointer" }}
+                    >
+                        &times;
+                    </span>
                     <h4 className="tos_title">Terms of Service & Privacy Policy</h4>
                     <p className="tos_introduce">
                         Welcome to Alurà! By signing up and creating an account on our website,
@@ -198,8 +190,8 @@ const FooterComponent = () => {
             </div>
 
             <div id="warrantyModal" className="modal">
-                <div className="modal-content">
-                    <span className="close" style={{ textAlign: 'end' }}>&times;</span>
+                <div className="modal-content-footer">
+                    <span className="close footer_close" style={{ textAlign: 'end' }}>&times;</span>
                     <h4 className="tos_title">Warranty Policy</h4>
                     <p className="tos_introduce">
                         Welcome to Alurà! By purchasing our products, you agree to the following terms and conditions of our Warranty Policy. We strive to provide high-quality products and excellent customer service. Thank you for your trust in us. Hope you have a great time shopping.

@@ -1,12 +1,12 @@
 .filters_and_products_wrapper {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     padding: 0 30px;
     margin-top: 40px;
 }
 
 .filter_sidebar {
-    width: 280px;
+    width: 300px;
     position: sticky;
     top: 70px;
     align-self: flex-start;

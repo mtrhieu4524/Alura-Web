@@ -164,7 +164,7 @@ const Home = () => {
                 <div className="slide-small-image">
                   <img src={slide1Small} alt="Small Slide 1" />
                   <button
-                    onClick={() => handleNavigate("/cosmetics", { type: "" })}
+                    onClick={() => handleNavigate("/cosmetics", { type: "Face" })}
                     className="slide-button">
                     SHOP NOW
                   </button>
@@ -176,7 +176,7 @@ const Home = () => {
             <div className="slide-background">
               <img src={sliderBackground} alt="Slide 2" />
               <h1>
-                SKIN <br></br>CARE
+                MEDICAL <br></br>TREATMENT
               </h1>
             </div>
             <div className="slide-content">
@@ -188,7 +188,7 @@ const Home = () => {
                 <div className="slide-small-image">
                   <img src={slide2Small} alt="Small Slide 1" />
                   <button
-                    onClick={() => handleNavigate("/cosmetics", { type: "" })}
+                    onClick={() => handleNavigate("/cosmetics", { type: "Treatment" })}
                     className="slide-button">
                     SHOP THIS CATEGORY
                   </button>
@@ -212,7 +212,7 @@ const Home = () => {
                 <div className="slide-small-image">
                   <img src={slide3Small} alt="Small Slide 3" />
                   <button
-                    onClick={() => handleNavigate("/cosmetics", { type: "" })}
+                    onClick={() => handleNavigate("/cosmetics", { type: "Fragrance" })}
                     className="slide-button">
                     SHOP THIS CATEGORY
                   </button>
@@ -228,7 +228,7 @@ const Home = () => {
         <div className="under_slider_column">
           <i className="fas fa-shipping-fast under_slider_icon"></i>
           <div className="under_slider_text_container">
-            <h4 className="under_slider_title">Free shipping</h4>
+            <h4 className="under_slider_title">Fast shipping</h4>
             <p className="under_slider_text">For all orders</p>
           </div>
         </div>
@@ -337,15 +337,15 @@ const Home = () => {
             <div className="category_large col-md-4">
               <div className="category_item_large">
                 <div className="category_image_wrapper_large">
-                  <img src={earringC} alt="Earrings" />
-                  <p className="category_name_large">Skincare</p>
+                  <img src={earringC} alt="Facial" />
+                  <p className="category_name_large">Facial</p>
                   <div className="category_hover_content">
-                    <p className="category_name_large_hover">Skincare</p>
+                    <p className="category_name_large_hover">Facial</p>
                     <div className="category_hover_text">
-                      <span className="category_large_letter">S</span>
+                      <span className="category_large_letter">F</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "" })
+                          handleNavigate("/cosmetics", { type: "Face" })
                         }
                         className="category_view_collection">
                         VIEW CATEGORY
@@ -366,7 +366,7 @@ const Home = () => {
                       <span className="category_large_letter_small">F</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "" })
+                          handleNavigate("/cosmetics", { type: "Fragrance" })
                         }
                         className="category_view_collection_small">
                         VIEW CATEGORY
@@ -377,15 +377,15 @@ const Home = () => {
               </div>
               <div className="category_item_small">
                 <div className="category_image_wrapper_small ciwm2">
-                  <img src={braceletC} alt="Bracelet" />
-                  <p className="category_name_small">Treatment</p>
+                  <img src={braceletC} alt="Body" />
+                  <p className="category_name_small">Body</p>
                   <div className="category_hover_content_small">
-                    <p className="category_name_small_hover">Treatment</p>
+                    <p className="category_name_small_hover">Body</p>
                     <div className="category_hover_text_small">
-                      <span className="category_large_letter_small">T</span>
+                      <span className="category_large_letter_small">B</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "" })
+                          handleNavigate("/cosmetics", { type: "Body" })
                         }
                         className="category_view_collection_small">
                         VIEW CATEGORY
@@ -406,7 +406,7 @@ const Home = () => {
                       <span className="category_large_letter">M</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "" })
+                          handleNavigate("/cosmetics", { type: "Makeup" })
                         }
                         className="category_view_collection">
                         VIEW CATEGORY
@@ -461,7 +461,7 @@ const Home = () => {
                     className="product_image"
                   />
                   <p className="trending_product_name">{product.name}</p>
-                  <p className="trending_product_price">{product.price} VND</p>
+                  <p className="trending_product_price">{product.price.toLocaleString() || "100,000"} VND</p>
                 </div>
               ))}
             </div>
