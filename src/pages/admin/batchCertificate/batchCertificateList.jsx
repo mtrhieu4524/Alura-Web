@@ -41,7 +41,7 @@ function BatchCertificateList() {
         }
 
         if (selectedCertificate) {
-            // Update existing certificate
+            
             try {
                 const res = await fetch(`${API_URL}/batch-certificate/${selectedCertificate._id}`, {
                     method: "PUT",
@@ -62,7 +62,7 @@ function BatchCertificateList() {
                 console.error("Failed to update certificate", error);
             }
         } else {
-            // Add new certificate
+            
             try {
                 const res = await fetch(`${API_URL}/batch-certificate`, {
                     method: "POST",

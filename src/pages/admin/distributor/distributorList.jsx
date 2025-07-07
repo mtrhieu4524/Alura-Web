@@ -49,14 +49,14 @@ function DistributorList() {
     };
 
     const handleSaveDistributor = async () => {
-        // Basic validation
+        
         if (!formData.name || !formData.phone || !formData.email || !formData.address) {
             alert("Please fill in all fields.");
             return;
         }
 
         if (selectedDistributor) {
-            // Update existing distributor
+            
             try {
                 const res = await fetch(`${API_URL}/distributor/${selectedDistributor._id}`, {
                     method: "PUT",
@@ -79,7 +79,7 @@ function DistributorList() {
                 console.error("Failed to update distributor", error);
             }
         } else {
-            // Add new distributor
+            
             try {
                 const res = await fetch(`${API_URL}/distributor`, {
                     method: "POST",
@@ -136,7 +136,7 @@ function DistributorList() {
     };
 
     const openEditModal = async (distributor) => {
-        // Fetch fresh data if needed
+        
         const freshData = await fetchDistributorById(distributor._id);
         if (freshData) {
             setSelectedDistributor(freshData);

@@ -104,6 +104,8 @@ const Login = () => {
       console.log("Login response:", data);
 
       dispatch(loginSuccess({ token: data.token, user: data.accountId }));
+      // dispatch(loginSuccess({ token: data.token, user: data.user }));
+
 
       if (rememberMe) {
         setSavedEmail(email, 15);
