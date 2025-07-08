@@ -164,10 +164,7 @@ function Cart() {
                   return (
                     <div className="cart_item" key={item._id}>
                       <Image
-                        src={
-                          product.imgUrls[0] ||
-                          "https://via.placeholder.com/175"
-                        }
+                        src={(Array.isArray(product.imgUrls) && product.imgUrls[0]) || "https://via.placeholder.com/175"}
                         className="cart_item_image"
                         alt={product.name}
                         width={200}
