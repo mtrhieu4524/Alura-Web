@@ -84,91 +84,6 @@ function Checkout() {
     return params.toString();
   };
 
-  const handleVNPayReturn = async (vnpayData) => {
-    const {
-      vnpResponseCode,
-      vnpTransactionStatus,
-      vnpOrderInfo,
-      vnpAmount,
-      vnpTxnRef,
-    } = vnpayData;
-
-    try {
-      const queryString = createQueryString(searchParams);
-
-      const api = `${import.meta.env.VITE_API_URL
-        }/payment/vnpay/return?${queryString}`;
-      console.log("API URL:", api);
-
-      const response = await fetch(api, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to verify payment");
-      }
-
-      const result = await response.json();
-
-      if (vnpResponseCode === "00" && vnpTransactionStatus === "00") {
-        toast.success("Payment successful!");
-
-        navigate("/order-success", {
-          state: {
-            orderId: vnpTxnRef,
-            amount: vnpAmount,
-            orderInfo: vnpOrderInfo,
-            paymentMethod: "VNPAY",
-            paymentStatus: "Success",
-            result: result,
-          },
-        });
-      } else {
-        let errorMessage = "Payment failed!";
-
-        switch (vnpResponseCode) {
-          case "24":
-            errorMessage = "Transaction was cancelled by user";
-            break;
-          case "09":
-            errorMessage =
-              "Card/Account is not registered for InternetBanking service";
-            break;
-          case "10":
-            errorMessage =
-              "Card/Account authentication failed more than 3 times";
-            break;
-          case "11":
-            errorMessage = "Payment timeout. Please try again";
-            break;
-          case "12":
-            errorMessage = "Card/Account is locked";
-            break;
-          case "13":
-            errorMessage = "Invalid OTP";
-            break;
-          case "51":
-            errorMessage = "Account balance is not enough";
-            break;
-          case "65":
-            errorMessage = "Account has exceeded daily transaction limit";
-            break;
-          default:
-            errorMessage = `Payment failed with code: ${vnpResponseCode}`;
-        }
-
-        toast.error(errorMessage);
-      }
-    } catch (error) {
-      console.error("Error handling VNPAY return:", error);
-      toast.error("An error occurred while processing payment kakak");
-    }
-  };
-
   useEffect(() => {
     if (cartItems.length === 0 || !cartItems) {
       navigate("/cart");
@@ -176,23 +91,17 @@ function Checkout() {
     }
 
     document.title = "Alurà - Checkout";
+  }, [cartItems]);
 
-    const vnpResponseCode = searchParams.get("vnp_ResponseCode");
-    const vnpTransactionStatus = searchParams.get("vnp_TransactionStatus");
-    const vnpOrderInfo = searchParams.get("vnp_OrderInfo");
-    const vnpAmount = searchParams.get("vnp_Amount");
-    const vnpTxnRef = searchParams.get("vnp_TxnRef");
+  // dùng để bắt VNpay
+  useEffect(() => {
+    const queryString = createQueryString(searchParams);
 
-    if (vnpResponseCode && vnpTransactionStatus) {
-      handleVNPayReturn({
-        vnpResponseCode,
-        vnpTransactionStatus,
-        vnpOrderInfo,
-        vnpAmount,
-        vnpTxnRef,
-      });
-    }
-  }, [searchParams, token]);
+    const api = `${
+      import.meta.env.VITE_API_URL
+    }/payment/vnpay/return?${queryString}`;
+    console.log("API URL:", api);
+  }, []);
 
   useEffect(() => {
     const fetchUserInformation = async () => {
@@ -280,7 +189,7 @@ function Checkout() {
           shippingAddress: address,
           shippingMethod: shippingMethod,
           promotionId: null,
-          note: note || "after 5 PM",
+          note: note || "",
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };
 
@@ -304,12 +213,7 @@ function Checkout() {
         }
 
         const prepareResult = await prepareResponse.json();
-
-        const createPaymentData = {
-          orderId: prepareResult.orderId,
-          amount: prepareResult.amount,
-          bankCode: prepareResult.bankCode,
-        };
+        console.log("Prepare Result:", prepareResult);
 
         const paymentResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/payment/vnpay/createPaymentUrl`,
@@ -319,7 +223,11 @@ function Checkout() {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(createPaymentData),
+            body: JSON.stringify({
+              ...prepareResult.paymentData, // Spread toàn bộ paymentData
+              amount: prepareResult.amount, // Thêm amount
+              bankCode: "",
+            }),
           }
         );
 
@@ -341,8 +249,8 @@ function Checkout() {
         const orderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
-          productId: userId,
-          note: note || "after 5 PM",
+          promotionId: null,
+          note: note || "",
           paymentMethod: paymentMethod,
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };
@@ -367,11 +275,11 @@ function Checkout() {
         const result = await response.json();
 
         toast.success("Order placed successfully!");
-
         navigate("/", {
           state: {
             orderId: result.orderId,
             message: result.message,
+            paymentMethod: "COD",
           },
         });
       }
@@ -455,15 +363,15 @@ function Checkout() {
           <div className="checkout_cart_items_container">
             <Image.PreviewGroup>
               {cartItems.map((item, index) => {
-                const product = item.productId;
+                // const product = item.productId;
                 const quantity = item.quantity;
                 const price = item.unitPrice;
                 return (
                   <React.Fragment key={index}>
                     <div className="checkout_cart_item">
                       <Image
-                        src={product.imgUrls?.[0] || product.image}
-                        alt={product.name}
+                        src={item.imgUrls?.[0] || item.image}
+                        alt={item.name}
                         className="checkout_item_image"
                         width={130}
                         height={130}
@@ -472,7 +380,7 @@ function Checkout() {
                         <div className="checkout_item_row">
                           <p className="checkout_item_name">
                             <strong>
-                              {product.name} x{quantity}
+                              {item.productName} x{quantity}
                             </strong>
                           </p>
                           <p className="checkout_item_price">
@@ -485,10 +393,12 @@ function Checkout() {
                         <div className="checkout_item_row">
                           <p>
                             <strong>Type: </strong>
-                            {product.type}
+                            {Array.isArray(item.productType)
+                              ? item.productType.join(", ")
+                              : item.productType || ""}
                           </p>
                           <p>
-                            <strong>Volume:</strong> {product.volume}
+                            <strong>Volume:</strong> {item.quantity}
                           </p>
                         </div>
                       </div>
@@ -506,34 +416,7 @@ function Checkout() {
             <i className="fas fa-credit-card"></i>Payment method
           </h5>
           <div className="payment_methods">
-            <div
-              className="shipping_method"
-              onClick={() => setPaymentMethod("VNPAY")}>
-              <input
-                type="radio"
-                id="vnpay"
-                name="paymentMethod"
-                value="VNPAY"
-                checked={paymentMethod === "VNPAY"}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              />
-              <div className="shipping_method_wrapper">
-                <label className="shipping_label" htmlFor="vnpay">
-                  VNPAY
-                </label>
-                <p className="shipping_description">(Transfer before receiving)</p>
-                <img
-                  src={vnpay}
-                  style={{
-                    width: "30px",
-                    marginTop: "-43px",
-                    marginBottom: "23px",
-                    marginLeft: "55px",
-                  }}
-                  alt="VNPAY"
-                />
-              </div>
-            </div>
+            {/* payment COD */}
             <div
               className="shipping_method"
               onClick={() => setPaymentMethod("COD")}>
@@ -549,7 +432,9 @@ function Checkout() {
                 <label className="shipping_label" htmlFor="cod">
                   COD
                 </label>
-                <p className="shipping_description">(Transfer after receiving)</p>
+                <p className="shipping_description">
+                  (Transfer after receiving)
+                </p>
                 <img
                   src={cash}
                   style={{
@@ -559,6 +444,33 @@ function Checkout() {
                     marginLeft: "55px",
                   }}
                   alt="COD"
+                />
+              </div>
+            </div>
+            <div
+              className="payment_method"
+              onClick={() => setPaymentMethod("VNPAY")}>
+              <input
+                type="radio"
+                id="vnpay"
+                name="paymentMethod"
+                value="VNPAY"
+                checked={paymentMethod === "VNPAY"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
+              <div className="payment_vnpay_wrapper">
+                <p className="payment_label" htmlFor="vnpay">
+                  VNPAY
+                </p>
+                <img
+                  src={vnpay}
+                  style={{
+                    width: "30px",
+                    marginTop: "-34px",
+                    marginBottom: "10px",
+                    marginLeft: "-17px",
+                  }}
+                  alt="VNPAY"
                 />
               </div>
             </div>
