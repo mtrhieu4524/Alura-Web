@@ -184,7 +184,9 @@ function Checkout() {
     setLoading(true);
 
     try {
+      // Step 1: Prepare order for VNPay (if payment method is VNPAY)
       if (paymentMethod === "VNPAY") {
+        // First, prepare the order for VNPay payment
         const prepareOrderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -206,10 +208,9 @@ function Checkout() {
         );
 
         if (!prepareResponse.ok) {
-          const errorData = await prepareResponse.json();
-          throw new Error(
-            errorData.message || "Failed to prepare order for VNPay"
-          );
+          toast.error("Failed to prepare order for VNPay");
+          navigate("/cart");
+          return;
         }
 
         const prepareResult = await prepareResponse.json();
@@ -232,20 +233,22 @@ function Checkout() {
         );
 
         if (!paymentResponse.ok) {
-          const errorData = await paymentResponse.json();
-          throw new Error(errorData.message || "Failed to create payment URL");
+          toast.error("Failed to create payment URL");
+          navigate("/cart");
         }
 
         const paymentResult = await paymentResponse.json();
 
         toast.success("Order prepared successfully! Redirecting to VNPay...");
 
+        // Redirect to VNPay payment page
         if (paymentResult.paymentUrl) {
           window.location.href = paymentResult.paymentUrl;
         } else {
           throw new Error("Payment URL not received");
         }
       } else {
+        // Handle COD payment (original logic)
         const orderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -268,8 +271,9 @@ function Checkout() {
         );
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Failed to place order");
+          toast.error("Failed to place order");
+          navigate("/cart");
+          return;
         }
 
         const result = await response.json();
@@ -418,7 +422,7 @@ function Checkout() {
           <div className="payment_methods">
             {/* payment COD */}
             <div
-              className="shipping_method"
+              className="payment_method"
               onClick={() => setPaymentMethod("COD")}>
               <input
                 type="radio"
@@ -428,20 +432,17 @@ function Checkout() {
                 checked={paymentMethod === "COD"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <div className="shipping_method_wrapper">
-                <label className="shipping_label" htmlFor="cod">
+              <div className="payment_vnpay_wrapper">
+                <p className="payment_label" htmlFor="cod">
                   COD
-                </label>
-                <p className="shipping_description">
-                  (Transfer after receiving)
                 </p>
                 <img
                   src={cash}
                   style={{
                     width: "30px",
-                    marginTop: "-40px",
-                    marginBottom: "20px",
-                    marginLeft: "55px",
+                    marginTop: "-34px",
+                    marginBottom: "10px",
+                    marginLeft: "-17px",
                   }}
                   alt="COD"
                 />
