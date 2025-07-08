@@ -80,6 +80,10 @@ const Home = () => {
   const [trendingProducts, setTrendingProducts] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL;
 
+  useEffect(() => {
+    document.title = "Alurà";
+  }, []);
+
   const settings = {
     dots: true,
     infinite: true,
@@ -103,6 +107,8 @@ const Home = () => {
   const handleNavigate = (path, state) => {
     navigate(path, { state });
   };
+
+  
 
   useEffect(() => {
     async function fetchProducts() {

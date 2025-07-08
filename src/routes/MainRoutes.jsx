@@ -32,6 +32,7 @@ import AdminAccountList from "../pages/admin/account/AccountList";
 
 import StaffOrderList from "../pages/staff/OrderList";
 import StaffOrderDetail from "../pages/staff/OrderDetail";
+import RoleBasedRoute from "./RoleBasedRoute";
 
 const MainRoutes = () => {
   return (
@@ -40,37 +41,93 @@ const MainRoutes = () => {
       <Route path="/sign-in" element={<Login />} />
       <Route path="/sign-up" element={<Register />} />
 
-      {/* User Routes */}
-      <Route path="/" element={<UserLayout><Home /></UserLayout>} />
-      <Route path="/contact" element={<UserLayout><Contact /></UserLayout>} />
-      <Route path="/introduce" element={<UserLayout><Introduce /></UserLayout>} />
-      <Route path="/faqs" element={<UserLayout><Faqs /></UserLayout>} />
-      <Route path="/visual-search" element={<UserLayout><VisualSearch /></UserLayout>} />
-      <Route path="/visual-search-result" element={<UserLayout><Result /></UserLayout>} />
-      <Route path="/search" element={<UserLayout><ProductSearch /></UserLayout>} />
-      {/* <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} /> */}
-      <Route path="/cosmetics" element={<UserLayout><CosmeticList /></UserLayout>} />
-      {/* <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} /> */}
-      <Route path="/cosmetics/:id" element={<UserLayout><ProductDetail /></UserLayout>} />
-      <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
-      <Route path="/checkout" element={<UserLayout><Checkout /></UserLayout>} />
-      <Route path="/invoice" element={<UserLayout><Invoice /></UserLayout>} />
-      <Route path="/profile" element={<UserLayout><Profile /></UserLayout>} />
-      <Route path="/order-history" element={<UserLayout><OrderHistory /></UserLayout>} />
-      <Route path="/order-detail/:id" element={<UserLayout><OrderDetail /></UserLayout>} />
+      {/* Role cho tất cả mọi người */}
+      <Route element={<UserLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/introduce" element={<Introduce />} />
+        <Route path="/faqs" element={<Faqs />} />
+        <Route path="/visual-search" element={<VisualSearch />} />
+        <Route path="/visual-search-result" element={<Result />} />
+        <Route path="/search" element={<ProductSearch />} />
+        {/* <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} /> */}
+        <Route path="/cosmetics" element={<CosmeticList />} />
+        {/* <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} /> */}
+        <Route path="/cosmetics/:id" element={<ProductDetail />} />
+      </Route>
+
+      {/* Role USER: người đã đăng nhập */}
+      <Route element={<RoleBasedRoute allowedRoles={["USER"]} />}>
+        <Route element={<UserLayout />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/order-detail/:id" element={<OrderDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/invoice" element={<Invoice />} />
+        </Route>
+      </Route>
 
       {/* Admin Routes */}
-      <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-      <Route path="/admin/account-list" element={<AdminLayout><AdminAccountList /></AdminLayout>} />
-      <Route path="/admin/product-list" element={<AdminLayout><AdminProductList /></AdminLayout>} />
-      <Route path="/admin/product-list/:id" element={<AdminLayout><AdminProductDetail /></AdminLayout>} />
-      <Route path="/admin/warehouse-list" element={<AdminLayout><AdminWarehouseList /></AdminLayout>} />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminLayout>
+            <AdminDashboard />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/account-list"
+        element={
+          <AdminLayout>
+            <AdminAccountList />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/product-list"
+        element={
+          <AdminLayout>
+            <AdminProductList />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/product-list/:id"
+        element={
+          <AdminLayout>
+            <AdminProductDetail />
+          </AdminLayout>
+        }
+      />
+      <Route
+        path="/admin/warehouse-list"
+        element={
+          <AdminLayout>
+            <AdminWarehouseList />
+          </AdminLayout>
+        }
+      />
 
       {/* Staff Routes */}
-      <Route path="/staff/order-list" element={<StaffLayout><StaffOrderList /></StaffLayout>} />
+      <Route
+        path="/staff/order-list"
+        element={
+          <StaffLayout>
+            <StaffOrderList />
+          </StaffLayout>
+        }
+      />
       {/* <Route path="/staff/order-detail/:id" element={<StaffLayout><StaffOrderDetail /></StaffLayout>} /> */}
-      <Route path="/staff/order-detail" element={<StaffLayout><StaffOrderDetail /></StaffLayout>} />
-
+      <Route
+        path="/staff/order-detail"
+        element={
+          <StaffLayout>
+            <StaffOrderDetail />
+          </StaffLayout>
+        }
+      />
     </Routes>
   );
 };

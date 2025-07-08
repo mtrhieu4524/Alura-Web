@@ -6,7 +6,7 @@ import Insta from "../../components/Insta/Instagram";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../styles/product/ProductDetail.css";
 import { useCart } from "../../context/CartContext";
-import { CircularProgress } from '@mui/material';
+import { CircularProgress } from "@mui/material";
 
 function ProductDetail() {
   const location = useLocation();
@@ -49,7 +49,6 @@ function ProductDetail() {
       return;
     }
 
-
     try {
       const response = await fetch(`${API_URL}/cart/add`, {
         method: "POST",
@@ -83,17 +82,27 @@ function ProductDetail() {
 
       toast.success("Added to cart!");
     } catch (error) {
+      console.error("Error adding to cart:", error);
       toast.error("Failed to add to cart");
     }
   };
 
   const toggleSpecifications = () => setShowSpecifications((prev) => !prev);
 
-  if (!product) return <div className="loading">
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}>
-      <CircularProgress style={{ color: '#1c1c1c' }} />
-    </div>
-  </div>;
+  if (!product)
+    return (
+      <div className="loading">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "40px 0",
+          }}>
+          <CircularProgress style={{ color: "#1c1c1c" }} />
+        </div>
+      </div>
+    );
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -115,8 +124,9 @@ function ProductDetail() {
                 key={idx}
                 src={image}
                 alt={`${product.name} ${idx + 1}`}
-                className={`thumbnail ${selectedImage === image ? "selected" : ""
-                  }`}
+                className={`thumbnail ${
+                  selectedImage === image ? "selected" : ""
+                }`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -234,8 +244,9 @@ function ProductDetail() {
           style={{ cursor: "pointer" }}>
           Specifications & Descriptions
           <i
-            className={`fas ${showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
-              } specification_toggle_icon`}></i>
+            className={`fas ${
+              showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
+            } specification_toggle_icon`}></i>
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
@@ -310,11 +321,12 @@ function ProductDetail() {
                 {product.instructions || "None"}
               </p>
             </div>
-
           </div>
         )}
       </div>
-      <br></br><br></br><br></br>
+      <br></br>
+      <br></br>
+      <br></br>
       <Insta />
     </div>
   );

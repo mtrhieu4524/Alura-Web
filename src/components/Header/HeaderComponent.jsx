@@ -41,6 +41,7 @@ const HeaderComponent = () => {
 
           const userId = decoded.userId;
           const res = await fetch(`${API_URL}/profile/${userId}`, {
+            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           });
 
@@ -76,48 +77,10 @@ const HeaderComponent = () => {
     checkAuth();
   }, [token, dispatch, navigate]);
 
-  useEffect(() => {
-    const checkProtectedRoutes = async () => {
-      const currentPath = window.location.pathname;
-      const protectedRoutes = [
-        "/cart",
-        "/checkout",
-        "/invoice",
-        "/profile",
-        "/order-history",
-        "/order-detail",
-      ];
-
-      const isProtected = protectedRoutes.some((route) =>
-        currentPath.startsWith(route)
-      );
-
-      if (!token && isProtected) {
-        navigate("/sign-in");
-      } else if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          const now = Math.floor(Date.now() / 1000);
-          if (decoded.exp && decoded.exp < now && isProtected) {
-            dispatch(logout());
-            setIsLoggedIn(false);
-            navigate("/sign-in");
-          }
-        } catch (err) {
-          console.error("Invalid token:", err);
-          dispatch(logout());
-          setIsLoggedIn(false);
-          navigate("/sign-in");
-        }
-      }
-    };
-
-    checkProtectedRoutes();
-  }, [token, dispatch, navigate]);
-
   const fetchCartCount = async (token) => {
     try {
       const res = await fetch(`${API_URL}/cart`, {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -141,8 +104,8 @@ const HeaderComponent = () => {
   return (
     <header className="header">
       <div className="top_announcement">
-        Standard shipping nationwide in Vietnam for all orders. Order today for best
-        service.
+        Standard shipping nationwide in Vietnam for all orders. Order today for
+        best service.
       </div>
       <div className="top_header container-fluid">
         <div
@@ -220,11 +183,7 @@ const HeaderComponent = () => {
               <div
                 className="cart_icon position-relative"
                 onClick={() => {
-                  if (!token) {
-                    navigate("/sign-in");
-                  } else {
-                    navigate("/cart");
-                  }
+                  navigate("/cart");
                 }}
                 style={{ cursor: "pointer" }}>
                 <i className="icon_cart fas fa-shopping-bag"></i>
@@ -237,13 +196,15 @@ const HeaderComponent = () => {
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
-                      }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${
+                      isDropdownOpen ? "rotate" : ""
+                    }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
-                    }`}>
+                  className={`user-dropdown-menu ${
+                    isDropdownOpen ? "open" : ""
+                  }`}>
                   {isLoggedIn ? (
                     <div className="user-logged-in">
                       <div className="user-info">

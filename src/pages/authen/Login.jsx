@@ -103,7 +103,15 @@ const Login = () => {
 
       console.log("Login response:", data);
 
-      dispatch(loginSuccess({ token: data.token, user: data.accountId }));
+   
+
+      dispatch(
+        loginSuccess({
+          token: data.token,
+          user: data.accountId,
+          role: data.role,
+        })
+      );
 
       if (rememberMe) {
         setSavedEmail(email, 15);
@@ -113,20 +121,8 @@ const Login = () => {
         clearSavedPassword();
       }
 
+      navigate("/");
       toast.success("Login successful.");
-
-      const role = data.role?.toUpperCase();
-      switch (role) {
-        case "ADMIN":
-          navigate("/admin/dashboard");
-          break;
-        case "STAFF":
-          navigate("/staff/dashboard");
-          break;
-        default:
-          navigate("/");
-          break;
-      }
     } catch (err) {
       toast.error(err.message || "Login failed.");
     } finally {
