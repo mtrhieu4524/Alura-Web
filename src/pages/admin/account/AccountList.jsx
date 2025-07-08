@@ -17,11 +17,17 @@ function AccountList({ searchQuery }) {
         const fetchUsers = async () => {
             setLoading(true);
             try {
+                const token = localStorage.getItem("token");
                 const url = searchQuery
                     ? `${API_URL}/profile?searchByEmail=${encodeURIComponent(searchQuery)}`
                     : `${API_URL}/profile`;
 
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
                 const data = await response.json();
 
                 if (data.success && data.users) {
@@ -39,6 +45,7 @@ function AccountList({ searchQuery }) {
         fetchUsers();
     }, [searchQuery]);
 
+
     const columns = ["Role", "Email", "Name", "Phone Number", "Address"];
 
     const adminData = users.filter(user => user.role === "ADMIN" || user.role === "ADMINISTRATOR");
@@ -49,8 +56,8 @@ function AccountList({ searchQuery }) {
             role: user.role,
             email: user.email,
             name: user.name,
-            phone_number: user.phone || "N/A",
-            address: user.address || "N/A",
+            phone_number: user.phone || "None",
+            address: user.address || "None",
         }));
 
     return (

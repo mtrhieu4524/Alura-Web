@@ -2,7 +2,7 @@
     max-width: 1000px;
     margin: 30px auto;
     background: white;
-    padding: 30px 30px 50px 30px;
+    padding: 30px 30px 40px 30px;
     border-radius: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -68,7 +68,6 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-bottom: 10px;
 }
 
 .product-detail-actions button {
@@ -84,7 +83,7 @@
 }
 
 .product-detail-actions button:nth-child(1) {
-    background-color: #6c757d;
+    background-color: #ccc;
 }
 
 .modal-overlay {
@@ -104,7 +103,7 @@
     background: white;
     padding: 2rem;
     border-radius: 8px;
-    width: 400px;
+    width: 300px !important;
     text-align: center;
 }
 
@@ -123,12 +122,22 @@
 }
 
 .modal-buttons button:first-child {
-    background-color: #dc3545;
+    background-color: #ccc;
+    padding: 8px 16px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
     color: white;
 }
 
 .modal-buttons button:last-child {
-    background-color: #6c757d;
+    background-color: #dc3545;
+    padding: 8px 16px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
     color: white;
 }
 
@@ -161,10 +170,87 @@
     height: 40px !important;
 }
 
+.product-detail-field select {
+    height: 40px !important;
+}
+
 .delete_icon {
     color: #a00 !important;
 }
 
 .delete_icon:hover {
     color: #d00 !important;
+}
+
+.close_modal_btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.product-images-carousel {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    margin: -15px 0 16px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.product-images-carousel img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.form_group_image {
+    margin-top: 30px;
+}
+
+.form_group_image label {
+    margin-right: 10px;
+}
+
+.product-images-carousel {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    margin: 16px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.image-wrapper {
+    position: relative;
+}
+
+.image-wrapper img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.image-wrapper .remove-btn {
+    position: absolute;
+    top: 0px;
+    right: -9px;
+    background: #1c1c1c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    cursor: pointer;
+    padding: 2px 0 0 0;
 }

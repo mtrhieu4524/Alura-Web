@@ -3,16 +3,16 @@ import { useState, cloneElement } from "react";
 import AdminSidebar from "../components/Sidebar/AdminSidebar";
 import './AdminLayout.css';
 import logo from '../assets/logo.png';
-
+import { Link } from "react-router-dom";
 const AdminLayout = ({ children }) => {
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
 
     const showSearchPaths = [
-        "/admin/account-list", 
-        "/admin/warehouse-list", 
-        "/admin/product-list",  
+        "/admin/account-list",
+        "/admin/warehouse-list",
+        "/admin/product-list",
         "/admin/batch-list",
         "/admin/batch-certificate-list",
         "/admin/distributor-list",
@@ -46,7 +46,9 @@ const AdminLayout = ({ children }) => {
             <AdminSidebar />
             <div className="admin_content_wrapper">
                 <div className="admin_top_card">
-                    <img src={logo} alt="Logo" className="admin_logo" />
+                    <Link to="/admin/dashboard">
+                        <img src={logo} alt="Logo" className="admin_logo" />
+                    </Link>
                     {showSearch && (
                         <div className="admin_search_section">
                             <div className="admin_search_bar_container">
