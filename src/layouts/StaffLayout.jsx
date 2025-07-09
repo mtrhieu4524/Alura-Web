@@ -3,6 +3,7 @@ import { useState, cloneElement } from "react";
 import StaffSidebar from "../components/Sidebar/StaffSidebar";
 import './AdminLayout.css';
 import logo from '../assets/logo.png';
+import { Link } from "react-router-dom";
 
 const StaffLayout = ({ children }) => {
     const location = useLocation();
@@ -37,8 +38,9 @@ const StaffLayout = ({ children }) => {
             <StaffSidebar />
             <div className="admin_content_wrapper">
                 <div className="admin_top_card">
-                    <img src={logo} alt="Logo" className="admin_logo" />
-
+                    <Link to="/staff/product-list">
+                        <img src={logo} alt="Logo" className="admin_logo" />
+                    </Link>
                     {showSearch && (
                         <div className="admin_search_section">
                             <div className="admin_search_bar_container">

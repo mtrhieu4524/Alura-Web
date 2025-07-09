@@ -201,7 +201,31 @@
 
                 .fa-cubes {
                     font-size: 17px;
+                    margin-right: 11px;
+                    margin-left: 20px;
+                }
+
+                .fa-cube {
+                    font-size: 17px;
                     margin-right: 12px;
+                    margin-left: 21px;
+                }
+
+                .fa-database {
+                    font-size: 17px;
+                    margin-right: 12px;
+                    margin-left: 21px;
+                }
+
+                .fa-user-secret {
+                    font-size: 17px;
+                    margin-right: 12px;
+                    margin-left: 21px;
+                }
+
+                .fa-file-text {
+                    font-size: 17px;
+                    margin-right: 15px;
                     margin-left: 21px;
                 }
 

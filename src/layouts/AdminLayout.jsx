@@ -11,11 +11,9 @@ const AdminLayout = ({ children }) => {
 
     const showSearchPaths = [
         "/admin/account-list",
-        "/admin/warehouse-list",
         "/admin/product-list",
         "/admin/batch-list",
         "/admin/batch-certificate-list",
-        "/admin/distributor-list",
         "/admin/batch-stock-list",
     ];
     const showSearch = showSearchPaths.includes(location.pathname);
@@ -23,12 +21,10 @@ const AdminLayout = ({ children }) => {
     const placeholderMap = {
         "/admin/account-list": "Search by email...",
         "/admin/product-list": "Search by name...",
-        "/admin/warehouse-list": "Search by name...",
 
-        "/admin/batch-list": "Search by name...",
-        "/admin/batch-certificate-list": "Search by name...",
-        "/admin/distributor-list": "Search by name...",
-        "/admin/batch-stock-list": "Search by name...",
+        "/admin/batch-list": "Search by code...",
+        "/admin/batch-certificate-list": "Search by code...",
+        "/admin/batch-stock-list": "Search by code...",
     };
 
     const placeholder = placeholderMap[location.pathname] || "Search...";

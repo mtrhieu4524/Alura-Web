@@ -12,7 +12,7 @@ function OrderList() {
         document.title = "Manage Order - Alurà System Management";
     }, []);
 
-    const columns = ["Order ID", "Order Date", "Total", "Status", "Detail"];
+    const columns = ["Order ID", "User", "Order Date", "Total", "Status", "Detail"];
 
     const fakeData = [
         { order_id: "ORD001", order_date: "01/06/2025", total: "$120.00", status: "Pending" },

@@ -30,7 +30,6 @@ import AdminProductDetail from "../pages/admin/product/ProductDetail";
 import AdminAccountList from "../pages/admin/account/AccountList";
 import AdminBatchList from "../pages/admin/batch/batchList";
 import AdminBatchCertificateList from "../pages/admin/batchCertificate/batchCertificateList";
-import AdminDistributorList from "../pages/admin/distributor/distributorList";
 import AdminBatchStockList from "../pages/admin/batchStock/batchStockList";
 
 import StaffOrderList from "../pages/staff/order/OrderList";
@@ -99,10 +98,6 @@ const MainRoutes = () => {
         <Route
           path="/admin/batch-certificate-list"
           element={<AdminLayout><AdminBatchCertificateList /></AdminLayout>}
-        />
-        <Route
-          path="/admin/distributor-list"
-          element={<AdminLayout><AdminDistributorList /></AdminLayout>}
         />
         <Route
           path="/admin/batch-stock-list"
