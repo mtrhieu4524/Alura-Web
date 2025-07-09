@@ -1,11 +1,36 @@
 import { useLocation } from "react-router-dom";
+import { useState, cloneElement } from "react";
 import StaffSidebar from "../components/Sidebar/StaffSidebar";
 import './AdminLayout.css';
 import logo from '../assets/logo.png';
 
 const StaffLayout = ({ children }) => {
     const location = useLocation();
-    const showSearch = ["/staff/order-list"].includes(location.pathname);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+
+    const showSearchPaths = [
+        "/staff/order-list",
+        "/staff/product-list",
+    ];
+
+    const showSearch = showSearchPaths.includes(location.pathname);
+
+    const placeholderMap = {
+        "/staff/order-list": "Search by order id...",
+        "/staff/product-list": "Search by name...",
+    };
+
+    const placeholder = placeholderMap[location.pathname] || "Search...";
+
+    const isOrderPage = location.pathname === "/staff/order-list";
+    const isProductPage = location.pathname === "/staff/product-list";
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            setSearchQuery(searchInput.trim());
+        }
+    };
 
     return (
         <div className="admin_layout">
@@ -21,7 +46,10 @@ const StaffLayout = ({ children }) => {
                                 <input
                                     type="text"
                                     className="admin_search_bar"
-                                    placeholder="Search by order id..."
+                                    placeholder={placeholder}
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                 />
                             </div>
                         </div>
@@ -29,7 +57,9 @@ const StaffLayout = ({ children }) => {
                 </div>
 
                 <div className="admin_content_card">
-                    {children}
+                    {(isOrderPage || isProductPage)
+                        ? cloneElement(children, { searchQuery })
+                        : children}
                 </div>
             </div>
         </div>

@@ -28,6 +28,7 @@ const StaffSidebar = () => {
     };
 
     const menuItems = [
+        { label: 'Manage Product', icon: 'fa-paint-brush', path: '/staff/product-list' },
         { label: 'Manage Order', icon: 'fas fa-clipboard-list', path: '/staff/order-list' },
         // { label: 'Manage Account', icon: 'fa-users', path: '/admin/account-list' },
     ];
@@ -51,7 +52,7 @@ const StaffSidebar = () => {
                         {menuItems.map((item) => (
                             <li
                                 key={item.path}
-                                className="admin_sidebar_menu_item selected"
+                                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? 'selected' : ''}`}
                                 onClick={() => navigate(item.path)}
                             >
                                 <i className={`fas ${item.icon}`}></i>

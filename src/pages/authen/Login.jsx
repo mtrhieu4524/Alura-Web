@@ -124,7 +124,7 @@ const Login = () => {
       if (data.role === "ADMIN") {
         navigate("/admin/dashboard");
       } else if (data.role === "STAFF") {
-        navigate("/staff/order-list");
+        navigate("/staff/product-list");
       } else {
         navigate("/");
       }

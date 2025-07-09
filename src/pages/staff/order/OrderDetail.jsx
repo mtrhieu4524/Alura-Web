@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Image, Space } from 'antd';
-import '../../styles/staff/OrderDetail.css';
+import '../../../styles/staff/order/OrderDetail.css';
 import { Select, MenuItem, Button, InputLabel, FormControl } from '@mui/material';
-import '../../styles/staff/OrderDetail.css';
 
 function OrderDetail() {
     const { id } = useParams();

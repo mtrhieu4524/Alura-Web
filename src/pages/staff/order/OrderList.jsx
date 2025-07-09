@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Table from '../../components/Table/Table';
+import Table from '../../../components/Table/Table';
 import { Chip, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 function OrderList() {

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import RoleBasedRoute from "./RoleBasedRoute";
 
 import Home from "../pages/Home";
 import VisualSearch from "../pages/visual/VisualSearch";
@@ -32,9 +33,10 @@ import AdminBatchCertificateList from "../pages/admin/batchCertificate/batchCert
 import AdminDistributorList from "../pages/admin/distributor/distributorList";
 import AdminBatchStockList from "../pages/admin/batchStock/batchStockList";
 
-import StaffOrderList from "../pages/staff/OrderList";
-import StaffOrderDetail from "../pages/staff/OrderDetail";
-import RoleBasedRoute from "./RoleBasedRoute";
+import StaffOrderList from "../pages/staff/order/OrderList";
+import StaffOrderDetail from "../pages/staff/order/OrderDetail";
+import StaffroductList from "../pages/staff/product/ProductList";
+import StaffProductDetail from "../pages/staff/product/ProductDetail";
 
 const MainRoutes = () => {
   return (
@@ -110,6 +112,14 @@ const MainRoutes = () => {
 
       {/* Protected STAFF routes */}
       <Route element={<RoleBasedRoute allowedRoles={["STAFF"]} />}>
+        <Route
+          path="/staff/product-list"
+          element={<StaffLayout><StaffroductList /></StaffLayout>}
+        />
+        <Route
+          path="/staff/product-detail"
+          element={<StaffLayout><StaffProductDetail /></StaffLayout>}
+        />
         <Route
           path="/staff/order-list"
           element={<StaffLayout><StaffOrderList /></StaffLayout>}
