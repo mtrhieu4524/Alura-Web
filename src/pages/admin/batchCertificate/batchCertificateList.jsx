@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import '../../../styles/admin/batchCertificate/BatchCertificateList.css';
+import Table from "../../../components/Table/Table";
+import "../../../styles/admin/warehouse/WarehouseList.css"; // reuse warehouse styles
+import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,51 +37,38 @@ function BatchCertificateList() {
     };
 
     const handleSaveCertificate = async () => {
-        if (!formData.certificateCode || !formData.issueDate || !formData.issuedBy || !formData.fileUrl) {
-            alert("Please fill in all required fields.");
+        const { certificateCode, issueDate, issuedBy, fileUrl } = formData;
+        if (!certificateCode || !issueDate || !issuedBy || !fileUrl) {
+            toast.error("Please fill in all required fields.");
             return;
         }
 
-        if (selectedCertificate) {
-            
-            try {
-                const res = await fetch(`${API_URL}/batch-certificate/${selectedCertificate._id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                });
+        const method = selectedCertificate ? "PUT" : "POST";
+        const endpoint = selectedCertificate
+            ? `${API_URL}/batch-certificate/${selectedCertificate._id}`
+            : `${API_URL}/batch-certificate`;
 
-                if (res.ok) {
-                    const updated = await res.json();
-                    setCertificates(prev =>
-                        prev.map(c => (c._id === updated._id ? updated : c))
-                    );
-                    closeModal();
-                } else {
-                    console.error("Failed to update certificate");
-                }
-            } catch (error) {
-                console.error("Failed to update certificate", error);
-            }
-        } else {
-            
-            try {
-                const res = await fetch(`${API_URL}/batch-certificate`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                });
+        try {
+            const res = await fetch(endpoint, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
 
-                if (res.ok) {
-                    const newCertificate = await res.json();
-                    setCertificates(prev => [...prev, newCertificate]);
-                    closeModal();
-                } else {
-                    console.error("Failed to add certificate");
-                }
-            } catch (error) {
-                console.error("Failed to add certificate", error);
+            if (res.ok) {
+                const updated = await res.json();
+                toast.success(`Certificate ${selectedCertificate ? "updated" : "added"} successfully!`);
+                setCertificates((prev) =>
+                    selectedCertificate
+                        ? prev.map((c) => (c._id === updated._id ? updated : c))
+                        : [...prev, updated]
+                );
+                closeModal();
+            } else {
+                toast.error("Failed to save certificate.");
             }
+        } catch (error) {
+            toast.error("Error saving certificate.");
         }
     };
 
@@ -92,16 +81,17 @@ function BatchCertificateList() {
             });
 
             if (res.ok) {
-                setCertificates(prev =>
-                    prev.filter(c => c._id !== selectedCertificate._id)
+                setCertificates((prev) =>
+                    prev.filter((c) => c._id !== selectedCertificate._id)
                 );
+                toast.success("Certificate deleted successfully!");
                 setIsDeleteModalOpen(false);
                 setSelectedCertificate(null);
             } else {
-                console.error("Failed to delete certificate");
+                toast.error("Failed to delete certificate.");
             }
         } catch (error) {
-            console.error("Error deleting certificate", error);
+            toast.error("Error deleting certificate.");
         }
     };
 
@@ -121,7 +111,7 @@ function BatchCertificateList() {
         setSelectedCertificate(certificate);
         setFormData({
             certificateCode: certificate.certificateCode,
-            issueDate: certificate.issueDate ? certificate.issueDate.split("T")[0] : "",
+            issueDate: certificate.issueDate?.split("T")[0] || "",
             issuedBy: certificate.issuedBy,
             fileUrl: certificate.fileUrl,
             note: certificate.note || ""
@@ -141,119 +131,123 @@ function BatchCertificateList() {
         });
     };
 
-    const columns = ["Certificate Code", "Issue Date", "Issued By", "File", "Note", "Action"];
+    const columns = [
+        "Certificate Code",
+        "Issue Date",
+        "Issued By",
+        "File",
+        "Note",
+        "Action",
+    ];
 
-    const tableData = certificates.map((certificate) => [
-        certificate.certificateCode,
-        certificate.issueDate ? new Date(certificate.issueDate).toLocaleDateString() : 'N/A',
-        certificate.issuedBy,
-        <a href={certificate.fileUrl} target="_blank" rel="noopener noreferrer" key={certificate._id}>
-            View File
-        </a>,
-        certificate.note,
-        <div className="action_icons" key={certificate._id}>
-            <i
-                className="fas fa-pen edit_icon"
-                title="Edit Certificate"
-                onClick={() => openEditModal(certificate)}
-            />
-            <i
-                className="fas fa-trash delete_icon"
-                title="Delete Certificate"
-                onClick={() => {
-                    setSelectedCertificate(certificate);
+    const data = certificates.map((c) => ({
+        certificate_code: c.certificateCode,
+        issue_date: c.issueDate ? new Date(c.issueDate).toLocaleDateString() : "N/A",
+        issued_by: c.issuedBy,
+        file: (
+            <a href={c.fileUrl} target="_blank" rel="noreferrer">
+                View File
+            </a>
+        ),
+        note: c.note,
+        action: (
+            <div className="action_icons" key={c._id}>
+                <i className="fas fa-pen edit_icon" onClick={() => openEditModal(c)} />
+                <i className="fas fa-trash delete_icon" onClick={() => {
+                    setSelectedCertificate(c);
                     setIsDeleteModalOpen(true);
-                }}
-            />
-        </div>
-    ]);
+                }} />
+            </div>
+        )
+    }));
 
     return (
-        <div className="BatchCertificateList">
-            <div className="batch_certificate_list_container">
-                <div className="batch_certificate_list_header">
+        <div className="WarehouseList">
+            <div className="warehouse_list_container">
+                <div className="warehouse_list_header">
                     <h2 className="admin_main_title">Manage Batch Certificate</h2>
-                    <button className="add_batch_certificate_btn" onClick={openAddModal}>
+                    <button className="add_warehouse_btn" onClick={openAddModal}>
                         Add New Certificate
                     </button>
                 </div>
-
-                {/* Table */}
-                <table className="batch_certificate_table">
-                    <thead>
-                        <tr>
-                            {columns.map((col, index) => (
-                                <th key={index}>{col}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tableData.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {row.map((cell, cellIndex) => (
-                                    <td key={cellIndex}>{cell}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <Table columns={columns} data={data} />
             </div>
 
-            {/* Add / Update Modal */}
             {isUpdateModalOpen && (
                 <div className="modal_overlay">
                     <div className="modal_content">
                         <button className="close_modal_btn" onClick={closeModal}>×</button>
-                        <h3>{selectedCertificate ? "Update Certificate" : "Add New Certificate"}</h3>
-
-                        <div className="modal_form">
-                            <input
-                                type="text"
-                                placeholder="Certificate Code"
-                                value={formData.certificateCode}
-                                onChange={(e) => setFormData({ ...formData, certificateCode: e.target.value })}
-                            />
-                            <input
-                                type="date"
-                                placeholder="Issue Date"
-                                value={formData.issueDate}
-                                onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Issued By"
-                                value={formData.issuedBy}
-                                onChange={(e) => setFormData({ ...formData, issuedBy: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                placeholder="File URL"
-                                value={formData.fileUrl}
-                                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Note"
-                                value={formData.note}
-                                onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                            />
-
-                            <button className="save_btn" onClick={handleSaveCertificate}>
-                                Save
-                            </button>
-                        </div>
+                        <h5>{selectedCertificate ? "Update Certificate" : "Add New Certificate"}</h5>
+                        <form
+                            className="product_form"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSaveCertificate();
+                            }}
+                        >
+                            <div className="form_group">
+                                <label>Certificate Code</label>
+                                <input
+                                    type="text"
+                                    value={formData.certificateCode}
+                                    onChange={(e) => setFormData({ ...formData, certificateCode: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>Issue Date</label>
+                                <input
+                                    type="date"
+                                    value={formData.issueDate}
+                                    onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>Issued By</label>
+                                <input
+                                    type="text"
+                                    value={formData.issuedBy}
+                                    onChange={(e) => setFormData({ ...formData, issuedBy: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>File URL</label>
+                                <input
+                                    type="text"
+                                    value={formData.fileUrl}
+                                    onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>Note</label>
+                                <input
+                                    type="text"
+                                    value={formData.note}
+                                    onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                                />
+                            </div>
+                            <div className="form_group">
+                                <button type="submit" className="add_account_btn">
+                                    {selectedCertificate ? "Update" : "Create"} Certificate
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
 
-            {/* Delete Modal */}
             {isDeleteModalOpen && (
                 <div className="modal_overlay">
                     <div className="modal_content">
                         <button className="close_modal_btn" onClick={() => setIsDeleteModalOpen(false)}>×</button>
-                        <h3>Confirm Delete</h3>
-                        <p>Are you sure you want to delete <b>{selectedCertificate?.certificateCode}</b>?</p>
-                        <button className="delete_btn" onClick={handleDeleteCertificate}>Delete</button>
+                        <h5>Are you sure you want to delete <b>{selectedCertificate?.certificateCode}</b>?</h5>
+                        <div className="modal-buttons">
+                            <button className="cancel_btn" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
+                            <button className="delete_btn" onClick={handleDeleteCertificate}>Confirm</button>
+                        </div>
                     </div>
                 </div>
             )}
