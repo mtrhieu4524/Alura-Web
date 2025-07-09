@@ -8,9 +8,7 @@ import Introduce from "../pages/constants/Introduce";
 import Faqs from "../pages/constants/Faqs";
 import Login from "../pages/authen/Login";
 import Register from "../pages/authen/Register";
-// import ProductList from "../pages/product/ProductList";
 import CosmeticList from "../pages/product/CosmeticList";
-// import MedicalList from "../pages/product/MedicalList";
 import ProductDetail from "../pages/product/ProductDetail";
 import ProductSearch from "../pages/product/ProductSearch";
 import Cart from "../pages/cart/Cart";
@@ -34,10 +32,6 @@ import AdminBatchCertificateList from "../pages/admin/batchCertificate/batchCert
 import AdminDistributorList from "../pages/admin/distributor/distributorList";
 import AdminBatchStockList from "../pages/admin/batchStock/batchStockList";
 
-
-
-
-
 import StaffOrderList from "../pages/staff/OrderList";
 import StaffOrderDetail from "../pages/staff/OrderDetail";
 import RoleBasedRoute from "./RoleBasedRoute";
@@ -49,7 +43,7 @@ const MainRoutes = () => {
       <Route path="/sign-in" element={<Login />} />
       <Route path="/sign-up" element={<Register />} />
 
-      {/* Role cho tất cả mọi người */}
+      {/* Public & User Routes */}
       <Route element={<UserLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
@@ -58,13 +52,11 @@ const MainRoutes = () => {
         <Route path="/visual-search" element={<VisualSearch />} />
         <Route path="/visual-search-result" element={<Result />} />
         <Route path="/search" element={<ProductSearch />} />
-        {/* <Route path="/product" element={<UserLayout><ProductList /></UserLayout>} /> */}
         <Route path="/cosmetics" element={<CosmeticList />} />
-        {/* <Route path="/medical-treatment" element={<UserLayout><MedicalList /></UserLayout>} /> */}
         <Route path="/cosmetics/:id" element={<ProductDetail />} />
       </Route>
 
-      {/* Role USER: người đã đăng nhập */}
+      {/* Protected USER routes */}
       <Route element={<RoleBasedRoute allowedRoles={["USER"]} />}>
         <Route element={<UserLayout />}>
           <Route path="/profile" element={<Profile />} />
@@ -76,72 +68,57 @@ const MainRoutes = () => {
         </Route>
       </Route>
 
-      {/* Admin Routes */}
-      <Route
-        path="/admin/dashboard"
-        element={
-          <AdminLayout>
-            <AdminDashboard />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/account-list"
-        element={
-          <AdminLayout>
-            <AdminAccountList />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/product-list"
-        element={
-          <AdminLayout>
-            <AdminProductList />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/product-list/:id"
-        element={
-          <AdminLayout>
-            <AdminProductDetail />
-          </AdminLayout>
-        }
-      />
-      <Route
-        path="/admin/warehouse-list"
-        element={
-          <AdminLayout>
-            <AdminWarehouseList />
-          </AdminLayout>
-        }
-      />
+      {/* Protected ADMIN routes */}
+      <Route element={<RoleBasedRoute allowedRoles={["ADMIN"]} />}>
+        <Route
+          path="/admin/dashboard"
+          element={<AdminLayout><AdminDashboard /></AdminLayout>}
+        />
+        <Route
+          path="/admin/account-list"
+          element={<AdminLayout><AdminAccountList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/product-list"
+          element={<AdminLayout><AdminProductList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/product-list/:id"
+          element={<AdminLayout><AdminProductDetail /></AdminLayout>}
+        />
+        <Route
+          path="/admin/warehouse-list"
+          element={<AdminLayout><AdminWarehouseList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/batch-list"
+          element={<AdminLayout><AdminBatchList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/batch-certificate-list"
+          element={<AdminLayout><AdminBatchCertificateList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/distributor-list"
+          element={<AdminLayout><AdminDistributorList /></AdminLayout>}
+        />
+        <Route
+          path="/admin/batch-stock-list"
+          element={<AdminLayout><AdminBatchStockList /></AdminLayout>}
+        />
+      </Route>
 
-      <Route path="/admin/batch-list" element={<AdminLayout><AdminBatchList /></AdminLayout>} />
-      <Route path="/admin/batch-certificate-list" element={<AdminLayout><AdminBatchCertificateList /></AdminLayout>} />
-      <Route path="/admin/distributor-list" element={<AdminLayout><AdminDistributorList /></AdminLayout>} />
-      <Route path="/admin/batch-stock-list" element={<AdminLayout><AdminBatchStockList /></AdminLayout>} />
-
-
-      {/* Staff Routes */}
-      <Route
-        path="/staff/order-list"
-        element={
-          <StaffLayout>
-            <StaffOrderList />
-          </StaffLayout>
-        }
-      />
-      {/* <Route path="/staff/order-detail/:id" element={<StaffLayout><StaffOrderDetail /></StaffLayout>} /> */}
-      <Route
-        path="/staff/order-detail"
-        element={
-          <StaffLayout>
-            <StaffOrderDetail />
-          </StaffLayout>
-        }
-      />
+      {/* Protected STAFF routes */}
+      <Route element={<RoleBasedRoute allowedRoles={["STAFF"]} />}>
+        <Route
+          path="/staff/order-list"
+          element={<StaffLayout><StaffOrderList /></StaffLayout>}
+        />
+        <Route
+          path="/staff/order-detail"
+          element={<StaffLayout><StaffOrderDetail /></StaffLayout>}
+        />
+      </Route>
     </Routes>
   );
 };

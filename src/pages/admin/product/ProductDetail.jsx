@@ -39,13 +39,24 @@ function ProductDetail() {
 
         const fetchProduct = async () => {
             try {
-                const res = await fetch(`${API_URL}/products?pageSize=100`);
+                const token = localStorage.getItem("token");
+                const res = await fetch(`${API_URL}/products/admin-and-staff/${id}`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
                 const data = await res.json();
-                const found = data.products.find((p) => p._id === id);
-                setProduct(found);
-                setExistingImages(found.imgUrls || []);
+                if (res.ok && data.success) {
+                    setProduct(data.product);
+                    setExistingImages(data.product.imgUrls || []);
+                } else {
+                    toast.error(data.message || "Failed to load product.");
+                }
             } catch (e) {
-                console.error(e);
+                console.error("Fetch product failed:", e);
+                toast.error("Error fetching product.");
             }
         };
 

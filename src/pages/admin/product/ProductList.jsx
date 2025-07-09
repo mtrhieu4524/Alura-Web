@@ -20,15 +20,26 @@ function ProductList({ searchQuery = "" }) {
 
     const fetchProducts = async () => {
         try {
+            const token = localStorage.getItem("token");
+
             const res = await fetch(
-                `${API_URL}/products?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`
+                `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
             );
+
             const data = await res.json();
             if (data.success) setProducts(data.products || []);
         } catch (error) {
             console.error("Failed to fetch products", error);
         }
     };
+
 
     useEffect(() => {
         fetchProducts();
@@ -61,6 +72,7 @@ function ProductList({ searchQuery = "" }) {
         try {
             const token = localStorage.getItem("token");
             const url = `${API_URL}/products/${isPublic ? "disable" : "enable"}/${id}`;
+
             const res = await fetch(url, {
                 method: "PUT",
                 headers: {
@@ -70,14 +82,17 @@ function ProductList({ searchQuery = "" }) {
 
             const data = await res.json();
             if (res.ok && data.success) {
-                toast.success(`Product ${isPublic ? "hidden" : "shown"} successfully.`);
+                const message = isPublic
+                    ? "Hide product successfully."
+                    : "Show product successfully.";
+                toast.success(message);
                 fetchProducts();
             } else {
                 toast.error(data.message || "Update failed.");
             }
         } catch (err) {
             console.error("Toggle public error:", err);
-            toast.error("Error updating product status.");
+            toast.error("Error when toggle disable and enable product.");
         }
     };
 

@@ -103,7 +103,7 @@ const Login = () => {
 
       console.log("Login response:", data);
 
-   
+
 
       dispatch(
         loginSuccess({
@@ -121,7 +121,14 @@ const Login = () => {
         clearSavedPassword();
       }
 
-      navigate("/");
+      if (data.role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else if (data.role === "STAFF") {
+        navigate("/staff/order-list");
+      } else {
+        navigate("/");
+      }
+
       toast.success("Login successful.");
     } catch (err) {
       toast.error(err.message || "Login failed.");
@@ -131,8 +138,6 @@ const Login = () => {
   };
 
   const handleGuestLogin = () => navigate("/");
-  const handleAdminLogin = () => navigate("/admin/dashboard");
-  const handleStaffLogin = () => navigate("/staff/dashboard");
 
   return (
     <div className="container main_container">
