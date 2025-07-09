@@ -225,16 +225,9 @@ function Cart() {
   // Empty cart component
   const EmptyCart = () => (
     <div className="cart_empty_message">
-      <div className="empty_cart_icon">
-        <i className="fas fa-shopping-cart"></i>
-      </div>
-      <h3>Your cart is empty</h3>
-      <p>Nothing here... Let's add something to the cart!</p>
-      <button
-        className="continue_shopping_btn"
-        onClick={() => navigate("/cosmetics")}>
-        Continue Shopping
-      </button>
+      <h5>Your cart is empty</h5>
+      <p> Let's add something to the cart!</p>
+
     </div>
   );
 
@@ -242,6 +235,7 @@ function Cart() {
   const CartItem = ({ item }) => {
     const product = item.productId;
     const quantity = item.quantity;
+    const productType = item.productType;
     const price = item.unitPrice;
 
     return (
@@ -273,6 +267,9 @@ function Cart() {
               </span>
             </div>
           </div>
+          <p className="cart_item_description">
+            Type: {productType}
+          </p>
 
           <p className="cart_item_description">
             Price: {price?.toLocaleString() || 0} VND

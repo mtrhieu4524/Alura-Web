@@ -21,6 +21,10 @@ function Profile() {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const [userId, setUserId] = useState(null);
 
     const navItems = [
@@ -64,7 +68,7 @@ function Profile() {
                         return res.json();
                     })
                     .then(data => {
-                        if (data && data.success && data.user) {
+                        if (data?.success && data.user) {
                             const user = data.user;
                             setTempFirstName(user.name || "");
                             setEmail(user.email || "");
@@ -88,15 +92,6 @@ function Profile() {
         setPasswordFormVisible(!isPasswordFormVisible);
     };
 
-    const togglePasswordVisibility = (id, eyeId) => {
-        const passwordField = document.getElementById(id);
-        const eyeIcon = document.getElementById(eyeId);
-        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-        passwordField.setAttribute("type", type);
-        eyeIcon.classList.toggle("fa-eye");
-        eyeIcon.classList.toggle("fa-eye-slash");
-    };
-
     const handleSaveProfileChanges = async () => {
         const token = localStorage.getItem("token");
         if (!token || !userId) {
@@ -106,9 +101,9 @@ function Profile() {
 
         const payload = {
             name: tempFirstName,
-            email: email,
-            phone: phone,
-            address: address,
+            email,
+            phone,
+            address,
         };
 
         try {
@@ -134,8 +129,54 @@ function Profile() {
     };
 
     const handleChangePassword = async () => {
-        // Add password change logic here
-        toast.success("Password changed (mock)");
+        if (newPassword.length < 8) {
+            toast.error("New password must have at least 8 characters.");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error("Passwords do not match.");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_URL}/auth/change-password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                }),
+            });
+
+            const contentType = res.headers.get("content-type");
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text);
+            }
+
+            if (contentType && contentType.includes("application/json")) {
+                const data = await res.json();
+                if (data.success) {
+                    toast.success("Password changed successfully.");
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                    setPasswordFormVisible(false);
+                } else {
+                    toast.error(data.message || "Failed to change password.");
+                }
+            } else {
+                throw new Error("Unexpected response from server.");
+            }
+        } catch (error) {
+            console.error("Password change error:", error);
+            toast.error("Error: " + error.message);
+        }
     };
 
     return (
@@ -143,8 +184,7 @@ function Profile() {
             <Breadcrumb items={navItems} />
             <div className="edit_profile_container">
                 <div className="setting_menu">
-                    <div className="setting_menu_section">
-                    </div>
+                    <div className="setting_menu_section" />
                     <div className="setting_menu_items">
                         {menuItems.map((item) => (
                             <div
@@ -174,12 +214,7 @@ function Profile() {
                         </div>
                         <div className="edit_form_group">
                             <label>Email *</label>
-                            <input
-                                className="edit_email"
-                                type="email"
-                                value={email}
-                                readOnly
-                            />
+                            <input className="edit_email" type="email" value={email} readOnly />
                         </div>
                         <div className="edit_form_group">
                             <label>Phone number</label>
@@ -218,18 +253,14 @@ function Profile() {
                                     <div className="edit_form_group full_width position-relative">
                                         <label>Current password</label>
                                         <input
-                                            type="password"
-                                            id="current_password"
+                                            type={showCurrentPassword ? "text" : "password"}
                                             value={currentPassword}
                                             onChange={(e) => setCurrentPassword(e.target.value)}
                                         />
                                         <span className="edit_password_eye">
                                             <i
-                                                className="far fa-eye"
-                                                id="edit_current_password_eye"
-                                                onClick={() =>
-                                                    togglePasswordVisibility("current_password", "edit_current_password_eye")
-                                                }
+                                                className={`far ${showCurrentPassword ? "fa-eye-slash" : "fa-eye"}`}
+                                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                                                 style={{ cursor: "pointer" }}
                                             ></i>
                                         </span>
@@ -237,18 +268,14 @@ function Profile() {
                                     <div className="edit_form_group full_width position-relative">
                                         <label>New password</label>
                                         <input
-                                            type="password"
-                                            id="new_password"
+                                            type={showNewPassword ? "text" : "password"}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                         />
                                         <span className="edit_password_eye">
                                             <i
-                                                className="far fa-eye"
-                                                id="edit_new_password_eye"
-                                                onClick={() =>
-                                                    togglePasswordVisibility("new_password", "edit_new_password_eye")
-                                                }
+                                                className={`far ${showNewPassword ? "fa-eye-slash" : "fa-eye"}`}
+                                                onClick={() => setShowNewPassword(!showNewPassword)}
                                                 style={{ cursor: "pointer" }}
                                             ></i>
                                         </span>
@@ -256,18 +283,14 @@ function Profile() {
                                     <div className="edit_form_group full_width position-relative">
                                         <label>Confirm new password</label>
                                         <input
-                                            type="password"
-                                            id="confirm_password"
+                                            type={showConfirmPassword ? "text" : "password"}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                         />
                                         <span className="edit_password_eye">
                                             <i
-                                                className="far fa-eye"
-                                                id="edit_confirm_password_eye"
-                                                onClick={() =>
-                                                    togglePasswordVisibility("confirm_password", "edit_confirm_password_eye")
-                                                }
+                                                className={`far ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                                 style={{ cursor: "pointer" }}
                                             ></i>
                                         </span>
@@ -276,6 +299,7 @@ function Profile() {
                                         type="button"
                                         className="edit_form_save_button"
                                         onClick={handleChangePassword}
+                                        disabled={!currentPassword || !newPassword || !confirmPassword}
                                     >
                                         Save new password
                                     </button>
