@@ -62,7 +62,7 @@ const MainRoutes = () => {
         <Route element={<UserLayout />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/order-history" element={<OrderHistory />} />
-          <Route path="/order-detail/:id" element={<OrderDetail />} />
+          <Route path="/order-history/:id" element={<OrderDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/invoice" element={<Invoice />} />

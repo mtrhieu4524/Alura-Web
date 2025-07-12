@@ -86,13 +86,27 @@ body {
     }
 }
 
-
 .order_filters {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
-    width: 40%;
-    gap: 20px;
+    width: 100%;
 }
+
+.order_history_title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1c1c1c;
+    margin: 0;
+}
+
+.order_filter_controls {
+    display: flex;
+    gap: 20px;
+    width: 40%;
+}
+
 
 .order_filter_select {
     padding: 5px 10px;
