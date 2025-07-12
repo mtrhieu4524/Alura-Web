@@ -3,62 +3,83 @@ import { useNavigate } from "react-router-dom";
 import Table from '../../../components/Table/Table';
 import { Chip, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-function OrderList() {
+const API_URL = import.meta.env.VITE_API_URL;
+
+function OrderList({ searchQuery = "" }) {
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [statusFilter, setStatusFilter] = useState("All");
+    const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         document.title = "Manage Order - Alurà System Management";
-    }, []);
+        fetchOrders();
+    }, [searchQuery]);
 
-    const columns = ["Order ID", "User", "Order Date", "Total", "Status", "Detail"];
+    const fetchOrders = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return console.error("No token found.");
 
-    const fakeData = [
-        { order_id: "ORD001", order_date: "01/06/2025", total: "$120.00", status: "Pending" },
-        { order_id: "ORD002", order_date: "02/06/2025", total: "$85.50", status: "Paid" },
-        { order_id: "ORD003", order_date: "03/06/2025", total: "$59.99", status: "Delivering" },
-        { order_id: "ORD004", order_date: "04/06/2025", total: "$132.00", status: "Success" },
-        { order_id: "ORD005", order_date: "05/06/2025", total: "$47.25", status: "Canceled" },
-        { order_id: "ORD006", order_date: "06/06/2025", total: "$99.90", status: "Pending" },
-        { order_id: "ORD007", order_date: "07/06/2025", total: "$74.20", status: "Delivering" },
-        { order_id: "ORD008", order_date: "08/06/2025", total: "$150.00", status: "Success" },
-    ];
+        try {
+            const url = searchQuery
+                ? `${API_URL}/order/searchById?search=${searchQuery}`
+                : `${API_URL}/order/all`;
+
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`HTTP ${res.status}: ${errorText}`);
+            }
+
+            const data = await res.json();
+            setOrders(Array.isArray(data) ? data : [data]);
+        } catch (error) {
+            console.error("Failed to fetch orders:", error.message);
+        }
+    };
+
+    const columns = ["Order ID", "User", "Order Date", "Total (VND)", "Status", "Detail"];
 
     const getStatusChip = (status) => {
         const statusMap = {
             Pending: { label: "Pending", color: "warning" },
+            // Processing: { label: "Processing", color: "error" },
             Paid: { label: "Paid", color: "info" },
-            Delivering: { label: "Delivering", color: "primary" },
+            Delivered: { label: "Delivered", color: "primary" },
+            Shipped: { label: "Shipped", color: "info" },
             Success: { label: "Success", color: "success" },
-            Canceled: { label: "Canceled", color: "error" },
+            Cancelled: { label: "Cancelled", color: "error" },
         };
         const { label, color } = statusMap[status] || { label: status, color: "default" };
-        return <Chip
-            label={label}
-            color={color}
-            size="small"
-            sx={{ fontSize: "11px", height: 18 }}
-        />;
+        return <Chip label={label} color={color} size="small" sx={{ fontSize: "11px", height: 18 }} />;
     };
 
-    const filteredData = statusFilter === "All"
-        ? fakeData
-        : fakeData.filter(order => order.status === statusFilter);
+    const filteredOrders = statusFilter === "All"
+        ? orders
+        : orders.filter(order => order.orderStatus === statusFilter || order.paymentStatus === statusFilter);
 
-    const tableData = filteredData.map(order => ({
-        order_id: order.order_id,
-        order_date: order.order_date,
-        total: order.total,
-        status: getStatusChip(order.status),
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-GB");
+    };
+
+    const tableData = filteredOrders.map(order => ({
+        order_id: order._id,
+        order_date: formatDate(order.orderDate),
+        "total_(vnd)": order.totalAmount.toLocaleString(),
+        status: getStatusChip(order.orderStatus || order.paymentStatus),
         detail: (
             <i
                 className="fas fa-info-circle detail_icon"
                 title="View Details"
-                // onClick={() => navigate(`/staff/order-detail/${order.order_id}`)}
-                onClick={() => navigate(`/staff/order-detail`)}
+                onClick={() => navigate(`/staff/order-list/${order._id}`)}
             />
-        )
+        ),
+        user: order.userId?.name || "Unknown"
     }));
 
     return (
@@ -75,34 +96,21 @@ function OrderList() {
                             value={statusFilter}
                             label="Status"
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            sx={{
-                                height: 35,
-                                fontSize: 14,
-                                padding: '0 8px',
-                            }}
+                            sx={{ height: 35, fontSize: 14, padding: '0 8px' }}
                         >
                             <MenuItem value="All">All</MenuItem>
-                            <MenuItem value="Unpaid">Unpaid</MenuItem>
-                            <MenuItem value="Paid">Paid</MenuItem>
-                            <MenuItem value="Preparing">Preparing</MenuItem>
-                            <MenuItem value="Delivering">Delivering</MenuItem>
-                            <MenuItem value="Completed">Completed</MenuItem>
+                            <MenuItem value="Processing">Processing</MenuItem>
+                            <MenuItem value="Pending">Pending</MenuItem>
+                            <MenuItem value="Delivered">Delivered</MenuItem>
+                            <MenuItem value="Shipped">Shipped</MenuItem>
                             <MenuItem value="Cancelled">Cancelled</MenuItem>
+                            <MenuItem value="Success">Success</MenuItem>
                         </Select>
                     </FormControl>
                 </div>
 
                 <Table columns={columns} data={tableData} />
             </div>
-
-            {isModalOpen && (
-                <div className="modal_overlay">
-                    <div className="modal_content">
-                        <button className="close_modal_btn" onClick={() => setIsModalOpen(false)}>×</button>
-                        <h3>Add product modal</h3>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

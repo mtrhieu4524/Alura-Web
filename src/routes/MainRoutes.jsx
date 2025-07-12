@@ -120,7 +120,7 @@ const MainRoutes = () => {
           element={<StaffLayout><StaffOrderList /></StaffLayout>}
         />
         <Route
-          path="/staff/order-detail"
+          path="/staff/order-list/:id"
           element={<StaffLayout><StaffOrderDetail /></StaffLayout>}
         />
       </Route>

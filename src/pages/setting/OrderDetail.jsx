@@ -40,6 +40,13 @@ function OrderDetail() {
     };
 
     const fetchOrderDetail = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found, redirecting...");
+        navigate("/sign-in");
+        return;
+      }
+
       try {
         const res = await fetch(`${API_URL}/order/by-order/${orderNumber}`, {
           headers: {
@@ -64,7 +71,7 @@ function OrderDetail() {
           orderId: data._id,
           date: data.orderDate,
           name: data.userId?.name || "Unknown",
-          phoneNumber: data.userId?.phoneNumber || "None",
+          phoneNumber: data.userId?.phone || "None",
           shippingAddress: data.shippingAddress,
           paymentMethod: data.paymentMethod,
           note: data.note || "No additional notes",
@@ -153,9 +160,8 @@ function OrderDetail() {
             {menuItems.map((item) => (
               <div
                 key={item.path}
-                className={`order_history_setting_menu_item ${
-                  item.path === "/order-history" ? "order-history-item" : ""
-                }`}
+                className={`order_history_setting_menu_item ${item.path === "/order-history" ? "order-history-item" : ""
+                  }`}
                 onClick={() => navigate(item.path)}>
                 <i
                   className={`${item.icon} order_history_setting_menu_icon ${item.iconClass}`}></i>

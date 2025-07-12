@@ -1,8 +1,6 @@
 import { Image } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import vnpay from "../../assets/vnpay.webp";
-import cash from "../../assets/cashLogo.png";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Insta from "../../components/Insta/Instagram";
 import "../../styles/cart/Checkout.css";
@@ -97,9 +95,8 @@ function Checkout() {
   useEffect(() => {
     const queryString = createQueryString(searchParams);
 
-    const api = `${
-      import.meta.env.VITE_API_URL
-    }/payment/vnpay/return?${queryString}`;
+    const api = `${import.meta.env.VITE_API_URL
+      }/payment/vnpay/return?${queryString}`;
     console.log("API URL:", api);
   }, []);
 
@@ -192,6 +189,7 @@ function Checkout() {
           shippingMethod: shippingMethod,
           promotionId: null,
           note: note || "",
+          phone: phone,
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };
 
@@ -254,6 +252,7 @@ function Checkout() {
           shippingMethod: shippingMethod,
           promotionId: null,
           note: note || "",
+          phone: phone,
           paymentMethod: paymentMethod,
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };
@@ -279,7 +278,7 @@ function Checkout() {
         const result = await response.json();
 
         toast.success("Order placed successfully!");
-        navigate("/", {
+        navigate("/order-history", {
           state: {
             orderId: result.orderId,
             message: result.message,
@@ -420,9 +419,10 @@ function Checkout() {
             <i className="fas fa-credit-card"></i>Payment method
           </h5>
           <div className="payment_methods">
-            {/* payment COD */}
+          </div>
+          <div className="shipping_methods">
             <div
-              className="payment_method"
+              className="shipping_method"
               onClick={() => setPaymentMethod("COD")}>
               <input
                 type="radio"
@@ -432,24 +432,15 @@ function Checkout() {
                 checked={paymentMethod === "COD"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <div className="payment_vnpay_wrapper">
-                <p className="payment_label" htmlFor="cod">
-                  COD
-                </p>
-                <img
-                  src={cash}
-                  style={{
-                    width: "30px",
-                    marginTop: "-34px",
-                    marginBottom: "10px",
-                    marginLeft: "-17px",
-                  }}
-                  alt="COD"
-                />
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="cod">
+                  Cash On Delivery (COD)
+                </label>
+                <p className="shipping_description">(Pay after delivery.)</p>
               </div>
             </div>
             <div
-              className="payment_method"
+              className="shipping_method"
               onClick={() => setPaymentMethod("VNPAY")}>
               <input
                 type="radio"
@@ -459,20 +450,11 @@ function Checkout() {
                 checked={paymentMethod === "VNPAY"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <div className="payment_vnpay_wrapper">
-                <p className="payment_label" htmlFor="vnpay">
+              <div className="shipping_method_wrapper">
+                <label className="shipping_label" htmlFor="vnpay">
                   VNPAY
-                </p>
-                <img
-                  src={vnpay}
-                  style={{
-                    width: "30px",
-                    marginTop: "-34px",
-                    marginBottom: "10px",
-                    marginLeft: "-17px",
-                  }}
-                  alt="VNPAY"
-                />
+                </label>
+                <p className="shipping_description">(Pay before delivery.)</p>
               </div>
             </div>
           </div>

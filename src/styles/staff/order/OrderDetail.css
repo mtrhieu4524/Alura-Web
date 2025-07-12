@@ -201,3 +201,41 @@
     align-items: center;
     justify-content: center;
 }
+
+.order_detail_customer_info {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order_detail_customer_row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.order_detail_customer_item {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    margin-bottom: 5px;
+    margin-right: 5%;
+    width: 45%;
+    box-sizing: border-box;
+}
+
+.order_detail_customer_item i {
+    margin-right: 10px;
+}
+
+.order_detail_customer_item .fa-credit-card,
+.order_detail_customer_item .fa-shipping-fast {
+    margin-right: 10px;
+}
+
+.order_detail_customer_item .fa-user,
+.order_detail_customer_item .fa-phone,
+.order_detail_customer_item .fa-sticky-note,
+.order_detail_customer_item .fa-map-marker-alt {
+    margin-right: 14px;
+}

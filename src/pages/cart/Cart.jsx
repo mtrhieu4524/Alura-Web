@@ -123,7 +123,7 @@ function Cart() {
       toast.success("Quantity updated successfully.");
     } catch (error) {
       console.error("Error updating quantity:", error);
-      toast.error("An error occurred while updating the quantity.");
+      toast.error("Quantity is not enough.");
     } finally {
       setUpdating(false);
     }

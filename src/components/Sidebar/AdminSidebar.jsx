@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import './AdminSidebar.css';
 
 const AdminSidebar = () => {
@@ -8,6 +9,17 @@ const AdminSidebar = () => {
     const navigate = useNavigate();
 
     const currentPath = location.pathname;
+
+    const token = localStorage.getItem('token');
+    let email = '';
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            email = decoded.email;
+        } catch (err) {
+            console.error('Failed to decode token:', err);
+        }
+    }
 
     useEffect(() => {
         const handleResize = () => {
@@ -27,6 +39,7 @@ const AdminSidebar = () => {
         setExpanded((prev) => !prev);
     };
 
+
     const menuItems = [
         { label: 'Dashboard', icon: 'fa-bar-chart', path: '/admin/dashboard' },
         { label: 'Manage Account', icon: 'fa-users', path: '/admin/account-list' },
@@ -42,7 +55,11 @@ const AdminSidebar = () => {
             <div className="admin_sidebar_header">
                 <div className={`admin_sidebar_profile ${expanded ? '' : 'hidden'}`}>
                     <div className="admin_sidebar_full_name">Admin</div>
+                    <div className="admin_sidebar_under_name">
+                        {email ? ` (${email})` : ''}
+                    </div>
                 </div>
+
                 <div className="admin_sidebar_toggle_button toggle-button" onClick={toggleSidebar}>
                     {expanded ? <i className="fas fa-angle-left"></i> : <i className="fas fa-angle-right"></i>}
                 </div>
