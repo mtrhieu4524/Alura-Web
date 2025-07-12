@@ -142,7 +142,7 @@ function Profile() {
         try {
             const token = localStorage.getItem("token");
             const res = await fetch(`${API_URL}/auth/change-password`, {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
@@ -162,20 +162,22 @@ function Profile() {
             if (contentType && contentType.includes("application/json")) {
                 const data = await res.json();
                 if (data.success) {
-                    toast.success("Password changed successfully.");
                     setCurrentPassword("");
                     setNewPassword("");
                     setConfirmPassword("");
                     setPasswordFormVisible(false);
                 } else {
-                    toast.error(data.message || "Failed to change password.");
+                    toast.success("Password changed successfully.");
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
                 }
             } else {
                 throw new Error("Unexpected response from server.");
             }
         } catch (error) {
             console.error("Password change error:", error);
-            toast.error("Error: " + error.message);
+            toast.error("Current password is wrong.");
         }
     };
 

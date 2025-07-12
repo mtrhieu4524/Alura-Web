@@ -34,7 +34,7 @@ const AdminSidebar = () => {
         { label: 'Manage Batch', icon: 'fa-cube', path: '/admin/batch-list' },
         { label: 'Manage Batch Stock', icon: 'fa-cubes', path: '/admin/batch-stock-list' },
         { label: 'Manage Batch Certificate', icon: 'fa-file-text', path: '/admin/batch-certificate-list' },
-        { label: 'Distrubutor & Warehouse', icon: 'fa-database', path: '/admin/warehouse-list' },
+        { label: 'Distributor & Warehouse', icon: 'fa-database', path: '/admin/warehouse-list' },
     ];
 
     return (
