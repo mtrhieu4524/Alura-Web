@@ -189,7 +189,7 @@ function Checkout() {
           shippingMethod: shippingMethod,
           promotionId: null,
           note: note || "",
-          phone: phone,
+          phoneNumber: phone,
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };
 
@@ -252,7 +252,7 @@ function Checkout() {
           shippingMethod: shippingMethod,
           promotionId: null,
           note: note || "",
-          phone: phone,
+          phoneNumber: phone,
           paymentMethod: paymentMethod,
           selectedCartItemIds: cartItems.map((item) => item._id || item.id),
         };

@@ -78,7 +78,7 @@ function OrderDetail() {
           totalPrice: data.totalAmount,
           shippingFee: data.shippingFee || 0,
           shippingMethod: data.shippingMethod || "STANDARD",
-          orderStatus: data.paymentStatus || data.orderStatus || "Unknown",
+          orderStatus: data.orderStatus || "Pending",
         });
 
         const productPromises = data.items.map(async (item) => {

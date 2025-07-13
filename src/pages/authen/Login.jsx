@@ -29,6 +29,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // 👈 New state for toggle
 
   useEffect(() => {
     document.title = "Alurà - Sign In";
@@ -51,26 +52,6 @@ const Login = () => {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
-
-  useEffect(() => {
-    const togglePassword = document.getElementById("togglePassword");
-    const handleTogglePassword = () => {
-      const passwordField = document.getElementById("password");
-      const type =
-        passwordField.getAttribute("type") === "password" ? "text" : "password";
-      passwordField.setAttribute("type", type);
-      togglePassword.classList.toggle("fa-eye");
-      togglePassword.classList.toggle("fa-eye-slash");
-    };
-    if (togglePassword) {
-      togglePassword.addEventListener("click", handleTogglePassword);
-    }
-    return () => {
-      if (togglePassword) {
-        togglePassword.removeEventListener("click", handleTogglePassword);
-      }
-    };
-  }, []);
 
   const sliderSettings = {
     dots: true,
@@ -100,10 +81,6 @@ const Login = () => {
       }
 
       const data = await resp.json();
-
-      console.log("Login response:", data);
-
-
 
       dispatch(
         loginSuccess({
@@ -165,7 +142,7 @@ const Login = () => {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
                 id="password"
                 placeholder="Enter password"
@@ -175,9 +152,10 @@ const Login = () => {
               />
               <span className="password_eye">
                 <i
-                  className="far fa-eye"
-                  id="togglePassword"
-                  style={{ cursor: "pointer" }}></i>
+                  className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ cursor: "pointer" }}
+                ></i>
               </span>
             </div>
 
@@ -197,11 +175,13 @@ const Login = () => {
               <button
                 type="submit"
                 className="sign_in_button btn btn-block"
-                disabled={loading}>
+                disabled={loading}
+              >
                 {loading && (
                   <i
                     className="fas fa-spinner fa-spin"
-                    style={{ marginRight: "5px" }}></i>
+                    style={{ marginRight: "5px" }}
+                  ></i>
                 )}
                 Sign in
               </button>
@@ -226,11 +206,10 @@ const Login = () => {
                 <div
                   className="guest_login_section"
                   onClick={handleGuestLogin}
-                  style={{ cursor: "pointer" }}>
+                  style={{ cursor: "pointer" }}
+                >
                   Navigate to home
                 </div>
-                {/* <div className="guest_login_section" onClick={handleAdminLogin} style={{ cursor: "pointer" }}>Navigate to admin</div>
-                <div className="guest_login_section" onClick={handleStaffLogin} style={{ cursor: "pointer" }}>Navigate to staff</div> */}
               </div>
             </div>
           </form>

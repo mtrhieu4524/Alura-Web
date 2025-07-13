@@ -24,9 +24,11 @@ function WarehouseList() {
         address: "",
     });
 
+    const getToken = () => localStorage.getItem("token");
+
     const getAdminId = () => {
         try {
-            const token = localStorage.getItem("token");
+            const token = getToken();
             if (!token) return "";
             const decoded = jwtDecode(token);
             return decoded?.userId || "";
@@ -49,19 +51,27 @@ function WarehouseList() {
 
     const fetchWarehouses = async () => {
         try {
-            const res = await fetch(`${API_URL}/warehouse`);
+            const res = await fetch(`${API_URL}/warehouse`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
             const data = await res.json();
-            if (data.success) {
-                setWarehouses(data.data || []);
+
+            if (Array.isArray(data.data)) {
+                setWarehouses(data.data);
+            } else {
+                setWarehouses([]);
             }
         } catch (error) {
             console.error("Failed to fetch warehouses", error);
         }
     };
 
+
     const fetchDistributors = async () => {
         try {
-            const res = await fetch(`${API_URL}/distributor`);
+            const res = await fetch(`${API_URL}/distributor`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
             const data = await res.json();
             if (Array.isArray(data)) {
                 setDistributors(data);
@@ -73,7 +83,9 @@ function WarehouseList() {
 
     const fetchDistributorById = async (id) => {
         try {
-            const res = await fetch(`${API_URL}/distributor/${id}`);
+            const res = await fetch(`${API_URL}/distributor/${id}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
             if (res.ok) {
                 const data = await res.json();
                 return data;
@@ -91,46 +103,38 @@ function WarehouseList() {
             return;
         }
 
-        if (selectedDistributor) {
-            try {
-                const res = await fetch(`${API_URL}/distributor/${selectedDistributor._id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                });
+        const method = selectedDistributor ? "PUT" : "POST";
+        const url = selectedDistributor
+            ? `${API_URL}/distributor/${selectedDistributor._id}`
+            : `${API_URL}/distributor`;
 
-                if (res.ok) {
-                    const updated = await res.json();
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`,
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                if (selectedDistributor) {
                     setDistributors((prev) =>
-                        prev.map((d) => (d._id === updated._id ? updated : d))
+                        prev.map((d) => (d._id === result._id ? result : d))
                     );
                     toast.success("Distributor updated successfully!");
-                    closeDistributorModal();
                 } else {
-                    toast.error("Failed to update distributor.");
-                }
-            } catch (error) {
-                toast.error("Failed to update distributor.");
-            }
-        } else {
-            try {
-                const res = await fetch(`${API_URL}/distributor`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                });
-
-                if (res.ok) {
-                    const newDistributor = await res.json();
-                    setDistributors((prev) => [...prev, newDistributor]);
+                    setDistributors((prev) => [...prev, result]);
                     toast.success("Distributor added successfully!");
-                    closeDistributorModal();
-                } else {
-                    toast.error("Failed to add distributor.");
                 }
-            } catch (error) {
-                toast.error("Failed to add distributor.");
+                closeDistributorModal();
+            } else {
+                toast.error("Failed to save distributor.");
             }
+        } catch (error) {
+            toast.error("Failed to save distributor.");
         }
     };
 
@@ -140,6 +144,7 @@ function WarehouseList() {
         try {
             const res = await fetch(`${API_URL}/distributor/${selectedDistributor._id}`, {
                 method: "DELETE",
+                headers: { Authorization: `Bearer ${getToken()}` },
             });
 
             if (res.ok) {
@@ -208,7 +213,10 @@ function WarehouseList() {
         try {
             const res = await fetch(endpoint, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`,
+                },
                 body: JSON.stringify(warehouseForm),
             });
 
@@ -234,6 +242,7 @@ function WarehouseList() {
         try {
             const res = await fetch(`${API_URL}/warehouse/${selectedWarehouse._id}`, {
                 method: "DELETE",
+                headers: { Authorization: `Bearer ${getToken()}` },
             });
 
             if (res.ok) {

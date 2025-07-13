@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "../../../components/Table/Table";
-import "../../../styles/admin/warehouse/WarehouseList.css"; // reuse warehouse styles
+import "../../../styles/admin/warehouse/WarehouseList.css";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -19,6 +19,8 @@ function BatchCertificateList() {
         note: ""
     });
 
+    const getToken = () => localStorage.getItem("token");
+
     useEffect(() => {
         document.title = "Manage Batch Certificate - Alurà System Management";
         fetchCertificates();
@@ -26,15 +28,22 @@ function BatchCertificateList() {
 
     const fetchCertificates = async () => {
         try {
-            const res = await fetch(`${API_URL}/batch-certificate`);
+            const res = await fetch(`${API_URL}/batch-certificate`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            });
             const data = await res.json();
-            if (Array.isArray(data)) {
-                setCertificates(data);
+            if (data.success && Array.isArray(data.data)) {
+                setCertificates(data.data);
+            } else {
+                setCertificates([]);
             }
         } catch (error) {
             console.error("Failed to fetch batch certificates", error);
         }
     };
+
 
     const handleSaveCertificate = async () => {
         const { certificateCode, issueDate, issuedBy, fileUrl } = formData;
@@ -51,7 +60,10 @@ function BatchCertificateList() {
         try {
             const res = await fetch(endpoint, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`
+                },
                 body: JSON.stringify(formData),
             });
 
@@ -78,6 +90,9 @@ function BatchCertificateList() {
         try {
             const res = await fetch(`${API_URL}/batch-certificate/${selectedCertificate._id}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
             });
 
             if (res.ok) {
@@ -142,7 +157,13 @@ function BatchCertificateList() {
 
     const data = certificates.map((c) => ({
         certificate_code: c.certificateCode,
-        issue_date: c.issueDate ? new Date(c.issueDate).toLocaleDateString() : "N/A",
+        issue_date: c.issueDate
+            ? new Date(c.issueDate).toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            })
+            : "N/A",
         issued_by: c.issuedBy,
         file: (
             <a href={c.fileUrl} target="_blank" rel="noreferrer">

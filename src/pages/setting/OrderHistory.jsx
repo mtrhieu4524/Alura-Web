@@ -16,7 +16,7 @@ function OrderHistory() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
   const [loading, setLoading] = useState(true);
-  const [confirmCancelOrderId, setConfirmCancelOrderId] = useState(null); // confirmation tracking
+  const [confirmCancelOrderId, setConfirmCancelOrderId] = useState(null);
   const ordersPerPage = 6;
   const { user } = useSelector((state) => state.auth);
   const token = localStorage.getItem("token");
@@ -235,7 +235,7 @@ function OrderHistory() {
                           variant="outlined"
                           size="small"
                           color="error"
-                          disabled={!["Unpaid", "Processing"].includes(order.orderStatus)}
+                          disabled={!["Pending", "Processing"].includes(order.orderStatus)}
                           onClick={() => handleCancelOrder(order.orderId)}
                         >
                           Cancel Order
