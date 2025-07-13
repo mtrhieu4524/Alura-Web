@@ -21,7 +21,9 @@ function OrderList({ searchQuery = "" }) {
 
         try {
             const url = searchQuery
-                ? `${API_URL}/order/searchById?search=${searchQuery}`
+                ? `${API_URL}/order/all?searchById=${encodeURIComponent(
+                    searchQuery
+                )}`
                 : `${API_URL}/order/all`;
 
             const res = await fetch(url, {
