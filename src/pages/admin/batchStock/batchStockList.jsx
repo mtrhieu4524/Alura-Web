@@ -6,29 +6,27 @@ import '../../../styles/admin/batchStock/BatchStockList.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function BatchStockList() {
+function BatchStockList({ searchQuery = "" }) {
   const { token, user } = useSelector((state) => state.auth);
 
   const [isLoading, setIsLoading] = useState(false);
   const [batchStocks, setBatchStocks] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  
-  // Data for dropdowns
+
   const [batches, setBatches] = useState([]);
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
-  
-  // Form state
+
   const [formData, setFormData] = useState({
     batchId: '',
     productId: '',
     warehouseId: '',
     quantity: '',
     note: '',
-    handledBy: user || ''  
+    handledBy: user || ''
   });
-  
+
 
 
   useEffect(() => {
@@ -40,12 +38,18 @@ function BatchStockList() {
   const fetchBatchStocks = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/batch-stock`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const url = searchQuery
+        ? `${API_URL}/batch-stock?batchId=${encodeURIComponent(searchQuery)}`
+        : `${API_URL}/batch-stock`;
+
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setBatchStocks(data);
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setBatchStocks(json.data);
+      } else {
+        setBatchStocks([]);
       }
     } catch (error) {
       console.error("Failed to fetch batch stocks", error);
@@ -53,9 +57,9 @@ function BatchStockList() {
     setIsLoading(false);
   };
 
+
   const fetchDropdownData = async () => {
     try {
-      // Fetch batches
       const batchRes = await fetch(`${API_URL}/batch`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -64,7 +68,6 @@ function BatchStockList() {
         setBatches(batchData);
       }
 
-      // Fetch products
       const productRes = await fetch(`${API_URL}/products`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -73,7 +76,6 @@ function BatchStockList() {
         setProducts(productData.products);
       }
 
-      // Fetch warehouses
       const warehouseRes = await fetch(`${API_URL}/warehouse`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -97,7 +99,7 @@ function BatchStockList() {
   const handleCreateBatchStock = async (e) => {
     e.preventDefault();
     setIsCreating(true);
-    
+
     try {
       const payload = {
         ...formData,
@@ -171,9 +173,9 @@ function BatchStockList() {
     warehouse: stock.warehouseId?.name || "-",
     quantity: stock.quantity ?? "-",
     remaining: stock.remaining ?? "-",
-    expiryDate: stock.batchId?.expiryDate ? 
+    expiryDate: stock.batchId?.expiryDate ?
       new Date(stock.batchId.expiryDate).toLocaleDateString() : "-",
-    exportedAt: stock.exportedAt ? 
+    exportedAt: stock.exportedAt ?
       new Date(stock.exportedAt).toLocaleString() : "-",
     note: stock.note || "-"
   }));
@@ -183,7 +185,7 @@ function BatchStockList() {
       <div className="batch_stock_list_container">
         <div className="batch_stock_list_header">
           <h2 className="admin_main_title">Manage Batch Stock</h2>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => setShowCreateModal(true)}
           >
@@ -197,7 +199,6 @@ function BatchStockList() {
           <Table columns={columns} data={tableData} />
         )}
 
-        {/* Create Modal */}
         {showCreateModal && (
           <Modal onClose={handleCloseModal}>
             <div className="modal-content">
@@ -215,7 +216,7 @@ function BatchStockList() {
                     <option value="">Chọn batch</option>
                     {batches.map(batch => (
                       <option key={batch._id} value={batch._id}>
-                        {batch.batchCode} - {batch.productId?.name || 'N/A'} 
+                        {batch.batchCode} - {batch.productId?.name || 'N/A'}
                         (Còn: {batch.quantity})
                       </option>
                     ))}
@@ -300,15 +301,15 @@ function BatchStockList() {
                 </div>
 
                 <div className="modal-actions">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn btn-secondary"
                     onClick={handleCloseModal}
                   >
                     Hủy
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="btn btn-primary"
                     disabled={isCreating}
                   >

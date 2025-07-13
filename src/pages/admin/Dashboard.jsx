@@ -93,7 +93,7 @@ function Dashboard() {
               id="month-select"
               value={months[months.length - 1] || ""}
               label="Month"
-              onChange={() => {}}
+              onChange={() => { }}
               sx={{
                 height: 35,
                 fontSize: 14,
@@ -161,44 +161,44 @@ function Dashboard() {
             <thead>
               <tr>
                 <th>Product Name</th>
-                <th>Date Time</th>
+                {/* <th>Date Time</th> */}
                 <th>Price</th>
-                <th>Quantity</th>
-                <th>Amount</th>
+                <th>Sold</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Pocket Drone 2.4G</td>
-                <td>07 April 2018</td>
+                {/* <td>07 April 2018</td> */}
                 <td>$129.99</td>
                 <td>32</td>
                 <td>$6089.58</td>
               </tr>
               <tr>
                 <td>Marco Lightweight Shirt</td>
-                <td>15 March 2018</td>
+                {/* <td>15 March 2018</td> */}
                 <td>$55.99</td>
                 <td>47</td>
                 <td>$3689.73</td>
               </tr>
               <tr>
                 <td>Lightweight Jacket</td>
-                <td>10 March 2018</td>
+                {/* <td>10 March 2018</td> */}
                 <td>$73.99</td>
                 <td>53</td>
                 <td>$1689.57</td>
               </tr>
               <tr>
                 <td>DJI Phantom 4 PRO</td>
-                <td>07 March 2018</td>
+                {/* <td>07 March 2018</td> */}
                 <td>$499.99</td>
                 <td>25</td>
                 <td>$8489.05</td>
               </tr>
               <tr>
                 <td>ST SwellPro Drone</td>
-                <td>02 March 2018</td>
+                {/* <td>02 March 2018</td> */}
                 <td>$219.99</td>
                 <td>12</td>
                 <td>$2689.58</td>

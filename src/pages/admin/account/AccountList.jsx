@@ -42,9 +42,11 @@ function AccountList({ searchQuery }) {
                 setUsers(data.users);
             } else {
                 console.error("Failed to fetch users");
+                toast.error("Failed to load user accounts");
             }
         } catch (error) {
             console.error("Error fetching users:", error);
+            toast.error("Error loading accounts.");
         } finally {
             setLoading(false);
         }
@@ -64,8 +66,9 @@ function AccountList({ searchQuery }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem("token");
+
         try {
-            const token = localStorage.getItem("token");
             const response = await fetch(`${API_URL}/auth/register-staff`, {
                 method: "POST",
                 headers: {
@@ -92,7 +95,7 @@ function AccountList({ searchQuery }) {
                 toast.error(data.message || "Failed to create staff account.");
             }
         } catch (err) {
-            console.error("Error:", err);
+            console.error("Error creating account:", err);
             toast.error("An error occurred while creating the account.");
         }
     };
@@ -199,7 +202,8 @@ function AccountList({ searchQuery }) {
                                 />
                                 <span className="admin_password_eye">
                                     <i
-                                        className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                                        className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"
+                                            }`}
                                         onClick={() => setShowPassword((prev) => !prev)}
                                         style={{
                                             position: "absolute",
