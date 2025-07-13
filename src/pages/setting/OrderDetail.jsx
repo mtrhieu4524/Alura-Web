@@ -71,7 +71,7 @@ function OrderDetail() {
           orderId: data._id,
           date: data.orderDate,
           name: data.userId?.name || "Unknown",
-          phoneNumber: data.userId?.phone || "None",
+          phoneNumber: data.phoneNumber || "None",
           shippingAddress: data.shippingAddress,
           paymentMethod: data.paymentMethod,
           note: data.note || "No additional notes",
