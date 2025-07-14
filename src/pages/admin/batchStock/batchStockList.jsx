@@ -45,13 +45,13 @@ function BatchStockList({ searchQuery = "" }) {
     document.title = "Manage Batch Stock - Alurà System Management";
     fetchBatchStocks();
     fetchDropdownData();
-  }, []);
+  }, [searchQuery]);
 
   const fetchBatchStocks = async () => {
     setIsLoading(true);
     try {
       const url = searchQuery
-        ? `${API_URL}/batch-stock?batchId=${encodeURIComponent(searchQuery)}`
+        ? `${API_URL}/batch-stock?search=${encodeURIComponent(searchQuery)}`
         : `${API_URL}/batch-stock`;
 
       const res = await fetch(url, {

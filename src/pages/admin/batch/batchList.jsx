@@ -6,10 +6,9 @@ import "../../../styles/admin/batch/BatchList.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function BatchList() {
+function BatchList({ searchQuery = "" }) {
   const { token } = useSelector((state) => state.auth);
   const [batches, setBatches] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState(null);
@@ -32,11 +31,13 @@ function BatchList() {
   useEffect(() => {
     document.title = "Manage Batch - Alurà System Management";
     fetchBatches();
-  }, []);
+  }, [searchQuery]);
+
 
   const fetchBatches = async () => {
     try {
-      const res = await fetch(API_URL + "/batch", {
+      const query = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : "";
+      const res = await fetch(`${API_URL}/batch${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
@@ -47,6 +48,7 @@ function BatchList() {
       }
     } catch (error) {
       console.error("Failed to fetch batches:", error);
+      toast.error("Failed to fetch batches!");
     }
   };
 

@@ -63,7 +63,7 @@ const AdminLayout = ({ children }) => {
                 </div>
 
                 <div className="admin_content_card">
-                    {(isProductPage || isAccountPage)
+                    {showSearch
                         ? cloneElement(children, { searchQuery })
                         : children}
                 </div>

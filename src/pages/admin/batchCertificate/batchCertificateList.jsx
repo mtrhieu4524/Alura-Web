@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function BatchCertificateList() {
+function BatchCertificateList({ searchQuery }) {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCertificate, setSelectedCertificate] = useState(null);
@@ -24,11 +24,12 @@ function BatchCertificateList() {
     useEffect(() => {
         document.title = "Manage Batch Certificate - Alurà System Management";
         fetchCertificates();
-    }, []);
+    }, [searchQuery]);
 
     const fetchCertificates = async () => {
         try {
-            const res = await fetch(`${API_URL}/batch-certificate`, {
+            const query = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : "";
+            const res = await fetch(`${API_URL}/batch-certificate${query}`, {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
                 }
@@ -43,7 +44,6 @@ function BatchCertificateList() {
             console.error("Failed to fetch batch certificates", error);
         }
     };
-
 
     const handleSaveCertificate = async () => {
         const { certificateCode, issueDate, issuedBy, fileUrl } = formData;
@@ -70,11 +70,7 @@ function BatchCertificateList() {
             if (res.ok) {
                 const updated = await res.json();
                 toast.success(`Certificate ${selectedCertificate ? "updated" : "added"} successfully!`);
-                setCertificates((prev) =>
-                    selectedCertificate
-                        ? prev.map((c) => (c._id === updated._id ? updated : c))
-                        : [...prev, updated]
-                );
+                fetchCertificates();
                 closeModal();
             } else {
                 toast.error("Failed to save certificate.");
@@ -96,10 +92,8 @@ function BatchCertificateList() {
             });
 
             if (res.ok) {
-                setCertificates((prev) =>
-                    prev.filter((c) => c._id !== selectedCertificate._id)
-                );
                 toast.success("Certificate deleted successfully!");
+                fetchCertificates();
                 setIsDeleteModalOpen(false);
                 setSelectedCertificate(null);
             } else {
