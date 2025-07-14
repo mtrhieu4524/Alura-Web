@@ -13,6 +13,11 @@ function BatchList({ searchQuery = "" }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedBatch, setSelectedBatch] = useState(null);
 
+  const [products, setProducts] = useState([]);
+  const [distributors, setDistributors] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+
   const [formData, setFormData] = useState({
     batchCode: "",
     productId: "",
@@ -30,9 +35,15 @@ function BatchList({ searchQuery = "" }) {
 
   useEffect(() => {
     document.title = "Manage Batch - Alurà System Management";
-    fetchBatches();
+    fetchAll();
   }, [searchQuery]);
 
+  const fetchAll = async () => {
+    await Promise.all([
+      fetchBatches(),
+      fetchDropdownOptions()
+    ]);
+  };
 
   const fetchBatches = async () => {
     try {
@@ -41,14 +52,35 @@ function BatchList({ searchQuery = "" }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setBatches(json.data);
-      } else {
-        setBatches([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch batches:", error);
+      setBatches(json.success ? json.data : []);
+    } catch {
       toast.error("Failed to fetch batches!");
+    }
+  };
+
+  const fetchDropdownOptions = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [prodRes, distRes, wareRes, certRes, brandRes] = await Promise.all([
+        fetch(`${API_URL}/products/admin-and-staff`, { headers }),
+        fetch(`${API_URL}/distributor`, { headers }),
+        fetch(`${API_URL}/warehouse`, { headers }),
+        fetch(`${API_URL}/batch-certificate`, { headers }),
+      ]);
+
+      const prodData = await prodRes.json();
+      const distData = await distRes.json();
+      const wareData = await wareRes.json();
+      const certData = await certRes.json();
+
+      if (prodData.success) setProducts(prodData.products);
+      if (Array.isArray(distData)) setDistributors(distData);
+      if (wareData?.data) setWarehouses(wareData.data);
+      if (certData.success) setCertificates(certData.data);
+    } catch (err) {
+      console.error("Dropdown error:", err);
+      toast.error("Failed to fetch dropdown data");
     }
   };
 
@@ -90,7 +122,25 @@ function BatchList({ searchQuery = "" }) {
     setIsUpdateModalOpen(true);
   };
 
+  const handleProductChange = (productId) => {
+    const selected = products.find((p) => p._id === productId);
+    setFormData((prev) => ({
+      ...prev,
+      productId,
+      imageUrl: selected?.imgUrls?.[0] || "",
+      brandId: selected?.brand?._id || "",
+    }));
+  };
+
   const handleSaveBatch = async () => {
+    const importDate = new Date(formData.importDate);
+    const expiryDate = new Date(formData.expiryDate);
+
+    if (expiryDate <= importDate) {
+      toast.error("Expiry date must be after import date!");
+      return;
+    }
+
     const method = selectedBatch ? "PUT" : "POST";
     const endpoint = selectedBatch
       ? `${API_URL}/batch/${selectedBatch._id}`
@@ -113,31 +163,35 @@ function BatchList({ searchQuery = "" }) {
       } else {
         toast.error("Failed to save batch.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Error saving batch.");
     }
   };
 
+
   const handleDeleteBatch = async () => {
     if (!selectedBatch) return;
+    if (selectedBatch.lockedReason) {
+      toast.error("Batch is already cancelled.");
+      return;
+    }
     try {
       const res = await fetch(`${API_URL}/batch/${selectedBatch._id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        toast.success("Batch deleted successfully!");
+        toast.success("Batch cancelled successfully!");
         setBatches(batches.filter((b) => b._id !== selectedBatch._id));
         closeModal();
       } else {
-        toast.error("Batch already deleted.");
+        toast.error("Batch is already cancelled.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Error deleting batch.");
     }
   };
+
 
   const closeModal = () => {
     setIsUpdateModalOpen(false);
@@ -147,53 +201,45 @@ function BatchList({ searchQuery = "" }) {
 
   const columns = [
     "Batch Code",
+    "Product",
     "Warehouse",
     "Distributor",
     "Amount",
-    "Expiry Date",
     "Import Date",
+    "Expiry Date",
     "Note",
     "Status",
     "Action",
   ];
 
-  const filteredData = batches
-    .filter((b) =>
-      b.batchCode.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .map((b) => ({
-      batch_code: b.batchCode,
-      warehouse: b.warehouseId?.name || "-",
-      distributor: b.distributorId?.name || "-",
-      amount: b.amount?.toLocaleString() || "",
-      expiry_date: b.expiryDate
-        ? new Date(b.expiryDate).toLocaleDateString("vi-VN")
-        : "",
-      import_date: b.importDate
-        ? new Date(b.importDate).toLocaleDateString("vi-VN")
-        : "",
-      note: b.notes || "",
-      status: (
-        <span
-          className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"
-            }`}
-        >
-          {b.lockedReason ? "Cancelled" : "Active"}
-        </span>
-      ),
-      action: (
-        <div className="action_icons" key={b._id}>
-          <i className="fas fa-pen edit_icon" onClick={() => openEditModal(b)} />
-          <i
-            className="fas fa-trash delete_icon"
-            onClick={() => {
-              setSelectedBatch(b);
-              setIsDeleteModalOpen(true);
-            }}
-          />
-        </div>
-      ),
-    }));
+  const filteredData = batches.map((b) => ({
+    batch_code: b.batchCode,
+    product: b.productId?.name || "-",
+    warehouse: b.warehouseId?.name || "-",
+    distributor: b.distributorId?.name || "-",
+    amount: b.amount?.toLocaleString() || "",
+    expiry_date: b.expiryDate
+      ? new Date(b.expiryDate).toLocaleDateString("vi-VN")
+      : "",
+    import_date: b.importDate
+      ? new Date(b.importDate).toLocaleDateString("vi-VN")
+      : "",
+    note: b.notes || "",
+    status: (
+      <span className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"}`}>
+        {b.lockedReason ? "Cancelled" : "Active"}
+      </span>
+    ),
+    action: (
+      <div className="action_icons" key={b._id}>
+        <i className="fas fa-pen edit_icon" onClick={() => openEditModal(b)} />
+        <i className="fas fa-trash delete_icon" onClick={() => {
+          setSelectedBatch(b);
+          setIsDeleteModalOpen(true);
+        }} />
+      </div>
+    ),
+  }));
 
   return (
     <div className="WarehouseList">
@@ -227,13 +273,67 @@ function BatchList({ searchQuery = "" }) {
                   <input
                     type="text"
                     value={formData.batchCode}
-                    onChange={(e) =>
-                      setFormData({ ...formData, batchCode: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, batchCode: e.target.value })}
                     required
                   />
                 </div>
               )}
+
+              <div className="form_group">
+                <label>Product</label>
+                <select
+                  value={formData.productId}
+                  onChange={(e) => handleProductChange(e.target.value)}
+                  required
+                >
+                  <option value="">Select Product</option>
+                  {products.map((p) => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form_group">
+                <label>Distributor</label>
+                <select
+                  value={formData.distributorId}
+                  onChange={(e) => setFormData({ ...formData, distributorId: e.target.value })}
+                  required
+                >
+                  <option value="">Select Distributor</option>
+                  {distributors.map((d) => (
+                    <option key={d._id} value={d._id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form_group">
+                <label>Warehouse</label>
+                <select
+                  value={formData.warehouseId}
+                  onChange={(e) => setFormData({ ...formData, warehouseId: e.target.value })}
+                  required
+                >
+                  <option value="">Select Warehouse</option>
+                  {warehouses.map((w) => (
+                    <option key={w._id} value={w._id}>{w.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form_group">
+                <label>Certificate</label>
+                <select
+                  value={formData.certificateId}
+                  onChange={(e) => setFormData({ ...formData, certificateId: e.target.value })}
+                >
+                  <option value="">Select Certificate</option>
+                  {certificates.map((c) => (
+                    <option key={c._id} value={c._id}>{c.certificateCode}</option>
+                  ))}
+                </select>
+              </div>
+
               {["quantity", "amount", "importDate", "expiryDate"].map((field) => (
                 <div className="form_group" key={field}>
                   <label>
@@ -248,22 +348,20 @@ function BatchList({ searchQuery = "" }) {
                   <input
                     type={field.includes("Date") ? "date" : "number"}
                     value={formData[field]}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [field]: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
                     required={field !== "quantity"}
                   />
                 </div>
               ))}
+
               <div className="form_group">
                 <label>Notes</label>
                 <textarea
                   value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
               </div>
+
               <button type="submit" className="add_account_btn">
                 {selectedBatch ? "Update" : "Create"} Batch
               </button>
@@ -277,7 +375,7 @@ function BatchList({ searchQuery = "" }) {
           <div className="modal_content">
             <button className="close_modal_btn" onClick={closeModal}>×</button>
             <h5>
-              Are you sure you want to delete <b>{selectedBatch?.batchCode}</b>?
+              Are you sure you want to delete (cancelled) <b>{selectedBatch?.batchCode}</b>?
             </h5>
             <div className="modal-buttons">
               <button className="cancel_btn" onClick={closeModal}>Cancel</button>

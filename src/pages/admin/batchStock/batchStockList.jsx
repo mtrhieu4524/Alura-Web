@@ -218,7 +218,7 @@ function BatchStockList({ searchQuery = "" }) {
     { header: "Exported At", accessor: "exportedAt" },
     { header: "Note", accessor: "note" },
     // { header: "Status", accessor: "status" },
-    { header: "Action", accessor: "action" }
+    // { header: "Action", accessor: "action" }
   ];
 
   const tableData = batchStocks.map(stock => ({

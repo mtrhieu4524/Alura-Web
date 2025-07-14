@@ -108,7 +108,7 @@ const Home = () => {
     navigate(path, { state });
   };
 
-  
+
 
   useEffect(() => {
     async function fetchProducts() {
@@ -249,7 +249,7 @@ const Home = () => {
           <i className="fa fa-undo-alt under_slider_icon"></i>
           <div className="under_slider_text_container">
             <h4 className="under_slider_title">Instant warranty</h4>
-            <p className="under_slider_text">If jewelry have problems</p>
+            <p className="under_slider_text">If product have problems</p>
           </div>
         </div>
         <div className="under_slider_column">
@@ -262,72 +262,6 @@ const Home = () => {
       </div>
       <hr className="under_slider_hr" />
 
-      {/* Diamond shape  */}
-      {/* <h1 className="shape_title">Explore Diamond Shapes</h1>
-            <div className="diamond_shape_container">
-                <div className="diamond_shape_grid">
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Round' })}>
-                            <img src={round} alt="Round" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Round</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Oval' })}>
-                            <img src={oval} alt="Oval" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Oval</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Emerald' })}>
-                            <img src={emerald} alt="Emerald" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Emerald</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Cushion' })}>
-                            <img src={cushion} alt="Cushion" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Cushion</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Pear' })}>
-                            <img src={pear} alt="Pear" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Pear</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Radiant' })}>
-                            <img src={radiant} alt="Radiant" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Radiant</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Princess' })}>
-                            <img src={princess} alt="Princess" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Princess</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Marquise' })}>
-                            <img src={marquise} alt="Marquise" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Marquise</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Asscher' })}>
-                            <img src={asscher} alt="Asscher" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Asscher</p>
-                        </a>
-                    </div>
-                    <div className="diamond_shape_column">
-                        <a onClick={() => handleNavigate('/shape', { shape: 'Heart' })}>
-                            <img src={heart} alt="Heart" className="diamond_shape_image" />
-                            <p className="diamond_shape_name">Heart</p>
-                        </a>
-                    </div>
-                </div>
-            </div> */}
 
       {/* Category */}
       <div className="category_container text-center">
