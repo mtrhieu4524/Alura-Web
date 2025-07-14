@@ -130,7 +130,7 @@ function BatchList() {
         setBatches(batches.filter((b) => b._id !== selectedBatch._id));
         closeModal();
       } else {
-        toast.error("Failed to delete batch.");
+        toast.error("Batch already deleted.");
       }
     } catch (error) {
       toast.error("Error deleting batch.");
@@ -151,6 +151,7 @@ function BatchList() {
     "Expiry Date",
     "Import Date",
     "Note",
+    "Status",
     "Action",
   ];
 
@@ -160,8 +161,8 @@ function BatchList() {
     )
     .map((b) => ({
       batch_code: b.batchCode,
-      warehouse: b.warehouseId?.name || "N/A",
-      distributor: b.distributorId?.name || "N/A",
+      warehouse: b.warehouseId?.name || "-",
+      distributor: b.distributorId?.name || "-",
       amount: b.amount?.toLocaleString() || "",
       expiry_date: b.expiryDate
         ? new Date(b.expiryDate).toLocaleDateString("vi-VN")
@@ -170,6 +171,14 @@ function BatchList() {
         ? new Date(b.importDate).toLocaleDateString("vi-VN")
         : "",
       note: b.notes || "",
+      status: (
+        <span
+          className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"
+            }`}
+        >
+          {b.lockedReason ? "Cancelled" : "Active"}
+        </span>
+      ),
       action: (
         <div className="action_icons" key={b._id}>
           <i className="fas fa-pen edit_icon" onClick={() => openEditModal(b)} />

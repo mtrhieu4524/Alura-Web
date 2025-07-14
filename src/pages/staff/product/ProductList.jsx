@@ -23,13 +23,11 @@ function ProductList({ searchQuery = "" }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(
-          searchQuery
-        )}`,
+        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`,
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -72,8 +70,7 @@ function ProductList({ searchQuery = "" }) {
   const handleTogglePublic = async (id, isPublic) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"
-        }/${id}`;
+      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"}/${id}`;
 
       const res = await fetch(url, {
         method: "PUT",
@@ -108,7 +105,8 @@ function ProductList({ searchQuery = "" }) {
     public: (
       <button
         className={`btn_toggle_public ${product.isPublic ? "hide" : "show"}`}
-        onClick={() => handleTogglePublic(product._id, product.isPublic)}>
+        onClick={() => handleTogglePublic(product._id, product.isPublic)}
+      >
         {product.isPublic ? "Hide" : "Show"}
       </button>
     ),
@@ -116,19 +114,67 @@ function ProductList({ searchQuery = "" }) {
       <i
         className="fas fa-info-circle detail_icon"
         title="View Details"
-        onClick={() => navigate(`/staff/product-list/${product._id}`)}
+        onClick={() => navigate(`/admin/product-list/${product._id}`)}
       />
     ),
   }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData();
+
+    const imageFiles = form.imgUrls.files;
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      const fileType = file.type;
+      if (!["image/png", "image/jpg", "image/jpeg"].includes(fileType)) {
+        toast.error("Image have to be png, jpg or jpeg.");
+        return;
+      }
+    }
+
+    for (let field of form.elements) {
+      if (field.name && field.type !== "file") {
+        formData.append(field.name, field.value);
+      }
+    }
+
+    for (let i = 0; i < imageFiles.length; i++) {
+      formData.append("imgUrls", imageFiles[i]);
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/products`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("Product added successfully.");
+        setIsModalOpen(false);
+        fetchProducts();
+      } else {
+        toast.error(data.message || "Failed to add product.");
+      }
+    } catch (err) {
+      console.error("Add product error:", err);
+      toast.error("An error occurred while adding the product.");
+    }
+  };
 
   return (
     <div className="ProductList">
       <div className="product_list_container">
         <div className="product_list_header">
           <h2 className="admin_main_title">Manage Product</h2>
-          <button
-            className="add_product_btn"
-            onClick={() => setIsModalOpen(true)}>
+          <button className="add_product_btn" onClick={() => setIsModalOpen(true)}>
             Add New Product
           </button>
         </div>
@@ -139,55 +185,10 @@ function ProductList({ searchQuery = "" }) {
       {isModalOpen && (
         <div className="modal_overlay">
           <div className="modal_content product_form_modal">
-            <button
-              className="close_modal_btn"
-              onClick={() => setIsModalOpen(false)}>
-              ×
-            </button>
+            <button className="close_modal_btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h5>Add New Product</h5>
 
-            <form
-              className="product_form"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData();
-
-                for (let field of form.elements) {
-                  if (field.name && field.type !== "file") {
-                    formData.append(field.name, field.value);
-                  }
-                }
-
-                const imageFiles = form.imgUrls.files;
-                for (let i = 0; i < imageFiles.length; i++) {
-                  formData.append("imgUrls", imageFiles[i]);
-                }
-
-                try {
-                  const token = localStorage.getItem("token");
-
-                  const res = await fetch(`${API_URL}/products`, {
-                    method: "POST",
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: formData,
-                  });
-
-                  const data = await res.json();
-                  if (res.ok && data.success) {
-                    toast.success("Product added successfully.");
-                    setIsModalOpen(false);
-                    fetchProducts();
-                  } else {
-                    toast.error(data.message || "Failed to add product.");
-                  }
-                } catch (err) {
-                  console.error("Add product error:", err);
-                  toast.error("An error occurred while adding the product.");
-                }
-              }}>
+            <form className="product_form" onSubmit={handleSubmit}>
               <div className="form_group">
                 <label>Name</label>
                 <input name="name" required />
@@ -307,17 +308,14 @@ function ProductList({ searchQuery = "" }) {
                 <input
                   type="file"
                   name="imgUrls"
-                  accept="image/*"
+                  accept="image/png, image/jpg, image/jpeg"
                   multiple
                   required
                 />
               </div>
 
               <div className="form_actions">
-                <button
-                  type="button"
-                  className="cancel_btn"
-                  onClick={() => setIsModalOpen(false)}>
+                <button type="button" className="cancel_btn" onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>
                 <button type="submit" className="add_product_btn">

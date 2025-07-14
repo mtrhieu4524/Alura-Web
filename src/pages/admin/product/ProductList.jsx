@@ -40,7 +40,6 @@ function ProductList({ searchQuery = "" }) {
         }
     };
 
-
     useEffect(() => {
         fetchProducts();
     }, [searchQuery]);
@@ -120,6 +119,56 @@ function ProductList({ searchQuery = "" }) {
         ),
     }));
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData();
+
+        const imageFiles = form.imgUrls.files;
+        for (let i = 0; i < imageFiles.length; i++) {
+            const file = imageFiles[i];
+            const fileType = file.type;
+            if (!["image/png", "image/jpg", "image/jpeg"].includes(fileType)) {
+                toast.error("Image have to be png, jpg or jpeg.");
+                return;
+            }
+        }
+
+        for (let field of form.elements) {
+            if (field.name && field.type !== "file") {
+                formData.append(field.name, field.value);
+            }
+        }
+
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append("imgUrls", imageFiles[i]);
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch(`${API_URL}/products`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                toast.success("Product added successfully.");
+                setIsModalOpen(false);
+                fetchProducts();
+            } else {
+                toast.error(data.message || "Failed to add product.");
+            }
+        } catch (err) {
+            console.error("Add product error:", err);
+            toast.error("An error occurred while adding the product.");
+        }
+    };
+
     return (
         <div className="ProductList">
             <div className="product_list_container">
@@ -139,49 +188,7 @@ function ProductList({ searchQuery = "" }) {
                         <button className="close_modal_btn" onClick={() => setIsModalOpen(false)}>×</button>
                         <h5>Add New Product</h5>
 
-                        <form
-                            className="product_form"
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                const form = e.target;
-                                const formData = new FormData();
-
-                                for (let field of form.elements) {
-                                    if (field.name && field.type !== "file") {
-                                        formData.append(field.name, field.value);
-                                    }
-                                }
-
-                                const imageFiles = form.imgUrls.files;
-                                for (let i = 0; i < imageFiles.length; i++) {
-                                    formData.append("imgUrls", imageFiles[i]);
-                                }
-
-                                try {
-                                    const token = localStorage.getItem("token");
-
-                                    const res = await fetch(`${API_URL}/products`, {
-                                        method: "POST",
-                                        headers: {
-                                            Authorization: `Bearer ${token}`,
-                                        },
-                                        body: formData,
-                                    });
-
-                                    const data = await res.json();
-                                    if (res.ok && data.success) {
-                                        toast.success("Product added successfully.");
-                                        setIsModalOpen(false);
-                                        fetchProducts();
-                                    } else {
-                                        toast.error(data.message || "Failed to add product.");
-                                    }
-                                } catch (err) {
-                                    console.error("Add product error:", err);
-                                    toast.error("An error occurred while adding the product.");
-                                }
-                            }}
-                        >
+                        <form className="product_form" onSubmit={handleSubmit}>
                             <div className="form_group">
                                 <label>Name</label>
                                 <input name="name" required />
@@ -298,7 +305,13 @@ function ProductList({ searchQuery = "" }) {
 
                             <div className="form_group form_group_image">
                                 <label>Upload Images (max 5)</label>
-                                <input type="file" name="imgUrls" accept="image/*" multiple required />
+                                <input
+                                    type="file"
+                                    name="imgUrls"
+                                    accept="image/png, image/jpg, image/jpeg"
+                                    multiple
+                                    required
+                                />
                             </div>
 
                             <div className="form_actions">

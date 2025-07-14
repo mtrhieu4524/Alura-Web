@@ -258,10 +258,10 @@ function WarehouseList() {
         }
     };
 
-    const distributorColumns = ["Name", "Email", "Phone", "Address", "Action"];
+    const distributorColumns = ["Name", "Email", "Phone Number", "Address", "Action"];
     const distributorData = distributors.map((distributor) => ({
         name: distributor.name,
-        phone: distributor.phone,
+        phone_number: distributor.phone,
         email: distributor.email,
         address: distributor.address,
         action: (

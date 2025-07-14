@@ -183,11 +183,16 @@ function ProductDetail() {
         formData.append("existingImages", JSON.stringify(existingImages));
       }
 
-      newImages.forEach((file) => {
+      for (const file of newImages) {
         if (file instanceof File) {
+          const fileType = file.type;
+          if (!["image/png", "image/jpg", "image/jpeg"].includes(fileType)) {
+            toast.error("Images must be png, jpg or jpeg.");
+            return;
+          }
           formData.append("imgUrls", file);
         }
-      });
+      }
 
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/products/${id}`, {
@@ -241,16 +246,16 @@ function ProductDetail() {
       return typeof product.brand === "object" && product.brand?._id
         ? product.brand._id
         : typeof product.brand === "string"
-        ? product.brand
-        : "";
+          ? product.brand
+          : "";
     }
 
     if (field === "categoryId") {
       return typeof product.categoryId === "object" && product.categoryId?._id
         ? product.categoryId._id
         : typeof product.categoryId === "string"
-        ? product.categoryId
-        : "";
+          ? product.categoryId
+          : "";
     }
 
     if (field === "productTypeId") {
@@ -258,8 +263,8 @@ function ProductDetail() {
         product.productTypeId?._id
         ? product.productTypeId._id
         : typeof product.productTypeId === "string"
-        ? product.productTypeId
-        : "";
+          ? product.productTypeId
+          : "";
     }
 
     return product[field] || "";

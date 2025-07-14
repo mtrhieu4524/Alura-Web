@@ -97,10 +97,13 @@
 .modal_content {
     position: relative;
     background-color: white;
-    padding: 30px 24px 24px 24px !important;
-    border-radius: 0 !important;
-    width: 500px !important;
+    padding: 24px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 50%;
+    max-height: 90%;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
 }
 
 .close_modal_btn {

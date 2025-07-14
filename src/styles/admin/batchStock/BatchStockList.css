@@ -43,10 +43,12 @@
     padding: 24px;
     border-radius: 8px;
     width: 400px;
-    max-width: 90%;
+    max-width: 50%;
+    max-height: 90%;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    font-size: 14px;
+    overflow-y: auto;
 }
+
 
 .close_modal_btn {
     position: absolute;
@@ -111,4 +113,22 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.form_group input:focus {
+    outline: none;
+}
+
+.form_group button {
+    margin-top: 30px;
+    margin-bottom: 0 !important;
+}
+
+.form_group select {
+    height: 30px;
+}
+
+.form_group select:focus {
+    outline: none;
+
 }
