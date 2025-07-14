@@ -18,7 +18,7 @@ const HeaderComponent = () => {
   const [userInfo, setUserInfo] = useState(null);
   const { cartCount, setCartCount } = useCart();
   const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth);
+  const { token, role } = useSelector((state) => state.auth);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -36,6 +36,7 @@ const HeaderComponent = () => {
             dispatch(logout());
             setIsLoggedIn(false);
             navigate("/sign-in");
+            window.location.reload();
             return;
           }
 
@@ -210,7 +211,7 @@ const HeaderComponent = () => {
                   className={`user-dropdown-menu ${
                     isDropdownOpen ? "open" : ""
                   }`}>
-                  {isLoggedIn ? (
+                  {isLoggedIn && role === "USER" ? (
                     <div className="user-logged-in">
                       <div className="user-info">
                         <p className="username">
@@ -240,6 +241,36 @@ const HeaderComponent = () => {
                         <i className="fas fa-sign-in-alt dropdown-icon"></i>{" "}
                         Sign out
                       </div>
+                    </div>
+                  ) : isLoggedIn && role === "ADMIN" ? (
+                    <div className="user-logged-in">
+                      <div className="user-info">
+                        <p className="username">
+                          {userInfo?.name || "User"} (
+                          {userInfo?.email || "Email"})
+                        </p>
+                      </div>
+                      <Link
+                        to="/admin/dashboard"
+                        className="user-dropdown-menu-link">
+                        <i className="fas fa-tachometer-alt dropdown-icon"></i>{" "}
+                        Back to Admin Page
+                      </Link>
+                    </div>
+                  ) : isLoggedIn && role === "STAFF" ? (
+                    <div className="user-logged-in">
+                      <div className="user-info">
+                        <p className="username">
+                          {userInfo?.name || "User"} (
+                          {userInfo?.email || "Email"})
+                        </p>
+                      </div>
+                      <Link
+                        to="/staff/product-list"
+                        className="user-dropdown-menu-link">
+                        <i className="fas fa-tachometer-alt dropdown-icon"></i>{" "}
+                        Back to Staff Page
+                      </Link>
                     </div>
                   ) : (
                     <div className="user-not-logged-in">
@@ -289,35 +320,67 @@ const HeaderComponent = () => {
                 <div className="cosmetics-dropdown">
                   <div className="dropdown-column">
                     <h6>Facial</h6>
-                    <p onClick={() => handleTypeNavigate("Cleanser")}>Cleanser</p>
+                    <p onClick={() => handleTypeNavigate("Cleanser")}>
+                      Cleanser
+                    </p>
                     <p onClick={() => handleTypeNavigate("Toner")}>Toner</p>
                     <p onClick={() => handleTypeNavigate("Serum")}>Serum</p>
-                    <p onClick={() => handleTypeNavigate("Face Mask")}>Face Mask</p>
+                    <p onClick={() => handleTypeNavigate("Face Mask")}>
+                      Face Mask
+                    </p>
                     <p onClick={() => handleTypeNavigate("Cream")}>Cream</p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Hair</h6>
                     <p onClick={() => handleTypeNavigate("Shampoo")}>Shampoo</p>
-                    <p onClick={() => handleTypeNavigate("Conditioner")}>Conditioner</p>
-                    <p onClick={() => handleTypeNavigate("Hair Serum")}>Hair Serum</p>
-                    <p onClick={() => handleTypeNavigate("Hair Tonic")}>Hair Tonic</p>
-                    <p onClick={() => handleTypeNavigate("Scalp Treatment")}>Scalp Treatment</p>
+                    <p onClick={() => handleTypeNavigate("Conditioner")}>
+                      Conditioner
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Hair Serum")}>
+                      Hair Serum
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Hair Tonic")}>
+                      Hair Tonic
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Scalp Treatment")}>
+                      Scalp Treatment
+                    </p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Body</h6>
-                    <p onClick={() => handleTypeNavigate("Body Lotion")}>Body Lotion</p>
-                    <p onClick={() => handleTypeNavigate("Body Wash")}>Body Wash</p>
-                    <p onClick={() => handleTypeNavigate("Deodorant")}>Deodorant</p>
-                    <p onClick={() => handleTypeNavigate("Sunscreen")}>Sunscreen</p>
-                    <p onClick={() => handleTypeNavigate("Body Scrub")}>Body Scrub</p>
+                    <p onClick={() => handleTypeNavigate("Body Lotion")}>
+                      Body Lotion
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Body Wash")}>
+                      Body Wash
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Deodorant")}>
+                      Deodorant
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Sunscreen")}>
+                      Sunscreen
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Body Scrub")}>
+                      Body Scrub
+                    </p>
                   </div>
                   <div className="dropdown-column">
                     <h6>Lips & Nails</h6>
-                    <p onClick={() => handleTypeNavigate("Lip Stick")}>Lip Stick</p>
-                    <p onClick={() => handleTypeNavigate("Lip Scrub")}>Lip Scrub</p>
-                    <p onClick={() => handleTypeNavigate("Nail Strengthener")}>Nail Strengthener</p>
-                    <p onClick={() => handleTypeNavigate("Cuticle Oil")}>Cuticle Oil</p>
-                    <p onClick={() => handleTypeNavigate("Nail Treatment")}>Nail Treatment</p>
+                    <p onClick={() => handleTypeNavigate("Lip Stick")}>
+                      Lip Stick
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Lip Scrub")}>
+                      Lip Scrub
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Nail Strengthener")}>
+                      Nail Strengthener
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Cuticle Oil")}>
+                      Cuticle Oil
+                    </p>
+                    <p onClick={() => handleTypeNavigate("Nail Treatment")}>
+                      Nail Treatment
+                    </p>
                   </div>
                   <div className="dropdown-viewall">
                     <Link to="/cosmetics">View all →</Link>

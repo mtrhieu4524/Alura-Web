@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
+
 export const useCheckAuthorization = (token, role, allowedRoles) => {
+  const navigate = useNavigate();
   if (!token || !role) {
+    navigate("/sign-in");
     return false;
   }
 
