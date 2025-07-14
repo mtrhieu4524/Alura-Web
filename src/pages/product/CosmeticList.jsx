@@ -49,6 +49,7 @@ function CosmeticListPage() {
     const [sex, setSex] = useState([]);
     const [type, setType] = useState([]);
     const [brand, setBrand] = useState([]);
+    const [brandOptions, setBrandOptions] = useState([]);
     const [skinType, setSkinType] = useState([]);
     const [skinColor, setSkinColor] = useState([]);
     const [volume, setVolume] = useState([]);
@@ -57,17 +58,32 @@ function CosmeticListPage() {
     const [products, setProducts] = useState([]);
     const [resetKey, setResetKey] = useState(Date.now());
     const [transitionKey, setTransitionKey] = useState(Date.now());
+    const [expandedPanel, setExpandedPanel] = useState(null);
 
     useEffect(() => {
         document.title = 'Alurà - Cosmetics';
     }, []);
 
     useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/brands`);
+                const json = await res.json();
+                if (json.success && Array.isArray(json.data)) {
+                    setBrandOptions(json.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch brands:", error);
+            }
+        };
+
+        fetchBrands();
+    }, []);
+
+    useEffect(() => {
         if (location.state) {
             if (location.state.sort) setSort(location.state.sort);
-
             if (location.state.sex) setSex(Array.isArray(location.state.sex) ? location.state.sex : [location.state.sex]);
-
             if (location.state.type) {
                 const shortcutType = location.state.type;
                 const mapped = CATEGORY_TYPE_MAP[shortcutType];
@@ -77,7 +93,6 @@ function CosmeticListPage() {
                     setType(Array.isArray(location.state.type) ? location.state.type : [location.state.type]);
                 }
             }
-
             if (location.state.brand) setBrand(Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand]);
             if (location.state.skinType) setSkinType(Array.isArray(location.state.skinType) ? location.state.skinType : [location.state.skinType]);
             if (location.state.skinColor) setSkinColor(Array.isArray(location.state.skinColor) ? location.state.skinColor : [location.state.skinColor]);
@@ -92,7 +107,6 @@ function CosmeticListPage() {
                 const response = await fetch(
                     `${import.meta.env.VITE_API_URL}/products?pageIndex=1&pageSize=100`
                 );
-
                 const data = await response.json();
 
                 if (data.success && data.products) {
@@ -189,34 +203,41 @@ function CosmeticListPage() {
         setStock([]);
     };
 
-    const filterConfigs = [{
-        label: "Type", state: type, setter: setType, options: [
-            "Cleanser", "Toner", "Serum", "Face Mask", "Cream",
-            "Shampoo", "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment",
-            "Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub",
-            "Fragrance", "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"
-        ]
-    }, {
-        label: "Brand", state: brand, setter: setBrand, options: [
-            "Naris Cosmetics", "L'Oreal", "Eucerin", "La Roche-Posay", "Cocoon", "Bioderma",
-            "CeraVe", "B.O.M", "Angel's Liquid", "Swiss Image", "3CE", "Vichy", "Maybelline", "Vaseline"
-        ]
-    }, {
-        label: "Stock", state: stock, setter: setStock, options: ["In Stock", "Out of Stock"]
-    }, {
-        label: "Sex", state: sex, setter: setSex, options: ["Male", "Female", "Unisex"]
-    }, {
-        label: "Skin Type", state: skinType, setter: setSkinType,
-        options: ["Normal", "Dry", "Oily", "Combination", "Sensitive"]
-    }, {
-        label: "Skin Color", state: skinColor, setter: setSkinColor,
-        options: ["Light", "Medium", "Tan", "Dark", "Neutral", "Cool"]
-    }, {
-        label: "Volume", state: volume, setter: setVolume,
-        options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
-    }];
-
-    const [expandedPanel, setExpandedPanel] = useState(null);
+    const filterConfigs = [
+        {
+            label: "Type", state: type, setter: setType, options: [
+                "Cleanser", "Toner", "Serum", "Face Mask", "Cream",
+                "Shampoo", "Conditioner", "Hair Serum", "Hair Tonic", "Scalp Treatment",
+                "Body Lotion", "Body Wash", "Deodorant", "Sunscreen", "Body Scrub",
+                "Fragrance", "Lip Balm", "Lip Stick", "Lip Scrub", "Nail Strengthener", "Cuticle Oil", "Nail Treatment"
+            ]
+        },
+        {
+            label: "Brand", state: brand, setter: setBrand,
+            options: brandOptions.map(b => ({
+                value: b.id,
+                label: b.brandName
+            }))
+        },
+        {
+            label: "Stock", state: stock, setter: setStock, options: ["In Stock", "Out of Stock"]
+        },
+        {
+            label: "Sex", state: sex, setter: setSex, options: ["Male", "Female", "Unisex"]
+        },
+        {
+            label: "Skin Type", state: skinType, setter: setSkinType,
+            options: ["Normal", "Dry", "Oily", "Combination", "Sensitive"]
+        },
+        {
+            label: "Skin Color", state: skinColor, setter: setSkinColor,
+            options: ["Light", "Dark", "Neutral", "Cool"]
+        },
+        {
+            label: "Volume", state: volume, setter: setVolume,
+            options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
+        }
+    ];
 
     return (
         <div className="ProductList">
@@ -278,15 +299,32 @@ function CosmeticListPage() {
                                             value={filter.state}
                                             onChange={(e) => filter.setter(e.target.value)}
                                             input={<OutlinedInput />}
-                                            renderValue={(selected) => selected.join(', ')}
+                                            renderValue={(selected) => {
+                                                if (filter.label === "Brand") {
+                                                    return selected
+                                                        .map(val => {
+                                                            const matched = filter.options.find(opt => opt.value === val);
+                                                            return matched ? matched.label : val;
+                                                        })
+                                                        .join(', ');
+                                                }
+                                                return selected.join(', ');
+                                            }}
+
                                             MenuProps={MenuProps}
                                         >
-                                            {filter.options.map((option) => (
-                                                <MenuItem key={option} value={option}>
-                                                    <Checkbox checked={filter.state.indexOf(option) > -1} />
-                                                    <ListItemText primary={option} />
-                                                </MenuItem>
-                                            ))}
+                                            {filter.options.map((option) => {
+                                                const value = typeof option === 'string' ? option : option.value;
+                                                const label = typeof option === 'string' ? option : option.label;
+
+                                                return (
+                                                    <MenuItem key={value} value={value}>
+                                                        <Checkbox checked={filter.state.includes(value)} />
+                                                        <ListItemText primary={label} />
+                                                    </MenuItem>
+                                                );
+                                            })}
+
                                         </Select>
                                     </FormControl>
                                 </AccordionDetails>

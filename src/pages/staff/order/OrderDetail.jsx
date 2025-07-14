@@ -162,7 +162,11 @@ function OrderDetail() {
                                         ))}
                                     </Select>
                                 </FormControl>
-                                <button className='staff_update_btn' onClick={handleStatusUpdate}>
+                                <button
+                                    className="staff_update_btn"
+                                    onClick={handleStatusUpdate}
+                                    disabled={["Success", "Cancelled"].includes(orderDetails.orderStatus)}
+                                >
                                     Update Status
                                 </button>
                             </div>

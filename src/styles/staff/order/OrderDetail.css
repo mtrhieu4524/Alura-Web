@@ -2,6 +2,12 @@
     padding: 30px 10%;
 }
 
+.staff_update_btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+}
+
 .staff_order_detail_line1 {
     margin: 0 0 30px 0;
 }
