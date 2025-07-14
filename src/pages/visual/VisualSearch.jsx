@@ -14,28 +14,47 @@ const VisualSearch = () => {
   }, []);
 
   const [imagePreview, setImagePreview] = useState(null);
-  const [imageLink, setImageLink] = useState("");
-  const [showImageButton, setShowImageButton] = useState(false);
+  // const [imageLink, setImageLink] = useState("");
+  // const [showImageButton, setShowImageButton] = useState(false);
   const navigate = useNavigate();
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        alert("Only PNG, JPG, and JPEG files are allowed.");
+        return;
+      }
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const validTypes = ["image/png", "image/jpeg", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        alert("Only PNG, JPG, and JPEG files are allowed.");
+        return;
+      }
       setImagePreview(URL.createObjectURL(file));
-      setImageLink("");
-      setShowImageButton(false);
+      // setImageLink("");
+      // setShowImageButton(false);
     }
   };
 
-  const handleLinkInputChange = (e) => {
-    setImageLink(e.target.value);
-    setShowImageButton(true);
-  };
+  // const handleLinkInputChange = (e) => {
+  //   setImageLink(e.target.value);
+  //   setShowImageButton(true);
+  // };
 
-  const handleShowImage = () => {
-    setImagePreview(imageLink);
-    setShowImageButton(false);
-  };
+  // const handleShowImage = () => {
+  //   setImagePreview(imageLink);
+  //   setShowImageButton(false);
+  // };
 
   const handleSearch = async () => {
     if (!imagePreview) {
@@ -119,7 +138,12 @@ const VisualSearch = () => {
 
   const handleRemoveImage = () => {
     setImagePreview(null);
-    setImageLink("");
+    // setImageLink("");
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
@@ -134,7 +158,10 @@ const VisualSearch = () => {
       <div className="visual_search_container">
         <h2>Search for any products with image</h2>
 
-        <div className="visual_drop_area">
+        <div
+          className="visual_drop_area"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}>
           {imagePreview ? (
             <div className="image_preview_container">
               <button
@@ -157,13 +184,13 @@ const VisualSearch = () => {
           <input
             type="file"
             id="imageUpload"
-            accept="image/*"
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg,image/jpg"
             onChange={handleImageChange}
             hidden
           />
         </div>
 
-        <div className="divider">
+        {/* <div className="divider">
           <span className="line"></span>
           <span className="or-text">OR</span>
           <span className="line"></span>
@@ -179,7 +206,7 @@ const VisualSearch = () => {
           <button onClick={handleShowImage} disabled={!showImageButton}>
             Preview
           </button>
-        </div>
+        </div> */}
 
         {imagePreview && (
           <button className="search_button" onClick={handleSearch}>
