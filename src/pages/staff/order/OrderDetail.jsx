@@ -194,14 +194,14 @@ function OrderDetail() {
                                 <div className="staff_order_detail_product_info">
                                     <div className="staff_order_detail_product_header">
                                         <h5 className="staff_order_detail_product_name">
-                                            {product.productName}
+                                            {product.productName} x {product.quantity}
                                         </h5>
                                     </div>
                                     <p className="staff_order_detail_product_size">
                                         Price: {product.unitPrice.toLocaleString()} VND
                                     </p>
                                     <p className="staff_order_detail_product_size">
-                                        Quantity: {product.quantity}
+                                        Batch: {product.batchCode}
                                     </p>
                                     <p className="staff_order_detail_product_price">
                                         Total:{' '}
