@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Table from '../../../components/Table/table/Table';
-import '../../../styles/admin/batchStock/BatchStockList.css';
+import Table from "../../../components/Table/table/Table";
+import "../../../styles/admin/batchStock/BatchStockList.css";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
@@ -11,7 +11,7 @@ function BatchStockList({ searchQuery = "" }) {
   const { token } = useSelector((state) => state.auth);
   const decoded = token ? jwtDecode(token) : {};
 
-  const userId = decoded?.UserId || decoded?.userId || decoded?.id || '';
+  const userId = decoded?.UserId || decoded?.userId || decoded?.id || "";
 
   const [isLoading, setIsLoading] = useState(false);
   const [batchStocks, setBatchStocks] = useState([]);
@@ -25,19 +25,18 @@ function BatchStockList({ searchQuery = "" }) {
   const [warehouses, setWarehouses] = useState([]);
 
   const [formData, setFormData] = useState({
-    batchId: '',
-    productId: '',
-    warehouseId: '',
-    quantity: '',
-    remaining: '',
-    note: '',
-    handledBy: userId || ''
+    batchId: "",
+    productId: "",
+    warehouseId: "",
+    quantity: "",
+    remaining: "",
+    note: "",
+    handledBy: userId || "",
   });
-
 
   useEffect(() => {
     if (userId) {
-      setFormData(prev => ({ ...prev, handledBy: userId }));
+      setFormData((prev) => ({ ...prev, handledBy: userId }));
     }
   }, [userId]);
 
@@ -47,36 +46,44 @@ function BatchStockList({ searchQuery = "" }) {
     fetchDropdownData();
   }, [searchQuery]);
 
-const fetchBatchStocks = async () => {
-  setIsLoading(true);
-  try {
-    const url = searchQuery
-      ? `${API_URL}/batch-stock?search=${encodeURIComponent(searchQuery)}`
-      : `${API_URL}/batch-stock`;
+  const fetchBatchStocks = async () => {
+    setIsLoading(true);
+    try {
+      const url = searchQuery
+        ? `${API_URL}/batch-stock?search=${encodeURIComponent(searchQuery)}`
+        : `${API_URL}/batch-stock`;
 
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data)) {
-      const filteredData = json.data.filter(stock => stock.isOrigin === false);
-      setBatchStocks(filteredData);
-    } else {
-      setBatchStocks([]);
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        const filteredData = json.data.filter(
+          (stock) => stock.isOrigin === false
+        );
+        setBatchStocks(filteredData);
+      } else {
+        setBatchStocks([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch batch stocks", error);
+      toast.error("Failed to load batch stock data.");
     }
-  } catch (error) {
-    console.error("Failed to fetch batch stocks", error);
-    toast.error("Failed to load batch stock data.");
-  }
-  setIsLoading(false);
-};
+    setIsLoading(false);
+  };
 
   const fetchDropdownData = async () => {
     try {
       const [batchRes, productRes, warehouseRes] = await Promise.all([
-        fetch(`${API_URL}/batch`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/warehouse`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/batch`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/products`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/warehouse`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       const batchJson = await batchRes.json();
@@ -101,7 +108,7 @@ const fetchBatchStocks = async () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCreateBatchStock = async (e) => {
@@ -114,34 +121,35 @@ const fetchBatchStocks = async () => {
       if (selectedStock) {
         payload = {
           quantity: parseInt(formData.quantity),
-          remaining: parseInt(formData.remaining || 0)
+          remaining: parseInt(formData.remaining || 0),
         };
       } else {
         payload = {
           ...formData,
           quantity: parseInt(formData.quantity),
-          handledBy: userId
+          handledBy: userId,
         };
       }
-
 
       const url = selectedStock
         ? `${API_URL}/batch-stock/${selectedStock._id}`
         : `${API_URL}/batch-stock`;
 
-      const method = selectedStock ? 'PUT' : 'POST';
+      const method = selectedStock ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
-        toast.success(`${selectedStock ? 'Update' : 'Add'} batch stock successfully!`);
+        toast.success(
+          `${selectedStock ? "Update" : "Add"} batch stock successfully!`
+        );
         fetchBatchStocks();
         setShowCreateModal(false);
         resetForm();
@@ -164,7 +172,7 @@ const fetchBatchStocks = async () => {
       warehouseId: stock.warehouseId?._id || "",
       quantity: stock.quantity || "",
       note: stock.note || "",
-      handledBy: userId
+      handledBy: userId,
     });
     setShowCreateModal(true);
   };
@@ -194,12 +202,12 @@ const fetchBatchStocks = async () => {
 
   const resetForm = () => {
     setFormData({
-      batchId: '',
-      productId: '',
-      warehouseId: '',
-      quantity: '',
-      note: '',
-      handledBy: userId
+      batchId: "",
+      productId: "",
+      warehouseId: "",
+      quantity: "",
+      note: "",
+      handledBy: userId,
     });
     setSelectedStock(null);
   };
@@ -214,7 +222,7 @@ const fetchBatchStocks = async () => {
     { header: "Product Name", accessor: "productName" },
     { header: "Warehouse", accessor: "warehouse" },
     { header: "Quantity", accessor: "quantity" },
-    { header: "Remaining In Batch Stock ", accessor: "remaining" },
+    { header: "Remaining In Store ", accessor: "remaining" },
     { header: "Expiry Date", accessor: "expiryDate" },
     { header: "Exported At", accessor: "exportedAt" },
     { header: "Note", accessor: "note" },
@@ -222,36 +230,40 @@ const fetchBatchStocks = async () => {
     // { header: "Action", accessor: "action" }
   ];
 
-  const tableData = batchStocks.map(stock => ({
+  const tableData = batchStocks.map((stock) => ({
     batchCode: stock.batchId?.batchCode || "-",
     productName: stock.productId?.name || "-",
     warehouse: stock.warehouseId?.name || "-",
     quantity: stock.quantity ?? "-",
     remaining: stock.remaining ?? "-",
     expiryDate: stock.batchId?.expiryDate
-      ? new Date(stock.batchId.expiryDate).toLocaleDateString('vi-VN')
+      ? new Date(stock.batchId.expiryDate).toLocaleDateString("vi-VN")
       : "-",
     exportedAt: stock.exportedAt
-      ? new Date(stock.exportedAt).toLocaleDateString('vi-VN')
+      ? new Date(stock.exportedAt).toLocaleDateString("vi-VN")
       : "-",
 
     note: stock.note || "-",
     status: (
       <span
-        className={`status_tag ${stock.lockedReason ? 'status_cancelled' : 'status_active'}`}
-      >
+        className={`status_tag ${
+          stock.lockedReason ? "status_cancelled" : "status_active"
+        }`}>
         {stock.lockedReason ? "Cancelled" : "Active"}
       </span>
     ),
     action: (
       <div className="action_icons">
         <i className="fas fa-pen edit_icon" onClick={() => handleEdit(stock)} />
-        <i className="fas fa-trash delete_icon" onClick={() => {
-          setSelectedStock(stock);
-          setIsDeleteModalOpen(true);
-        }} />
+        <i
+          className="fas fa-trash delete_icon"
+          onClick={() => {
+            setSelectedStock(stock);
+            setIsDeleteModalOpen(true);
+          }}
+        />
       </div>
-    )
+    ),
   }));
 
   return (
@@ -264,8 +276,7 @@ const fetchBatchStocks = async () => {
             onClick={() => {
               resetForm();
               setShowCreateModal(true);
-            }}
-          >
+            }}>
             Add New Batch Stock
           </button>
         </div>
@@ -279,7 +290,9 @@ const fetchBatchStocks = async () => {
         {showCreateModal && !selectedStock && (
           <div className="modal_overlay">
             <div className="modal_content">
-              <button className="close_modal_btn" onClick={handleCloseModal}>×</button>
+              <button className="close_modal_btn" onClick={handleCloseModal}>
+                ×
+              </button>
               <h5>Add New Batch Stock</h5>
               <form className="product_form" onSubmit={handleCreateBatchStock}>
                 <div className="form_group">
@@ -289,12 +302,12 @@ const fetchBatchStocks = async () => {
                     name="batchId"
                     value={formData.batchId}
                     onChange={handleInputChange}
-                    required
-                  >
+                    required>
                     <option value="">Choose batch</option>
-                    {batches.map(batch => (
+                    {batches.map((batch) => (
                       <option key={batch._id} value={batch._id}>
-                        {batch.batchCode} - {batch.productId?.name || "N/A"} (Còn: {batch.quantity})
+                        {batch.batchCode} - {batch.productId?.name || "N/A"}{" "}
+                        (Còn: {batch.quantity})
                       </option>
                     ))}
                   </select>
@@ -307,10 +320,9 @@ const fetchBatchStocks = async () => {
                     name="productId"
                     value={formData.productId}
                     onChange={handleInputChange}
-                    required
-                  >
+                    required>
                     <option value="">Choose product</option>
-                    {products.map(product => (
+                    {products.map((product) => (
                       <option key={product._id} value={product._id}>
                         {product.name} - {product.price?.toLocaleString()} VND
                       </option>
@@ -325,10 +337,9 @@ const fetchBatchStocks = async () => {
                     name="warehouseId"
                     value={formData.warehouseId}
                     onChange={handleInputChange}
-                    required
-                  >
+                    required>
                     <option value="">Choose warehouse</option>
-                    {warehouses.map(warehouse => (
+                    {warehouses.map((warehouse) => (
                       <option key={warehouse._id} value={warehouse._id}>
                         {warehouse.name}
                       </option>
@@ -372,8 +383,11 @@ const fetchBatchStocks = async () => {
                 </div>
 
                 <div className="form_group">
-                  <button type="submit" className="add_account_btn" disabled={isCreating}>
-                    {isCreating ? 'Đang lưu...' : 'Add Batch Stock'}
+                  <button
+                    type="submit"
+                    className="add_account_btn"
+                    disabled={isCreating}>
+                    {isCreating ? "Đang lưu..." : "Add Batch Stock"}
                   </button>
                 </div>
               </form>
@@ -384,10 +398,11 @@ const fetchBatchStocks = async () => {
         {showCreateModal && selectedStock && (
           <div className="modal_overlay">
             <div className="modal_content">
-              <button className="close_modal_btn" onClick={handleCloseModal}>×</button>
+              <button className="close_modal_btn" onClick={handleCloseModal}>
+                ×
+              </button>
               <h5>Update Batch Stock</h5>
               <form className="product_form" onSubmit={handleCreateBatchStock}>
-
                 <div className="form_group">
                   <label htmlFor="quantity">Quantity *</label>
                   <input
@@ -426,8 +441,11 @@ const fetchBatchStocks = async () => {
                 </div>
 
                 <div className="form_group">
-                  <button type="submit" className="add_account_btn" disabled={isCreating}>
-                    {isCreating ? 'Đang lưu...' : 'Update Batch Stock'}
+                  <button
+                    type="submit"
+                    className="add_account_btn"
+                    disabled={isCreating}>
+                    {isCreating ? "Đang lưu..." : "Update Batch Stock"}
                   </button>
                 </div>
               </form>
@@ -435,18 +453,27 @@ const fetchBatchStocks = async () => {
           </div>
         )}
 
-
         {isDeleteModalOpen && (
           <div className="modal_overlay">
             <div className="modal_content">
-              <button className="close_modal_btn" onClick={() => setIsDeleteModalOpen(false)}>×</button>
+              <button
+                className="close_modal_btn"
+                onClick={() => setIsDeleteModalOpen(false)}>
+                ×
+              </button>
               <h5>
-                Are you sure you want to delete {" "}
+                Are you sure you want to delete{" "}
                 <strong>{selectedStock?.batchId?.batchCode}</strong>?
               </h5>
               <div className="modal-buttons">
-                <button className="cancel_btn" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
-                <button className="delete_btn" onClick={handleDelete}>Confirm</button>
+                <button
+                  className="cancel_btn"
+                  onClick={() => setIsDeleteModalOpen(false)}>
+                  Cancel
+                </button>
+                <button className="delete_btn" onClick={handleDelete}>
+                  Confirm
+                </button>
               </div>
             </div>
           </div>
