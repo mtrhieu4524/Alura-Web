@@ -47,28 +47,29 @@ function BatchStockList({ searchQuery = "" }) {
     fetchDropdownData();
   }, [searchQuery]);
 
-  const fetchBatchStocks = async () => {
-    setIsLoading(true);
-    try {
-      const url = searchQuery
-        ? `${API_URL}/batch-stock?search=${encodeURIComponent(searchQuery)}`
-        : `${API_URL}/batch-stock`;
+const fetchBatchStocks = async () => {
+  setIsLoading(true);
+  try {
+    const url = searchQuery
+      ? `${API_URL}/batch-stock?search=${encodeURIComponent(searchQuery)}`
+      : `${API_URL}/batch-stock`;
 
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setBatchStocks(json.data);
-      } else {
-        setBatchStocks([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch batch stocks", error);
-      toast.error("Failed to load batch stock data.");
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const json = await res.json();
+    if (json.success && Array.isArray(json.data)) {
+      const filteredData = json.data.filter(stock => stock.isOrigin === false);
+      setBatchStocks(filteredData);
+    } else {
+      setBatchStocks([]);
     }
-    setIsLoading(false);
-  };
+  } catch (error) {
+    console.error("Failed to fetch batch stocks", error);
+    toast.error("Failed to load batch stock data.");
+  }
+  setIsLoading(false);
+};
 
   const fetchDropdownData = async () => {
     try {
@@ -213,7 +214,7 @@ function BatchStockList({ searchQuery = "" }) {
     { header: "Product Name", accessor: "productName" },
     { header: "Warehouse", accessor: "warehouse" },
     { header: "Quantity", accessor: "quantity" },
-    { header: "Remaining In Store", accessor: "remaining" },
+    { header: "Remaining In Batch Stock ", accessor: "remaining" },
     { header: "Expiry Date", accessor: "expiryDate" },
     { header: "Exported At", accessor: "exportedAt" },
     { header: "Note", accessor: "note" },
