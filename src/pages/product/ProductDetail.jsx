@@ -124,8 +124,9 @@ function ProductDetail() {
                 key={idx}
                 src={image}
                 alt={`${product.name} ${idx + 1}`}
-                className={`thumbnail ${selectedImage === image ? "selected" : ""
-                  }`}
+                className={`thumbnail ${
+                  selectedImage === image ? "selected" : ""
+                }`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -243,17 +244,16 @@ function ProductDetail() {
           style={{ cursor: "pointer" }}>
           Specifications & Descriptions
           <i
-            className={`fas ${showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
-              } specification_toggle_icon`}></i>
+            className={`fas ${
+              showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
+            } specification_toggle_icon`}></i>
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
           <div className="specifications_grid">
             <div className="specification_item">
               <span className="specification_label">Name: </span>
-              <p className="specification_value">
-                {product.name || "None"}
-              </p>
+              <p className="specification_value">{product.name || "None"}</p>
             </div>
 
             <div className="specification_item">
@@ -294,7 +294,6 @@ function ProductDetail() {
               </p>
             </div>
 
-
             <div className="specification_item">
               <span className="specification_label">Purpose: </span>
               <p className="specification_value">{product.purpose || "None"}</p>
@@ -315,13 +314,6 @@ function ProductDetail() {
             </div>
 
             <div className="specification_item">
-              <span className="specification_label">Instruction:</span>
-              <p className="specification_value">
-                {product.instructions || "None"}
-              </p>
-            </div>
-
-            <div className="specification_item">
               <span className="specification_label">Key Ingredients: </span>
               <p className="specification_value">
                 {product.keyIngredients || "None"}
@@ -334,8 +326,6 @@ function ProductDetail() {
                 {product.detailInfredients || "None"}
               </p>
             </div>
-
-
           </div>
         )}
       </div>
