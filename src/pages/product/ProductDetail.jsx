@@ -112,6 +112,12 @@ function ProductDetail() {
 
   const maxProductAvailable = product.stock || 0;
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "None";
+    const text = String(str);
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+
   return (
     <div id="product_detail" className="product_detail">
       <Breadcrumb items={navItems} />
@@ -124,9 +130,8 @@ function ProductDetail() {
                 key={idx}
                 src={image}
                 alt={`${product.name} ${idx + 1}`}
-                className={`thumbnail ${
-                  selectedImage === image ? "selected" : ""
-                }`}
+                className={`thumbnail ${selectedImage === image ? "selected" : ""
+                  }`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -151,7 +156,7 @@ function ProductDetail() {
             <strong>Type:</strong> {product.productTypeId?.name || "None"}
           </p>
           <p className="product_diamond_detail">
-            <strong>Skin Type:</strong> {product.skinType || "None"}
+            <strong>Skin Type:</strong>                 {capitalizeFirstLetter(product.skinType)}
           </p>
           <p className="product_shell_detail">
             <strong>Volume:</strong> {product.volume}
@@ -244,9 +249,8 @@ function ProductDetail() {
           style={{ cursor: "pointer" }}>
           Specifications & Descriptions
           <i
-            className={`fas ${
-              showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
-            } specification_toggle_icon`}></i>
+            className={`fas ${showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
+              } specification_toggle_icon`}></i>
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
@@ -266,20 +270,22 @@ function ProductDetail() {
             <div className="specification_item">
               <span className="specification_label">Skin Type: </span>
               <p className="specification_value">
-                {product.skinType || "None"}
+                {capitalizeFirstLetter(product.skinType)}
               </p>
             </div>
 
             <div className="specification_item">
               <span className="specification_label">Skin Color: </span>
               <p className="specification_value">
-                {product.skinColor || "None"}
+                {capitalizeFirstLetter(product.skinColor)}
               </p>
             </div>
 
             <div className="specification_item">
               <span className="specification_label">Sex: </span>
-              <p className="specification_value">{product.sex || "None"}</p>
+              <p className="specification_value">
+                {capitalizeFirstLetter(product.sex)}
+              </p>
             </div>
 
             <div className="specification_item">
@@ -309,6 +315,7 @@ function ProductDetail() {
             <div className="specification_item">
               <span className="specification_label">Preserve: </span>
               <p className="specification_value">
+                Expiry date: {product.expiryDate || "xx/xx/xxxx. "}
                 {product.preservation || "None"}
               </p>
             </div>
