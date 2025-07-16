@@ -199,6 +199,14 @@
     padding-bottom: 10px;
 }
 
+.under_sign_in_title {
+    font-size: 13px;
+    text-align: center;
+    color: #797979;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
 .password_eye {
     position: absolute;
     top: 50%;

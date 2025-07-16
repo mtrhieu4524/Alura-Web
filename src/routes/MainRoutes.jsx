@@ -8,6 +8,9 @@ import Contact from "../pages/constants/Contact";
 import Introduce from "../pages/constants/Introduce";
 import Faqs from "../pages/constants/Faqs";
 import Login from "../pages/authen/Login";
+import ForgetPassword from "../pages/authen/ForgetPassword";
+import VerifyCode from "../pages/authen/VerifyCode";
+import ResetPassword from "../pages/authen/ResetPassword";
 import Register from "../pages/authen/Register";
 import CosmeticList from "../pages/product/CosmeticList";
 import ProductDetail from "../pages/product/ProductDetail";
@@ -43,6 +46,9 @@ const MainRoutes = () => {
       {/* Authentication */}
       <Route path="/sign-in" element={<Login />} />
       <Route path="/sign-up" element={<Register />} />
+      <Route path="/forget-password" element={<ForgetPassword />} />
+      <Route path="/verify-code" element={<VerifyCode />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Public & User Routes */}
       <Route element={<UserLayout />}>

@@ -29,7 +29,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 👈 New state for toggle
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     document.title = "Alurà - Sign In";
@@ -166,7 +166,7 @@ const Login = () => {
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label className="remember_me">Remember me</label>
-              <Link className="forgot_password_link" to="/forgot-password">
+              <Link className="forgot_password_link" to="/forget-password">
                 Forgot password?
               </Link>
             </div>
@@ -208,7 +208,7 @@ const Login = () => {
                   onClick={handleGuestLogin}
                   style={{ cursor: "pointer" }}
                 >
-                  Navigate to home
+                  Sign in as guest
                 </div>
               </div>
             </div>

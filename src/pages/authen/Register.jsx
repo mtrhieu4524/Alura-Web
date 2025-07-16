@@ -98,10 +98,8 @@ const Register = () => {
     };
 
     const handleGoogleLogin = () => {
-        navigate("");
+        navigate("/");
     };
-
-
 
     return (
         <div className="register_main_container container-fluid">
@@ -226,7 +224,7 @@ const Register = () => {
                                     onClick={handleGoogleLogin}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    Login with Google
+                                    Sign in as guest
                                 </div>
                             </div>
                         </div>
