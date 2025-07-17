@@ -201,7 +201,7 @@ function OrderDetail() {
                                         Price: {product.unitPrice.toLocaleString()} VND
                                     </p>
                                     <p className="staff_order_detail_product_size">
-                                        Batch: {product.batchCode}
+                                        Batch: {product.batches?.[0]?.batchCode || "None"}
                                     </p>
                                     <p className="staff_order_detail_product_price">
                                         Total:{' '}
