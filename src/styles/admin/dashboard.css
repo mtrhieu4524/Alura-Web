@@ -175,6 +175,10 @@
     margin-bottom: 20px;
 }
 
+.total_sales_pie {
+    padding: 20px 40px 40px 40px !important;
+}
+
 .selling_table th,
 .selling_table td {
     padding: 10px;
@@ -216,4 +220,5 @@
 .pie_wrapper canvas {
     width: 100% !important;
     height: 100% !important;
+    margin-top: 40px;
 }

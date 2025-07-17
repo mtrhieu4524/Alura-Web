@@ -205,7 +205,7 @@ function BatchList({ searchQuery = "" }) {
     "Warehouse",
     "Distributor",
     "Amount",
-    "Import Date",
+    // "Import Date",
     "Expiry Date",
     "Note",
     "Status",

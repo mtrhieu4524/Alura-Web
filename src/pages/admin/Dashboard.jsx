@@ -33,13 +33,13 @@ function Dashboard() {
   const [summary, setSummary] = useState({
     customers: 0,
     orders: 0,
-    earnings: 0,
+    revenue: 0,
     growth: 0,
   });
   const [percentChange, setPercentChange] = useState({
     customers: 0,
     orders: 0,
-    earnings: 0,
+    revenue: 0,
     growth: 0,
   });
 
@@ -77,33 +77,32 @@ function Dashboard() {
       const dataCurrent = await resCurrent.json();
       const dataPrev = await resPrev.json();
 
-      setSummary(dataCurrent || { customers: 0, orders: 0, earnings: 0, growth: 0 });
+      setSummary(dataCurrent || { customers: 0, orders: 0, revenue: 0, growth: 0 });
       setPercentChange({
         customers: calcPercent(dataCurrent.customers, dataPrev.customers),
         orders: calcPercent(dataCurrent.orders, dataPrev.orders),
-        earnings: calcPercent(dataCurrent.earnings, dataPrev.earnings),
+        revenue: calcPercent(dataCurrent.revenue, dataPrev.revenue),
         growth: calcPercent(dataCurrent.growth, dataPrev.growth),
       });
     } catch (error) {
       console.error("Failed to fetch dashboard summary:", error);
-      setSummary({ customers: 0, orders: 0, earnings: 0, growth: 0 });
-      setPercentChange({ customers: 0, orders: 0, earnings: 0, growth: 0 });
+      setSummary({ customers: 0, orders: 0, revenue: 0, growth: 0 });
+      setPercentChange({ customers: 0, orders: 0, revenue: 0, growth: 0 });
     }
   };
 
   const calcPercent = (current, previous) => {
     if (previous === 0) {
-      if (current === 0) return 0;
-      return 100;
+      return current === 0 ? 0 : 100;
     }
-    return (((current - previous) / previous) * 100).toFixed(2);
+    return Number((((current - previous) / previous) * 100).toFixed(2));
   };
 
   const lineData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: ["1/7", "5/7", "10/7", "15/7", "20/7", "25/7", "30/7"],
     datasets: [
       {
-        label: "Current Week",
+        label: "Current Month",
         data: [3000, 4000, 3200, 5100, 4500, 4900, 5300],
         borderColor: "#4CAF50",
         backgroundColor: "rgba(76, 175, 80, 0.1)",
@@ -111,7 +110,7 @@ function Dashboard() {
         fill: true,
       },
       {
-        label: "Previous Week",
+        label: "Previous Month",
         data: [4000, 3800, 4200, 4600, 5000, 5500, 5700],
         borderColor: "#FFC107",
         backgroundColor: "rgba(255, 193, 7, 0.1)",
@@ -167,21 +166,21 @@ function Dashboard() {
             <h4>Customers</h4>
             <p className="value">{summary.customers || 0}</p>
             <p className={percentChange.customers >= 0 ? "positive" : "negative"}>
-              {percentChange.customers >= 0 ? "▲" : "▼"} {Math.abs(percentChange.customers)}% Since last month
+              {percentChange.customers >= 0 ? "▲" : "▼"} {isNaN(percentChange.customers) ? 0 : Math.abs(percentChange.customers)}% Since last month
             </p>
           </div>
           <div className="dashboard_card">
             <h4>Orders</h4>
             <p className="value">{summary.orders || 0}</p>
-            <p className={percentChange.orders >= 0 ? "positive" : "negative"}>
-              {percentChange.orders >= 0 ? "▲" : "▼"} {Math.abs(percentChange.orders)}% Since last month
+            <p className={percentChange.customers >= 0 ? "positive" : "negative"}>
+              {percentChange.customers >= 0 ? "▲" : "▼"} {isNaN(percentChange.customers) ? 0 : Math.abs(percentChange.customers)}% Since last month
             </p>
           </div>
           <div className="dashboard_card">
             <h4>Earnings</h4>
             <p className="value">{(summary.revenue || 0).toLocaleString()} VND</p>
             <p className={percentChange.revenue >= 0 ? "positive" : "negative"}>
-              {percentChange.revenue >= 0 ? "▲" : "▼"} {Math.abs(percentChange.revenue)}% Since last month
+              {percentChange.revenue >= 0 ? "▲" : "▼"} {isNaN(percentChange.revenue) ? 0 : Math.abs(percentChange.revenue)}% Since last month
             </p>
           </div>
           <div className="dashboard_card">
@@ -202,7 +201,7 @@ function Dashboard() {
           <div className="revenue_chart">
             <div className="chart_header">
               <h5>Revenue</h5>
-              <p>Current Week: <strong>45,320</strong> | Previous Week: <strong>58,610</strong></p>
+              <p>Current Month: <strong>45,320 VND</strong> | Previous Month: <strong>58,610 VND</strong></p>
             </div>
             <Line data={lineData} options={lineOptions} />
           </div>
@@ -216,7 +215,7 @@ function Dashboard() {
 
         <div className="dashboard_table_section">
           <div className="table_header">
-            <h5>Top 5 Selling Products</h5>
+            <h5>Top 5 Selling Products (All Time)</h5>
             {/* <button className="export_btn">Export <i className="fas fa-download"></i></button> */}
           </div>
           <table className="selling_table">
