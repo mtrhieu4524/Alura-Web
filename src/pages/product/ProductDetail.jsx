@@ -315,7 +315,7 @@ function ProductDetail() {
             <div className="specification_item">
               <span className="specification_label">Preserve: </span>
               <p className="specification_value">
-                Expiry date: {product.expiryDate || "xx/xx/xxxx. "}
+                {/* Expiry date: {product.expiryDate || "xx/xx/xxxx. "} */}
                 {product.preservation || "None"}
               </p>
             </div>

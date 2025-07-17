@@ -25,9 +25,9 @@
 
 .dashboard_cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 .dashboard_card h4 {
@@ -159,7 +159,7 @@
 
 .dashboard_card {
     background-color: white;
-    padding: 20px;
+    padding: 20px 20px 10px 20px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     text-align: left;
 }
