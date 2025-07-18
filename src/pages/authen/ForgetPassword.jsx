@@ -42,11 +42,10 @@ const ForgetPassword = () => {
             });
 
             if (response.ok) {
-                toast.success("Successfully! Check your email for reset password code.");
+                toast.success("Check your email for verify code.");
                 navigate("/verify-code", { state: { email } });
             } else {
                 toast.error("Email not registered an account.");
-                navigate("/verify-code", { state: { email } });
 
             }
         } catch (error) {

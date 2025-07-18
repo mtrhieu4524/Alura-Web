@@ -48,10 +48,9 @@ const VerifyCode = () => {
             });
 
             if (response.ok) {
-                toast.success("Verify code success!");
                 navigate("/reset-password", { state: { email, code } });
             } else {
-                toast.error("Code is incorrect.");
+                toast.error("Verify code is incorrect.");
             }
         } catch (error) {
             toast.error("Something went wrong. Please try again.");

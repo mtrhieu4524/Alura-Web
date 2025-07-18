@@ -64,7 +64,7 @@ const ResetPassword = () => {
             });
 
             if (response.ok) {
-                toast.success("Password reset successfully!");
+                toast.success("Reset password successfully!");
                 navigate("/sign-in");
             } else {
                 const errorData = await response.json();
