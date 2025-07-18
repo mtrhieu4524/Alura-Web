@@ -345,7 +345,7 @@ function ProductDetail() {
         <div
           className="admin_back"
           onClick={() => navigate("/staff/product-list")}>
-          &lt; Back
+          &lt; Back To Product List
         </div>
       </div>
 

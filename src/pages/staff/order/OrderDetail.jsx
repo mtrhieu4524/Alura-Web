@@ -127,7 +127,7 @@ function OrderDetail() {
                         className="staff_back"
                         onClick={() => navigate('/staff/order-list')}
                     >
-                        &lt; Back
+                        &lt; Back To Order List
                     </div>
 
                     <div className="staff_order_detail_border">

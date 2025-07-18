@@ -177,7 +177,7 @@ function OrderDetail() {
           <div
             className="user_back_order_list"
             onClick={() => navigate("/order-history")}>
-            &lt; Back
+            &lt; Back To Order History
           </div>
           <div className="order_detail_border">
             {loading ? (
