@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/setting/OrderHistory.css";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-import { Select, MenuItem, FormControl, InputLabel, CircularProgress, Button } from "@mui/material";
+import { Chip, Select, MenuItem, FormControl, InputLabel, CircularProgress, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -81,6 +81,27 @@ function OrderHistory() {
       return () => clearTimeout(timer);
     }
   }, [confirmCancelOrderId]);
+
+  const getStatusChip = (status) => {
+    const statusMap = {
+      Pending: { label: "Pending", color: "warning" },
+      Paid: { label: "Paid", color: "info" },
+      Delivered: { label: "Delivered", color: "primary" },
+      Shipped: { label: "Shipped", color: "info" },
+      Success: { label: "Success", color: "success" },
+      Cancelled: { label: "Cancelled", color: "error" },
+    };
+    const { label, color } = statusMap[status] || { label: status, color: "default" };
+    return (
+      <Chip
+        label={label}
+        color={color}
+        size="small"
+        sx={{ fontSize: "11px", height: 18 }}
+      />
+    );
+  };
+
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -229,7 +250,7 @@ function OrderHistory() {
                       <td>{formatDate(order.date)}</td>
                       <td>{order.orderId}</td>
                       <td>{order.totalPrice.toLocaleString()} VND</td>
-                      <td>{order.orderStatus}</td>
+                      <td>{getStatusChip(order.orderStatus)}</td>
                       <td>
                         <Button
                           variant="outlined"
@@ -243,9 +264,9 @@ function OrderHistory() {
                       </td>
                       <td>
                         <i
-                          className="order_history_detail_icon fas fa-external-link-alt"
+                          className="fas fa-info-circle detail_icon"
+                          title="View Details"
                           onClick={() => handleDetailClick(order.orderId)}
-                          style={{ cursor: "pointer" }}
                         />
                       </td>
                     </tr>

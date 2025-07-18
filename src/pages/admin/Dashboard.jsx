@@ -185,7 +185,7 @@ function Dashboard() {
             </p>
           </div>
           <div className="dashboard_card">
-            <h4>Earnings</h4>
+            <h4>Revenue</h4>
             <p className="value">{(summary.revenue || 0).toLocaleString()} VND</p>
             <p className={percentChange.revenue >= 0 ? "positive" : "negative"}>
               {percentChange.revenue >= 0 ? "▲" : "▼"} {isNaN(percentChange.revenue) ? 0 : Math.abs(percentChange.revenue)}% Since last month

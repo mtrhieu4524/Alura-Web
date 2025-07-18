@@ -201,3 +201,14 @@ body {
 .order_history_detail_icon:hover {
     color: #797979;
 }
+
+.detail_icon {
+    font-size: 15px;
+    color: #1c1c1c !important;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.detail_icon:hover {
+    color: #7d7d7d !important;
+}

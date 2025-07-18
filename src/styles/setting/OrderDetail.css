@@ -125,13 +125,6 @@ body {
             font-weight: bold;
         }
 
-        .order_detail_status {
-            font-size: 15px;
-            border: 1px solid #1c1c1c;
-            border-radius: 30px;
-            padding: 3px 30px 5px 30px;
-            color: #1c1c1c;
-        }
     }
 
     .order_detail_product {

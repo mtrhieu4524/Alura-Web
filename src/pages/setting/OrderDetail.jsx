@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Image, Space } from "antd";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../styles/setting/OrderDetail.css";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Chip } from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("token");
@@ -150,6 +150,26 @@ function OrderDetail() {
     });
   };
 
+  const getStatusChip = (status) => {
+    const statusMap = {
+      Pending: { label: "Pending", color: "warning" },
+      Paid: { label: "Paid", color: "info" },
+      Delivered: { label: "Delivered", color: "primary" },
+      Shipped: { label: "Shipped", color: "info" },
+      Success: { label: "Success", color: "success" },
+      Cancelled: { label: "Cancelled", color: "error" },
+    };
+    const { label, color } = statusMap[status] || { label: status, color: "default" };
+    return (
+      <Chip
+        label={label}
+        color={color}
+        // size="small"
+        sx={{ fontSize: "15px", height: 30 }}
+      />
+    );
+  };
+
   return (
     <div className="OrderDetail">
       <Breadcrumb items={navItems} />
@@ -195,8 +215,9 @@ function OrderDetail() {
                 <div className="order_detail_header">
                   <h4 className="order_detail_number">#{orderNumber}</h4>
                   <span className="order_detail_status">
-                    {orderDetails?.orderStatus}
+                    {getStatusChip(orderDetails?.orderStatus)}
                   </span>
+
                 </div>
                 <hr className="order_detail_line1" />
                 {orderProducts.map((product, index) => (
