@@ -39,7 +39,7 @@ function ProductDetail() {
 
   const handleAddToCart = async () => {
     if (!productId) {
-      toast.error("No product selected");
+      toast.error("No product selected.");
       return;
     }
 
@@ -64,7 +64,8 @@ function ProductDetail() {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
-        const errorMessage = errData?.message || "Failed to add to cart";
+        // const errorMessage = errData?.message || "Failed to add to cart";
+        const errorMessage = "You are logged in as an admin/staff. Adding to cart is not permitted.";
         toast.error(errorMessage);
         return;
       }
@@ -155,13 +156,13 @@ function ProductDetail() {
           <p className="product_code_detail">
             <strong>Type:</strong> {product.productTypeId?.name || "None"}
           </p>
-          <p className="product_diamond_detail">
+          <p className="product_cosmetic_detail">
             <strong>Skin Type:</strong>                 {capitalizeFirstLetter(product.skinType)}
           </p>
           <p className="product_shell_detail">
             <strong>Volume:</strong> {product.volume}
           </p>
-          <p className="product_diamond_detail">
+          <p className="product_cosmetic_detail">
             <strong>Sold:</strong> {product.sold || 0}
           </p>
 

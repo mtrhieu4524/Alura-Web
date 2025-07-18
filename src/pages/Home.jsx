@@ -143,11 +143,10 @@ const Home = () => {
 
   const handleProductClick = (product) => {
     const productName = product._id.replace(/\s+/g, "-").toLowerCase();
-    const path = product.name.toLowerCase().includes("diamond")
-      ? `/diamond-detail/${productName}`
-      : `/cosmetics/${productName}`;
+    const path = `/cosmetics/${productName}`;
     navigate(path, { state: { id: product._id } });
   };
+
 
   return (
     <div className="Home">

@@ -233,9 +233,9 @@ const Register = () => {
 
                 <div className="col-lg-6 col-md-6 col-sm-12 register_right_side">
                     <Slider {...sliderSettings}>
-                        <div><img className="register_image" src={rightImage} alt="Ring photo" /></div>
-                        <div><img className="register_image" src={rightImage2} alt="Ring photo" /></div>
-                        <div><img className="register_image" src={rightImage3} alt="Model with jewelry photo" /></div>
+                        <div><img className="register_image" src={rightImage} alt="Cosmetic" /></div>
+                        <div><img className="register_image" src={rightImage2} alt="Cosmetic" /></div>
+                        <div><img className="register_image" src={rightImage3} alt="Cosmetic" /></div>
                     </Slider>
                 </div>
             </div>
@@ -253,7 +253,7 @@ const Register = () => {
 
                         <h4 className="tos_title">Terms of Service & Privacy Policy</h4>
                         <p class="tos_introduce">
-                            Welcome to Dian Jewelry! By signing up and creating an account on
+                            Welcome to Alurà! By signing up and creating an account on
                             our website, you agree to the following terms, conditions, and
                             privacy policy. You acknowledge that you have read and agree to our
                             Terms of Service & Privacy Policy. Thank you for your visit.

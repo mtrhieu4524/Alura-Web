@@ -54,7 +54,6 @@ const FooterComponent = () => {
         navigate(event.currentTarget.getAttribute('href'));
     };
 
-
     return (
         <>
             <footer className="footer">
@@ -107,15 +106,14 @@ const FooterComponent = () => {
                         <div className="col-sm-12 col-md-3 footer_last_column">
                             <h6>Connect with us</h6>
                             <ul className="footer_content social_media_icon" style={{ listStyle: 'none', padding: 0, display: 'flex', gap: '16px' }}>
-                                <li><Link to="https://www.facebook.com/profile.php?id=61560517631582" target="_blank"><i className="fb fab fa-facebook-f" target="_blank"></i></Link></li>
-                                <li><Link to="https://www.instagram.com/alura" target="_blank"><i className="ins fab fa-instagram"></i></Link></li>
-                                <li><Link to="https://www.tiktok.com/@alura" target="_blank"><i className="tik fab fa-tiktok"></i></Link></li>
+                                <li><Link to="https:www.facebook.com/alura" target="_blank"><i className="fb fab fa-facebook-f"></i></Link></li>
+                                <li><Link to="https:www.instagram.com/alura" target="_blank"><i className="ins fab fa-instagram"></i></Link></li>
+                                <li><Link to="https:www.tiktok.com/@alura" target="_blank"><i className="tik fab fa-tiktok"></i></Link></li>
                                 <li><Link to="/" target="_blank"><i className="gg fab fa-google"></i></Link></li>
                             </ul>
                             <h6 className='footer_last_column_title_2'>Secure payment</h6>
                             <ul className="footer_content">
                                 <img className='footer_vnpay' src={vnpay} alt="VNPAY Logo" />
-                                {/* <img className='footer_bank' src={bank} alt="Bank Logo" /> */}
                                 <img className='footer_cash' src={cash} alt="Cash Logo" />
                             </ul>
                         </div>
@@ -124,9 +122,9 @@ const FooterComponent = () => {
                     <div className="copyright row">
                         <div className="end_footer col-sm-12 col-md-6">
                             <p>© Copyright 2025 by Alurà</p> <p>ㅤ|ㅤ</p>
-                            <Link className="footer_tos_link" id="warrantyModalLink" to=""> Warranty Policyㅤ</Link>
+                            <a className="footer_tos_link" id="warrantyModalLink" href="#"> Warranty Policyㅤ</a>
                             <p>| ㅤ</p>
-                            <Link className="footer_tos_link" id="tosModalLink" to="">Terms of Service & Privacy Policy</Link>
+                            <a className="footer_tos_link" id="tosModalLink" href="#">Terms of Service & Privacy Policy</a>
                         </div>
                     </div>
                 </div>
@@ -134,13 +132,7 @@ const FooterComponent = () => {
 
             <div id="tosModal" className="modal">
                 <div className="modal-content-footer">
-                    {/* <span className="close" style={{ textAlign: 'end' }}>&times;</span> */}
-                    <span
-                        className="close footer_close"
-                        style={{ textAlign: "end", cursor: "pointer" }}
-                    >
-                        &times;
-                    </span>
+                    <span className="close footer_close" style={{ textAlign: "end", cursor: "pointer" }}>&times;</span>
                     <h4 className="tos_title">Terms of Service & Privacy Policy</h4>
                     <p className="tos_introduce">
                         Welcome to Alurà! By signing up and creating an account on our website,
@@ -191,7 +183,7 @@ const FooterComponent = () => {
 
             <div id="warrantyModal" className="modal">
                 <div className="modal-content-footer">
-                    <span className="close footer_close" style={{ textAlign: 'end' }}>&times;</span>
+                    <span className="close footer_close" style={{ textAlign: 'end', cursor: "pointer" }}>&times;</span>
                     <h4 className="tos_title">Warranty Policy</h4>
                     <p className="tos_introduce">
                         Welcome to Alurà! By purchasing our products, you agree to the following terms and conditions of our Warranty Policy. We strive to provide high-quality products and excellent customer service. Thank you for your trust in us. Hope you have a great time shopping.
@@ -238,8 +230,6 @@ const FooterComponent = () => {
                     </p>
                 </div>
             </div>
-
-
         </>
     );
 };

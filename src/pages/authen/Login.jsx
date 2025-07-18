@@ -105,8 +105,6 @@ const Login = () => {
       } else {
         navigate("/");
       }
-
-      toast.success("Login successful.");
     } catch (err) {
       toast.error(err.message || "Login failed.");
     } finally {

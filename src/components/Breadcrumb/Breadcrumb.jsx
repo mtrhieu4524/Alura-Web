@@ -7,13 +7,7 @@ const Breadcrumb = ({ items }) => {
     const navigate = useNavigate();
 
     const handleNavigation = (item) => {
-        if (item.name === 'Diamond Jewelry') {
-            navigate('/diamond-jewelry', { state: { category: 'all' } });
-        }
-        else if (item.name === 'Wedding Jewelry') {
-            navigate('/diamond-jewelry', { state: { category: 'weddingJewelry' } });
-        }
-        else if (item.link) {
+        if (item.link) {
             navigate(item.link);
         }
     };

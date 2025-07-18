@@ -202,23 +202,26 @@ const HeaderComponent = () => {
                 <div className="dropdown-toggle-icon" onClick={toggleDropdown}>
                   <i className="icon_account fas fa-user"></i>
                   <i
-                    className={`fas fa-chevron-down arrow-icon ${
-                      isDropdownOpen ? "rotate" : ""
-                    }`}></i>
+                    className={`fas fa-chevron-down arrow-icon ${isDropdownOpen ? "rotate" : ""
+                      }`}></i>
                 </div>
 
                 <div
-                  className={`user-dropdown-menu ${
-                    isDropdownOpen ? "open" : ""
-                  }`}>
+                  className={`user-dropdown-menu ${isDropdownOpen ? "open" : ""
+                    }`}>
                   {isLoggedIn && role === "USER" ? (
                     <div className="user-logged-in">
                       <div className="user-info">
                         <p className="username">
-                          {userInfo?.name || "User"} (
-                          {userInfo?.email || "Email"})
+                          {userInfo?.name || "User"}
                         </p>
                       </div>
+                      <div className="user-info">
+                        <p className="under_username">
+                          ({userInfo?.email || "Email"})
+                        </p>
+                      </div>
+
                       <Link
                         to="/profile"
                         state={{
@@ -246,31 +249,53 @@ const HeaderComponent = () => {
                     <div className="user-logged-in">
                       <div className="user-info">
                         <p className="username">
-                          {userInfo?.name || "User"} (
-                          {userInfo?.email || "Email"})
+                          {userInfo?.name || "User"}
+                        </p>
+                      </div>
+                      <div className="user-info">
+                        <p className="under_username">
+                          ({userInfo?.email || "Email"})
                         </p>
                       </div>
                       <Link
                         to="/admin/dashboard"
                         className="user-dropdown-menu-link">
                         <i className="fas fa-tachometer-alt dropdown-icon"></i>{" "}
-                        Back to Admin Page
+                        System management
                       </Link>
+                      <div
+                        onClick={handleLogout}
+                        className="user-dropdown-menu-link handle-logout"
+                        style={{ cursor: "pointer" }}>
+                        <i className="fas fa-sign-in-alt dropdown-icon"></i>{" "}
+                        Sign out
+                      </div>
                     </div>
                   ) : isLoggedIn && role === "STAFF" ? (
                     <div className="user-logged-in">
                       <div className="user-info">
                         <p className="username">
-                          {userInfo?.name || "User"} (
-                          {userInfo?.email || "Email"})
+                          {userInfo?.name || "User"}
+                        </p>
+                      </div>
+                      <div className="user-info">
+                        <p className="under_username">
+                          ({userInfo?.email || "Email"})
                         </p>
                       </div>
                       <Link
                         to="/staff/product-list"
                         className="user-dropdown-menu-link">
                         <i className="fas fa-tachometer-alt dropdown-icon"></i>{" "}
-                        Back to Staff Page
+                        System management
                       </Link>
+                      <div
+                        onClick={handleLogout}
+                        className="user-dropdown-menu-link handle-logout"
+                        style={{ cursor: "pointer" }}>
+                        <i className="fas fa-sign-in-alt dropdown-icon"></i>{" "}
+                        Sign out
+                      </div>
                     </div>
                   ) : (
                     <div className="user-not-logged-in">

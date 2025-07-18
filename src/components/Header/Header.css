@@ -298,7 +298,7 @@ body {
     padding: 10px;
     text-decoration: none;
     color: #333;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e5e5e5;
     cursor: pointer;
 }
 
@@ -326,7 +326,7 @@ body {
     align-items: center;
     gap: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+    /* border-bottom: 1px solid #eee; */
 }
 
 .avatar-circle {
@@ -344,6 +344,12 @@ body {
 .username {
     font-weight: bold;
     margin: 0;
+}
+
+.under_username {
+    font-size: 13px;
+    margin-top: -25px;
+    margin-bottom: 0;
 }
 
 .account_dropdown_section:hover .arrow-icon {

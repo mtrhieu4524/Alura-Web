@@ -72,19 +72,28 @@ const SpecialCard = () => {
 };
 
 const ProductList = ({ products, resetKey }) => {
-  const [visibleProducts, setVisibleProducts] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
   const location = useLocation();
   const isCosmeticsPage = location.pathname === "/cosmetics";
 
   useEffect(() => {
-    setVisibleProducts(12);
+    setCurrentPage(1);
   }, [resetKey]);
 
-  const handleSeeMore = () => {
-    setVisibleProducts(visibleProducts + 12);
-  };
+  const totalPages = Math.ceil(products.length / productsPerPage);
 
-  const displayedProducts = products.slice(0, visibleProducts);
+  const displayedProducts = products.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo(0, 0);
+    }
+  };
 
   return (
     <div className="product_list col-lg-12">
@@ -99,18 +108,44 @@ const ProductList = ({ products, resetKey }) => {
           shade=""
           volume={product.volume}
           sex={product.sex}
-          // stock={5}
           stock={product.stock || 0}
         />
       ))}
-      {visibleProducts < products.length ? (
-        <div className="product_see_more_container">
-          <button className="product_see_more_button" onClick={handleSeeMore}>
-            View More
+
+      {totalPages > 1 && (
+        <div className="pagination_container">
+          <button
+            className="pagination_button"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            &lt;
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              className={`pagination_button ${currentPage === i + 1 ? "active" : ""}`}
+              onClick={() => handlePageChange(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            className="pagination_button"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            &gt;
           </button>
         </div>
-      ) : (
-        !isCosmeticsPage && <SpecialCard />
+      )}
+
+      {displayedProducts.length === 0 && (
+        <p className="no_products">No products found.</p>
+      )}
+
+      {displayedProducts.length > 0 && !isCosmeticsPage && (
+        <SpecialCard />
       )}
     </div>
   );

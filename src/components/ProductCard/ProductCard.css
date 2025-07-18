@@ -220,3 +220,41 @@
 .image_wrapper {
     position: relative;
 }
+
+.pagination_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    /* gap: 8px; */
+}
+
+.pagination_button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 5px 10px 6px 10px;
+    margin: 0 5px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    color: gray;
+    font-size: 14px;
+}
+
+.pagination_button:hover {
+    background: #f2f2f2;
+}
+
+.pagination_button.active {
+    background-color: #f8dcce;
+    color: #1c1c1c;
+    border: 1px solid #777777;
+    height: 100%;
+    width: 100%;
+}
+
+
+.pagination_button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    border: 1px solid gray;
+}

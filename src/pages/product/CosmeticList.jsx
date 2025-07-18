@@ -176,6 +176,17 @@ function CosmeticListPage() {
 
                     setProducts(filtered);
                     setResetKey(Date.now());
+
+                    //duplicate
+                    // let duplicated = [];
+                    // while (duplicated.length < 20) {
+                    //     duplicated = duplicated.concat(filtered);
+                    // }
+                    // duplicated = duplicated.slice(0, 20);
+                    // setProducts(duplicated);
+                    // setResetKey(Date.now());
+                    //duplicate
+
                 }
             } catch (error) {
                 console.error('Error fetching products:', error);

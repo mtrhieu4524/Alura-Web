@@ -4,12 +4,6 @@
   margin-right: auto;
 }
 
-.text-diamond-data {
-  color: #797979;
-  font-size: 15px;
-  margin-bottom: 5px;
-}
-
 .cart_header {
   display: flex;
   justify-content: space-between;
@@ -271,10 +265,10 @@
 }
 
 .cart_item_footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
 }
 
 .cart_item_quantity {
