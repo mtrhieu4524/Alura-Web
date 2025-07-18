@@ -106,3 +106,11 @@
 .admin_password_eye i {
     margin-top: 12px;
 }
+
+.account_edit_icon {
+    color: #1c1c1c;
+}
+
+.account_edit_icon:hover {
+    color: #7d7d7d;
+}
