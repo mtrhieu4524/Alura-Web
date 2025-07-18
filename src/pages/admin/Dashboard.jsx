@@ -45,7 +45,7 @@ function Dashboard() {
     growth: 0,
   });
   const [topProducts, setTopProducts] = useState([]);
-  const [pieProducts, setPieProducts] = useState(["Lipstick", "Serum", "Sun Cream", "Perfume"]);
+  const [pieChartData, setPieChartData] = useState([]);
 
   useEffect(() => {
     document.title = "Dashboard - Alurà System Management";
@@ -55,10 +55,15 @@ function Dashboard() {
       return `${date.getMonth() + 1}/${date.getFullYear()}`;
     });
     setMonths(recentMonths);
-    setCurrentMonth(`${now.getMonth() + 1}/${now.getFullYear()}`);
-    fetchDashboardData(now.getMonth() + 1, now.getFullYear());
-    fetchTopProducts();
-    // fetchPieData();
+
+    const thisMonth = now.getMonth() + 1;
+    const thisYear = now.getFullYear();
+    const current = `${thisMonth}/${thisYear}`;
+
+    setCurrentMonth(current);
+    fetchDashboardData(thisMonth, thisYear);
+    fetchTopProducts(thisMonth, thisYear);
+    fetchPieData(thisMonth, thisYear);
   }, []);
 
   const getPreviousMonthYear = (month, year) => {
@@ -97,11 +102,11 @@ function Dashboard() {
     }
   };
 
-  const fetchTopProducts = async () => {
+  const fetchTopProducts = async (month, year) => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/dashboard/top-products`, {
+      const res = await fetch(`${API_URL}/dashboard/top-products?month=${month}&year=${year}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -112,36 +117,47 @@ function Dashboard() {
     }
   };
 
-  // const fetchPieData = async () => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) return;
-  //   try {
-  //     const res = await fetch(`${API_URL}/dashboard/pie-chart`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     const data = await res.json();
-  //     setPieProducts(data.products || []);
-  //   } catch (err) {
-  //     console.error("Failed to fetch pie chart data:", err);
-  //   }
-  // };
+  const fetchPieData = async (month, year) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/dashboard/products-sold-by-category?month=${month}&year=${year}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result = await res.json();
+      if (result?.data) {
+        setPieChartData(result.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch pie chart data:", err);
+    }
+  };
 
   const calcPercent = (current, previous) => {
-    if (previous === 0) {
-      return current === 0 ? 0 : 100;
-    }
+    if (previous === 0) return current === 0 ? 0 : 100;
     return Number((((current - previous) / previous) * 100).toFixed(2));
   };
 
   const pieData = {
-    labels: pieProducts,
+    labels: pieChartData.map((d) => d.categoryName),
     datasets: [
       {
-        data: [35, 25, 20, 20],
-        backgroundColor: ["#4CAF50", "#2196F3", "#FFC107", "#FF5722"],
+        data: pieChartData.map((d) => d.totalQuantitySold),
+        backgroundColor: [
+          "#4CAF50", "#2196F3", "#FFC107", "#FF5722",
+          "#9C27B0", "#3F51B5", "#009688", "#E91E63"
+        ],
         borderWidth: 1,
       },
     ],
+  };
+
+  const handleMonthChange = (e) => {
+    const [month, year] = e.target.value.split("/").map(Number);
+    setCurrentMonth(e.target.value);
+    fetchDashboardData(month, year);
+    fetchTopProducts(month, year);
+    fetchPieData(month, year);
   };
 
   return (
@@ -156,11 +172,7 @@ function Dashboard() {
               id="month-select"
               value={currentMonth || ""}
               label="Month"
-              onChange={(e) => {
-                const [month, year] = e.target.value.split("/");
-                setCurrentMonth(e.target.value);
-                fetchDashboardData(parseInt(month), parseInt(year));
-              }}
+              onChange={handleMonthChange}
               sx={{ height: 35, fontSize: 14, padding: "0 8px" }}>
               {months.map((m, i) => (
                 <MenuItem key={i} value={m}>{m}</MenuItem>
@@ -207,14 +219,20 @@ function Dashboard() {
 
         <div className="dashboard_charts">
           <div className="total_sales_pie">
-            <h5>Total Sales (Month)</h5>
+            <h5>Top Selling Categories</h5>
             <div className="pie_wrapper">
-              <Pie data={pieData} />
+              {pieChartData.length > 0 ? (
+                <Pie data={pieData} />
+              ) : (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center", padding: "40px", fontSize: "14px" }}>
+                  No data available
+                </div>
+              )}
             </div>
           </div>
           <div className="revenue_chart">
             <div className="chart_header">
-              <h5>Top 5 Selling Products (All Time)</h5>
+              <h5>Top Selling Products</h5>
             </div>
             <table className="selling_table">
               <thead>
@@ -239,7 +257,7 @@ function Dashboard() {
                           className="fas fa-info-circle detail_icon"
                           title="View Details"
                           onClick={() => navigate(`/admin/product-list/${product._id}`)}
-                          style={{ cursor: "pointer", color: "#2196F3" }}
+                          style={{ cursor: "pointer" }}
                         />
                       </td>
                     </tr>
@@ -252,7 +270,6 @@ function Dashboard() {
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>

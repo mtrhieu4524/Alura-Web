@@ -221,7 +221,7 @@
 .pie_wrapper canvas {
     width: 100% !important;
     height: 100% !important;
-    margin-left: 30px;
+    /* margin-left: 30px; */
     margin-top: -10px;
 }
 
