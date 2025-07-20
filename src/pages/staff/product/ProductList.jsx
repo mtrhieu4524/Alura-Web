@@ -23,11 +23,13 @@ function ProductList({ searchQuery = "" }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`,
+        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(
+          searchQuery
+        )}`,
         {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -70,7 +72,9 @@ function ProductList({ searchQuery = "" }) {
   const handleTogglePublic = async (id, isPublic) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"}/${id}`;
+      const url = `${API_URL}/products/${
+        isPublic ? "disable" : "enable"
+      }/${id}`;
 
       const res = await fetch(url, {
         method: "PUT",
@@ -105,8 +109,7 @@ function ProductList({ searchQuery = "" }) {
     public: (
       <button
         className={`btn_toggle_public ${product.isPublic ? "hide" : "show"}`}
-        onClick={() => handleTogglePublic(product._id, product.isPublic)}
-      >
+        onClick={() => handleTogglePublic(product._id, product.isPublic)}>
         {product.isPublic ? "Hide" : "Show"}
       </button>
     ),
@@ -114,7 +117,7 @@ function ProductList({ searchQuery = "" }) {
       <i
         className="fas fa-info-circle detail_icon"
         title="View Details"
-        onClick={() => navigate(`/admin/product-list/${product._id}`)}
+        onClick={() => navigate(`/staff/product-list/${product._id}`)}
       />
     ),
   }));
@@ -174,7 +177,9 @@ function ProductList({ searchQuery = "" }) {
       <div className="product_list_container">
         <div className="product_list_header">
           <h2 className="admin_main_title">Manage Product</h2>
-          <button className="add_product_btn" onClick={() => setIsModalOpen(true)}>
+          <button
+            className="add_product_btn"
+            onClick={() => setIsModalOpen(true)}>
             Add New Product
           </button>
         </div>
@@ -185,7 +190,11 @@ function ProductList({ searchQuery = "" }) {
       {isModalOpen && (
         <div className="modal_overlay">
           <div className="modal_content product_form_modal">
-            <button className="close_modal_btn" onClick={() => setIsModalOpen(false)}>×</button>
+            <button
+              className="close_modal_btn"
+              onClick={() => setIsModalOpen(false)}>
+              ×
+            </button>
             <h5>Add New Product</h5>
 
             <form className="product_form" onSubmit={handleSubmit}>
@@ -315,7 +324,10 @@ function ProductList({ searchQuery = "" }) {
               </div>
 
               <div className="form_actions">
-                <button type="button" className="cancel_btn" onClick={() => setIsModalOpen(false)}>
+                <button
+                  type="button"
+                  className="cancel_btn"
+                  onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>
                 <button type="submit" className="add_product_btn">

@@ -123,8 +123,15 @@ function Cart() {
       toast.success("Quantity updated successfully.");
     } catch (error) {
       console.error("Error updating quantity:", error);
-      toast.error("Quantity is not enough.");
+      toast.error("An error occurred while updating quantity.");
+      await fetch(`${API_URL}/cart/item/${cartItemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } finally {
+      await fetchCartItems();
       setUpdating(false);
     }
   };
@@ -227,7 +234,6 @@ function Cart() {
     <div className="cart_empty_message">
       <h5>Your cart is empty</h5>
       <p> Let's add something to the cart!</p>
-
     </div>
   );
 
@@ -267,9 +273,7 @@ function Cart() {
               </span>
             </div>
           </div>
-          <p className="cart_item_description">
-            Type: {productType}
-          </p>
+          <p className="cart_item_description">Type: {productType}</p>
 
           <p className="cart_item_description">
             Price: {price?.toLocaleString() || 0} VND

@@ -7,6 +7,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "../../styles/product/ProductDetail.css";
 import { useCart } from "../../context/CartContext";
 import { CircularProgress } from "@mui/material";
+import { useSelector } from "react-redux";
 
 function ProductDetail() {
   const location = useLocation();
@@ -17,6 +18,7 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [showSpecifications, setShowSpecifications] = useState(true);
   const { setCartCount } = useCart();
+  const { role } = useSelector((state) => state.auth);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -43,6 +45,11 @@ function ProductDetail() {
       return;
     }
 
+    if (product && product.isPublic === false) {
+      toast.error("This product is currently unavailable for purchase.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) {
       toast.warning("Please sign in before add product to cart.");
@@ -63,9 +70,12 @@ function ProductDetail() {
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => null);
-        // const errorMessage = errData?.message || "Failed to add to cart";
-        const errorMessage = "You are logged in as an admin/staff. Adding to cart is not permitted.";
+        // const errData = await response.json().catch(() => null);
+        let errorMessage = "Failed to add to cart";
+        if (role === "ADMIN" || role === "STAFF") {
+          errorMessage =
+            "You are logged in as an admin/staff. Adding to cart is not permitted.";
+        }
         toast.error(errorMessage);
         return;
       }
@@ -131,8 +141,9 @@ function ProductDetail() {
                 key={idx}
                 src={image}
                 alt={`${product.name} ${idx + 1}`}
-                className={`thumbnail ${selectedImage === image ? "selected" : ""
-                  }`}
+                className={`thumbnail ${
+                  selectedImage === image ? "selected" : ""
+                }`}
                 onClick={() => setSelectedImage(image)}
               />
             ))}
@@ -157,7 +168,8 @@ function ProductDetail() {
             <strong>Type:</strong> {product.productTypeId?.name || "None"}
           </p>
           <p className="product_cosmetic_detail">
-            <strong>Skin Type:</strong>                 {capitalizeFirstLetter(product.skinType)}
+            <strong>Skin Type:</strong>{" "}
+            {capitalizeFirstLetter(product.skinType)}
           </p>
           <p className="product_shell_detail">
             <strong>Volume:</strong> {product.volume}
@@ -250,8 +262,9 @@ function ProductDetail() {
           style={{ cursor: "pointer" }}>
           Specifications & Descriptions
           <i
-            className={`fas ${showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
-              } specification_toggle_icon`}></i>
+            className={`fas ${
+              showSpecifications ? "fa-chevron-up" : "fa-chevron-down"
+            } specification_toggle_icon`}></i>
         </h3>
         <hr className="product_specification_line" />
         {showSpecifications && (
