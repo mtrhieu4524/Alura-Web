@@ -5,78 +5,96 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useCart } from "../../context/CartContext";
 import { logout } from "../../store/authSlice";
-// import { waitForRehydration } from "../../store/store";
 import "../Header/Header.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { token, role } = useSelector((state) => state.auth);
+  const { cartCount, setCartCount } = useCart();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const { cartCount, setCartCount } = useCart();
-  const dispatch = useDispatch();
-  const { token, role } = useSelector((state) => state.auth);
+  const [productTypes, setProductTypes] = useState([]);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+
+  const COSMETICS_CATEGORY_ID = "685f753db792e430e6925dad";
+  const TREATMENTS_CATEGORY_ID = "685f755db792e430e6925db0";
+
+  const cosmeticsTypes = productTypes.filter(
+    (pt) => pt.category?._id === COSMETICS_CATEGORY_ID
+  );
+
+  const treatmentsTypes = productTypes.filter(
+    (pt) => pt.category?._id === TREATMENTS_CATEGORY_ID
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (token) {
-        setIsLoggedIn(true);
-        try {
-          const decoded = jwtDecode(token);
-          const now = Math.floor(Date.now() / 1000);
-          if (decoded.exp && decoded.exp < now + 300) {
-            console.log("Token will expire soon or has expired");
-            dispatch(logout());
-            setIsLoggedIn(false);
-            navigate("/sign-in");
-            window.location.reload();
-            return;
-          }
+      if (!token) {
+        setIsLoggedIn(false);
+        setCartCount(0);
+        return;
+      }
 
-          const userId = decoded.userId;
-          const res = await fetch(`${API_URL}/profile/${userId}`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-          });
+      setIsLoggedIn(true);
+      try {
+        const decoded = jwtDecode(token);
+        const now = Math.floor(Date.now() / 1000);
 
-          if (res.status === 401) {
-            console.log("401 Unauthorized - Token may be expired or invalid");
-            dispatch(logout());
-            setIsLoggedIn(false);
-            navigate("/sign-in");
-            return;
-          }
-
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-          }
-
-          const data = await res.json();
-          if (data?.success) {
-            setUserInfo(data.user);
-            await fetchCartCount(token);
-          }
-        } catch (err) {
-          console.error("Error fetching user profile:", err);
+        if (decoded.exp && decoded.exp < now + 300) {
           dispatch(logout());
           setIsLoggedIn(false);
           navigate("/sign-in");
+          window.location.reload();
+          return;
         }
-      } else {
+
+        const res = await fetch(`${API_URL}/profile/${decoded.userId}`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.status === 401) {
+          dispatch(logout());
+          setIsLoggedIn(false);
+          navigate("/sign-in");
+          return;
+        }
+
+        const data = await res.json();
+        if (data?.success) {
+          setUserInfo(data.user);
+          await fetchCartCount(token);
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        dispatch(logout());
         setIsLoggedIn(false);
-        setCartCount(0);
+        navigate("/sign-in");
+      }
+    };
+
+    const fetchProductTypes = async () => {
+      try {
+        const res = await fetch(`${API_URL}/product-types`);
+        if (res.ok) {
+          const data = await res.json();
+          setProductTypes(data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching product types:", err);
       }
     };
 
     checkAuth();
-  }, [token, dispatch, navigate]);
+    fetchProductTypes();
+  }, [token]);
 
   const fetchCartCount = async (token) => {
     try {
@@ -84,13 +102,12 @@ const HeaderComponent = () => {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (res.status !== 200) return;
-
-      const data = await res.json();
-      setCartCount(data?.items?.length || 0);
-    } catch (error) {
-      console.error("Error fetching cart count:", error);
+      if (res.ok) {
+        const data = await res.json();
+        setCartCount(data?.items?.length || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch cart count", err);
     }
   };
 
@@ -102,9 +119,9 @@ const HeaderComponent = () => {
     navigate("/sign-in");
   };
 
-  const handleTypeNavigate = (type) => {
+  const handleTypeNavigate = (typeName, type) => {
+    navigate(`/cosmetics?${type}=${encodeURIComponent(typeName)}`);
     window.scrollTo(0, 0);
-    navigate("/cosmetics", { state: { type } });
   };
 
   return (
@@ -333,104 +350,60 @@ const HeaderComponent = () => {
             id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <Link className="home nav-link" to="/">
-                  HOME
-                </Link>
+                <Link className="home nav-link" to="/">HOME</Link>
               </li>
+
               <li className="nav-item dropdown-cosmetics">
                 <Link className="home nav-link cosmetics-link" to="/cosmetics">
                   COSMETICS
-                  <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i>
+                  {/* <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i> */}
                 </Link>
-                <div className="cosmetics-dropdown">
+                {/* <div className={`cosmetics-dropdown ${isDropdownOpen ? "open" : ""}`}>
                   <div className="dropdown-column">
-                    <h6>Facial</h6>
-                    <p onClick={() => handleTypeNavigate("Cleanser")}>
-                      Cleanser
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Toner")}>Toner</p>
-                    <p onClick={() => handleTypeNavigate("Serum")}>Serum</p>
-                    <p onClick={() => handleTypeNavigate("Face Mask")}>
-                      Face Mask
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Cream")}>Cream</p>
-                  </div>
-                  <div className="dropdown-column">
-                    <h6>Hair</h6>
-                    <p onClick={() => handleTypeNavigate("Shampoo")}>Shampoo</p>
-                    <p onClick={() => handleTypeNavigate("Conditioner")}>
-                      Conditioner
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Hair Serum")}>
-                      Hair Serum
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Hair Tonic")}>
-                      Hair Tonic
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Scalp Treatment")}>
-                      Scalp Treatment
-                    </p>
-                  </div>
-                  <div className="dropdown-column">
-                    <h6>Body</h6>
-                    <p onClick={() => handleTypeNavigate("Body Lotion")}>
-                      Body Lotion
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Body Wash")}>
-                      Body Wash
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Deodorant")}>
-                      Deodorant
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Sunscreen")}>
-                      Sunscreen
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Body Scrub")}>
-                      Body Scrub
-                    </p>
-                  </div>
-                  <div className="dropdown-column">
-                    <h6>Lips & Nails</h6>
-                    <p onClick={() => handleTypeNavigate("Lip Stick")}>
-                      Lip Stick
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Lip Scrub")}>
-                      Lip Scrub
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Nail Strengthener")}>
-                      Nail Strengthener
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Cuticle Oil")}>
-                      Cuticle Oil
-                    </p>
-                    <p onClick={() => handleTypeNavigate("Nail Treatment")}>
-                      Nail Treatment
-                    </p>
+                    <h6>Type</h6>
+                    {cosmeticsTypes.map((pt) => (
+                      <p key={pt._id} onClick={() => handleTypeNavigate(pt.name, "type")}>
+                        {pt.name}
+                      </p>
+                    ))}
                   </div>
                   <div className="dropdown-viewall">
                     <Link to="/cosmetics">View all →</Link>
                   </div>
-                </div>
+                </div> */}
+              </li>
+
+              <li className="nav-item dropdown-cosmetics">
+                <Link className="home nav-link cosmetics-link" to="/treatments">
+                  TREATMENTS
+                  {/* <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i> */}
+                </Link>
+                {/* <div className={`cosmetics-dropdown ${isDropdownOpen ? "open" : ""}`}>
+                  <div className="dropdown-column">
+                    <h6>Type</h6>
+                    {treatmentsTypes.map((pt) => (
+                      <p key={pt._id} onClick={() => handleTypeNavigate(pt.name, "type")}>
+                        {pt.name}
+                      </p>
+                    ))}
+                  </div>
+                  <div className="dropdown-viewall">
+                    <Link to="/cosmetics">View all →</Link>
+                  </div>
+                </div> */}
+              </li>
+
+              <li className="nav-item">
+                <Link className="home nav-link" to="/visual-search">VISUAL SEARCH</Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/visual-search">
-                  VISUAL SEARCH
-                </Link>
+                <Link className="home nav-link" to="/faqs">FAQS</Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/faqs">
-                  FAQS
-                </Link>
+                <Link className="home nav-link" to="/introduce">INTRODUCE</Link>
               </li>
               <li className="nav-item">
-                <Link className="home nav-link" to="/introduce">
-                  INTRODUCE
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="home nav-link" to="/contact">
-                  CONTACT US
-                </Link>
+                <Link className="home nav-link" to="/contact">CONTACT US</Link>
               </li>
             </ul>
           </div>

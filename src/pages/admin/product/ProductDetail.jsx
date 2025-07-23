@@ -428,6 +428,7 @@ function ProductDetail() {
                       name={value}
                       value={getFieldValue(value)}
                       onChange={handleInputChange}
+                      disabled={value === "stock"}
                     />
                   )
                 ) : (
@@ -445,7 +446,7 @@ function ProductDetail() {
               <input
                 type="file"
                 name="imgUrls"
-                accept="image/*"
+                accept=".png, .jpg, .jpeg"
                 multiple
                 onChange={handleImagesChange}
               />

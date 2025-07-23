@@ -72,24 +72,39 @@ function OrderDetail() {
     };
 
     const handleStatusUpdate = async () => {
-        if (!status || status === orderDetails.orderStatus) {
-            toast.info('No changes to update.');
-            return;
-        }
-
-        if (
-            !statusTransitions[orderDetails.orderStatus]?.includes(status)
-        ) {
-            toast.error(
-                `Invalid status transition from ${orderDetails.orderStatus} to ${status}`
-            );
-            return;
-        }
-
         const token = localStorage.getItem('token');
         if (!token) return;
 
         try {
+            const latestRes = await fetch(`${API_URL}/order/by-order/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!latestRes.ok) throw new Error(await latestRes.text());
+
+            const latestData = await latestRes.json();
+            const latestStatus = latestData.orderStatus;
+
+            if (["Cancelled", "Success"].includes(latestStatus)) {
+                toast.error(`Order has already been marked as "${latestStatus}".`);
+                fetchOrderDetail();
+                return;
+            }
+
+            if (!status || status === latestStatus) {
+                toast.info('No changes to update.');
+                return;
+            }
+
+            if (!statusTransitions[latestStatus]?.includes(status)) {
+                toast.error(
+                    `Invalid status transition from ${latestStatus} to ${status}`
+                );
+                return;
+            }
+
             const res = await fetch(`${API_URL}/order/update-cod/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -118,34 +133,17 @@ function OrderDetail() {
 
     return (
         <div className="staff_order_detail">
-            <div
-                className="staff_order_detail_container"
-                ref={orderDetailContainerRef}
-            >
+            <div className="staff_order_detail_container" ref={orderDetailContainerRef}>
                 <div className="staff_order_detail_wrapper">
-                    <div
-                        className="staff_back"
-                        onClick={() => navigate('/staff/order-list')}
-                    >
+                    <div className="staff_back" onClick={() => navigate('/staff/order-list')}>
                         &lt; Back To Order List
                     </div>
 
                     <div className="staff_order_detail_border">
                         <div className="staff_order_detail_header">
-                            <h4 className="staff_order_detail_number">
-                                #{orderDetails._id}
-                            </h4>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                }}
-                            >
-                                <FormControl
-                                    size="small"
-                                    style={{ marginRight: '10px', width: '150px' }}
-                                >
+                            <h4 className="staff_order_detail_number">#{orderDetails._id}</h4>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <FormControl size="small" style={{ marginRight: '10px', width: '150px' }}>
                                     <InputLabel id="orderFilterLabel">Status</InputLabel>
                                     <Select
                                         labelId="orderFilterLabel"
@@ -155,7 +153,7 @@ function OrderDetail() {
                                         onChange={(e) => setStatus(e.target.value)}
                                         sx={{ height: '40px' }}
                                     >
-                                        {[orderDetails.orderStatus, ...(statusTransitions[orderDetails.orderStatus] || [])].map((option) => (
+                                        {availableStatusOptions.map((option) => (
                                             <MenuItem key={option} value={option}>
                                                 {option}
                                             </MenuItem>
@@ -175,10 +173,7 @@ function OrderDetail() {
                         <hr className="staff_order_detail_line1" />
 
                         {orderDetails.items.map((product, index) => (
-                            <div
-                                key={index}
-                                className="staff_order_detail_product"
-                            >
+                            <div key={index} className="staff_order_detail_product">
                                 <Space size={12}>
                                     <Image
                                         width={150}
@@ -204,11 +199,7 @@ function OrderDetail() {
                                         Batch: {product.batches?.[0]?.batchCode || "None"}
                                     </p>
                                     <p className="staff_order_detail_product_price">
-                                        Total:{' '}
-                                        {(
-                                            product.unitPrice * product.quantity
-                                        ).toLocaleString()}{' '}
-                                        VND
+                                        Total: {(product.unitPrice * product.quantity).toLocaleString()} VND
                                     </p>
                                 </div>
                             </div>
@@ -229,9 +220,7 @@ function OrderDetail() {
                                     <i className="fas fa-phone"></i>
                                     <span>
                                         <strong>Phone Number: </strong>
-                                        <span>
-                                            {orderDetails.userId?.phone || 'None'}
-                                        </span>
+                                        <span>{orderDetails.userId?.phone || 'None'}</span>
                                     </span>
                                 </div>
                             </div>
@@ -246,9 +235,7 @@ function OrderDetail() {
                                 <div className="order_detail_customer_item">
                                     <i className="fas fa-shipping-fast"></i>
                                     <span>
-                                        <strong>
-                                            Shipping ({orderDetails?.shippingMethod}):{' '}
-                                        </strong>
+                                        <strong>Shipping ({orderDetails?.shippingMethod}): </strong>
                                         {orderDetails?.shippingFee.toLocaleString()} VND
                                     </span>
                                 </div>
@@ -278,8 +265,7 @@ function OrderDetail() {
                                 Order date: {formatDate(orderDetails.orderDate)}
                             </p>
                             <p className="staff_order_detail_total_price">
-                                Total price:{' '}
-                                {orderDetails.totalAmount.toLocaleString()} VND
+                                Total price: {orderDetails.totalAmount.toLocaleString()} VND
                             </p>
                         </div>
                     </div>

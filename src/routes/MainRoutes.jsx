@@ -13,6 +13,7 @@ import VerifyCode from "../pages/authen/VerifyCode";
 import ResetPassword from "../pages/authen/ResetPassword";
 import Register from "../pages/authen/Register";
 import CosmeticList from "../pages/product/CosmeticList";
+import TreatmentList from "../pages/product/TreatmentList";
 import ProductDetail from "../pages/product/ProductDetail";
 import ProductSearch from "../pages/product/ProductSearch";
 import Cart from "../pages/cart/Cart";
@@ -34,6 +35,8 @@ import AdminAccountList from "../pages/admin/account/AccountList";
 import AdminBatchList from "../pages/admin/batch/batchList";
 import AdminBatchCertificateList from "../pages/admin/batchCertificate/batchCertificateList";
 import AdminBatchStockList from "../pages/admin/batchStock/batchStockList";
+import AdminCategoryList from "../pages/admin/category/categoryList";
+import AdminTypeList from "../pages/admin/type/TypeList";
 
 import StaffOrderList from "../pages/staff/order/OrderList";
 import StaffOrderDetail from "../pages/staff/order/OrderDetail";
@@ -60,6 +63,8 @@ const MainRoutes = () => {
         <Route path="/visual-search-result" element={<Result />} />
         <Route path="/search" element={<ProductSearch />} />
         <Route path="/cosmetics" element={<CosmeticList />} />
+        <Route path="/cosmetics/:id" element={<ProductDetail />} />
+        <Route path="/treatments" element={<TreatmentList />} />
         <Route path="/cosmetics/:id" element={<ProductDetail />} />
       </Route>
 
@@ -114,6 +119,22 @@ const MainRoutes = () => {
           element={
             <AdminLayout>
               <AdminWarehouseList />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/category-list"
+          element={
+            <AdminLayout>
+              <AdminCategoryList />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/type-list"
+          element={
+            <AdminLayout>
+              <AdminTypeList />
             </AdminLayout>
           }
         />

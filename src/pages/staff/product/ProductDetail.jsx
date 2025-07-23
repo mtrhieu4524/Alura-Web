@@ -16,7 +16,7 @@ function ProductDetail() {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
-  //   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -54,7 +54,7 @@ function ProductDetail() {
         setCategories(cd);
         setProductTypes(td);
       } catch (e) {
-        console.error("Error fetching options:", e);
+        console.error(e);
         toast.error("Failed to load options");
       }
     };
@@ -77,7 +77,7 @@ function ProductDetail() {
           toast.error(data.message || "Failed to load product.");
         }
       } catch (e) {
-        console.error("Error fetching product:", e);
+        console.error("Fetch product failed:", e);
         toast.error("Error fetching product.");
       }
     };
@@ -113,9 +113,11 @@ function ProductDetail() {
     if (value && typeof value === "object" && value._id) {
       return value._id;
     }
+
     if (typeof value === "string" && /^[0-9a-fA-F]{24}$/.test(value)) {
       return value;
     }
+
     if (typeof value === "string" && value.length > 0) {
       if (field === "brand") {
         const brand = brands.find(
@@ -136,6 +138,7 @@ function ProductDetail() {
         return productType?._id || "";
       }
     }
+
     return "";
   };
 
@@ -190,6 +193,7 @@ function ProductDetail() {
           formData.append("imgUrls", file);
         }
       }
+
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/products/${id}`, {
         method: "PUT",
@@ -209,33 +213,33 @@ function ProductDetail() {
         toast.error(data.error || data.message || "Update failed.");
       }
     } catch (e) {
-      console.error("Error updating product:", e);
+      console.error("Update error:", e);
       toast.error("Error updating product.");
     }
   };
 
-  //   const handleDelete = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const res = await fetch(`${API_URL}/products/${id}`, {
-  //         method: "DELETE",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/products/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  //       if (res.ok) {
-  //         toast.success("Product deleted successfully.");
-  //         navigate("/staff/product-list");
-  //       } else {
-  //         const data = await res.json();
-  //         toast.error(data.message || "Failed to delete product.");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error deleting product:", err);
-  //       toast.error("An error occurred while deleting the product.");
-  //     }
-  //   };
+      if (res.ok) {
+        toast.success("Product deleted successfully.");
+        navigate("/admin/product-list");
+      } else {
+        const data = await res.json();
+        toast.error(data.message || "Failed to delete product.");
+      }
+    } catch (err) {
+      console.error("Delete failed", err);
+      toast.error("An error occurred while deleting the product.");
+    }
+  };
 
   const getFieldValue = (field) => {
     if (field === "brand") {
@@ -245,6 +249,7 @@ function ProductDetail() {
           ? product.brand
           : "";
     }
+
     if (field === "categoryId") {
       return typeof product.categoryId === "object" && product.categoryId?._id
         ? product.categoryId._id
@@ -252,6 +257,7 @@ function ProductDetail() {
           ? product.categoryId
           : "";
     }
+
     if (field === "productTypeId") {
       return typeof product.productTypeId === "object" &&
         product.productTypeId?._id
@@ -260,6 +266,7 @@ function ProductDetail() {
           ? product.productTypeId
           : "";
     }
+
     return product[field] || "";
   };
 
@@ -344,7 +351,7 @@ function ProductDetail() {
       <div className="product-detail-container-back">
         <div
           className="admin_back"
-          onClick={() => navigate("/staff/product-list")}>
+          onClick={() => navigate("/admin/product-list")}>
           &lt; Back To Product List
         </div>
       </div>
@@ -421,6 +428,7 @@ function ProductDetail() {
                       name={value}
                       value={getFieldValue(value)}
                       onChange={handleInputChange}
+                      disabled={value === "stock"}
                     />
                   )
                 ) : (
@@ -438,7 +446,7 @@ function ProductDetail() {
               <input
                 type="file"
                 name="imgUrls"
-                accept="image/*"
+                accept=".png, .jpg, .jpeg"
                 multiple
                 onChange={handleImagesChange}
               />
@@ -449,8 +457,8 @@ function ProductDetail() {
             </div>
           </>
         )}
-
-        {/* {showDeleteModal && (
+        {/* 
+        {showDeleteModal && (
           <div className="modal-overlay">
             <div className="modal-content">
               <button

@@ -20,7 +20,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
 import Question from '../../components/Question/Question';
 import ProductList from '../../components/ProductCard/ProductCard';
 import Insta from '../../components/Insta/Instagram';
-import banner from '../../assets/bannerCosmetic.png';
+import banner from '../../assets/bannerMedical.png';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,7 +34,7 @@ const MenuProps = {
 };
 
 
-function CosmeticListPage() {
+function TreatmentListPage() {
     const location = useLocation();
     const [typeOptions, setTypeOptions] = useState([]);
     const [sort, setSort] = useState('');
@@ -51,7 +51,7 @@ function CosmeticListPage() {
     const [resetKey, setResetKey] = useState(Date.now());
     const [transitionKey, setTransitionKey] = useState(Date.now());
     const [expandedPanel, setExpandedPanel] = useState(null);
-    const COSMETICS_CATEGORY_ID = '685f753db792e430e6925dad';
+    const COSMETICS_CATEGORY_ID = '685f755db792e430e6925db0';
     useEffect(() => {
         document.title = 'Alurà - Cosmetics';
     }, []);
@@ -241,7 +241,7 @@ function CosmeticListPage() {
 
     return (
         <div className="ProductList">
-            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetics' }]} />
+            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Treatments' }]} />
 
             <div key={transitionKey} className="news_banner_main_wrapper">
                 <div className="news_banner_image">
@@ -345,6 +345,6 @@ function CosmeticListPage() {
     );
 }
 
-export default CosmeticListPage;
+export default TreatmentListPage;
 
 

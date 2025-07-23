@@ -63,7 +63,7 @@ const SpecialCard = () => {
     <div className="special_card">
       <h5>Don't see what you are looking for?</h5>
       <hr className="special_line" />
-      <p>Browse our full catalog for more cosmetics, medicals and treatments</p>
+      <p>Browse our catalog for more cosmetics, medicals and treatments</p>
       <button className="all_shop_now_btn" onClick={handleShopNowClick}>
         Shop now
       </button>
@@ -75,7 +75,7 @@ const ProductList = ({ products, resetKey }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
   const location = useLocation();
-  const isCosmeticsPage = location.pathname === "/cosmetics";
+  const isCosmeticsPage = location.pathname === "/search";
 
   useEffect(() => {
     setCurrentPage(1);
@@ -144,7 +144,7 @@ const ProductList = ({ products, resetKey }) => {
         <p className="no_products">No products found.</p>
       )}
 
-      {displayedProducts.length > 0 && !isCosmeticsPage && (
+      {displayedProducts.length > 0 && isCosmeticsPage && (
         <SpecialCard />
       )}
     </div>

@@ -50,6 +50,8 @@ const AdminSidebar = () => {
       icon: "fa-paint-brush",
       path: "/admin/product-list",
     },
+    { label: "Manage Product Type", icon: "fa-cube", path: "/admin/type-list" },
+    { label: "Manage Category", icon: "fa-shopping-bag", path: "/admin/category-list" },
     { label: "Manage Batch", icon: "fa-cube", path: "/admin/batch-list" },
     {
       label: "Manage Batch Stock",
@@ -103,9 +105,8 @@ const AdminSidebar = () => {
             {menuItems.map((item) => (
               <li
                 key={item.path}
-                className={`admin_sidebar_menu_item ${
-                  currentPath.startsWith(item.path) ? "selected" : ""
-                }`}
+                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""
+                  }`}
                 onClick={() => navigate(item.path)}>
                 <i className={`fas ${item.icon}`}></i>
                 <span>{item.label}</span>
@@ -123,9 +124,8 @@ const AdminSidebar = () => {
             {menuItems.map((item) => (
               <li
                 key={item.path}
-                className={`admin_sidebar_menu_item ${
-                  currentPath.startsWith(item.path) ? "selected" : ""
-                }`}
+                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""
+                  }`}
                 data-tooltip={item.label}
                 onClick={() => navigate(item.path)}>
                 <i className={`fas ${item.icon}`}></i>
