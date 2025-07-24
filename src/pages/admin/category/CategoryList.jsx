@@ -9,6 +9,7 @@ function CategoryList({ searchQuery }) {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
+    const [filterCosmeticOnly, setFilterCosmeticOnly] = useState(false);
 
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -228,35 +229,48 @@ function CategoryList({ searchQuery }) {
         )
     }));
 
-    const subCategoryData = subCategories.map(s => ({
-        name: s.name,
-        description: s.description,
-        category: s.category?.name || "",
-        action: (
-            <div className="action_icons" key={s._id}>
-                <i className="fas fa-pen edit_icon" onClick={() => openEditSubModal(s)} />
-                <i className="fas fa-trash delete_icon" onClick={() => {
-                    setSelectedSubCategory(s);
-                    setIsSubDeleteModalOpen(true);
-                }} />
-            </div>
-        )
-    }));
+    const subCategoryData = subCategories
+        .filter(s => !filterCosmeticOnly || s.category?.name === "Cosmetic")
+        .map(s => ({
+            name: s.name,
+            description: s.description,
+            category: s.category?.name || "",
+            action: (
+                <div className="action_icons" key={s._id}>
+                    <i className="fas fa-pen edit_icon" onClick={() => openEditSubModal(s)} />
+                    <i className="fas fa-trash delete_icon" onClick={() => {
+                        setSelectedSubCategory(s);
+                        setIsSubDeleteModalOpen(true);
+                    }} />
+                </div>
+            )
+        }));
 
     return (
         <div className="WarehouseList">
             <div className="warehouse_list_container">
                 <div className="warehouse_list_header">
+                    <h2 className="admin_main_title">Manage Sub Category</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px", marginRight: "20px", marginBottom: "7px" }}>
+                            <input
+                                type="checkbox"
+                                checked={filterCosmeticOnly}
+                                onChange={(e) => setFilterCosmeticOnly(e.target.checked)}
+                            />
+                            Cosmetic Only
+                        </label>
+                        <button className="add_warehouse_btn" onClick={openAddSubModal}>Add New Sub Category</button>
+                    </div>
+                </div>
+
+                <Table columns={subCategoryColumns} data={subCategoryData} />
+
+                <div className="warehouse_list_header" style={{ marginTop: "40px" }}>
                     <h2 className="admin_main_title">Manage Category</h2>
                     <button className="add_warehouse_btn" onClick={openAddModal}>Add New Category</button>
                 </div>
                 <Table columns={categoryColumns} data={categoryData} />
-
-                <div className="warehouse_list_header" style={{ marginTop: "40px" }}>
-                    <h2 className="admin_main_title">Manage Sub Category</h2>
-                    <button className="add_warehouse_btn" onClick={openAddSubModal}>Add New Sub Category</button>
-                </div>
-                <Table columns={subCategoryColumns} data={subCategoryData} />
             </div>
 
             {isUpdateModalOpen && (

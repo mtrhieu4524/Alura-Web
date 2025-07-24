@@ -12,12 +12,14 @@ function TypeList({ searchQuery }) {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedType, setSelectedType] = useState(null);
+    const [filterCosmeticOnly, setFilterCosmeticOnly] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
         description: "",
         categoryID: "",
-        subCategoryID: ""
+        subCategoryID: "",
+        categoryName: ""
     });
 
     const getToken = () => localStorage.getItem("token");
@@ -85,7 +87,12 @@ function TypeList({ searchQuery }) {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${getToken()}`
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    name,
+                    description,
+                    categoryID,
+                    subCategoryID
+                }),
             });
 
             if (res.ok) {
@@ -124,7 +131,7 @@ function TypeList({ searchQuery }) {
 
     const openAddModal = () => {
         setSelectedType(null);
-        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "" });
+        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "", categoryName: "" });
         setIsUpdateModalOpen(true);
     };
 
@@ -134,7 +141,8 @@ function TypeList({ searchQuery }) {
             name: type.name,
             description: type.description,
             categoryID: type.category?._id || "",
-            subCategoryID: type.subCategory?._id || ""
+            subCategoryID: type.subCategory?._id || "",
+            categoryName: type.category?.name || ""
         });
         setIsUpdateModalOpen(true);
     };
@@ -142,36 +150,62 @@ function TypeList({ searchQuery }) {
     const closeModal = () => {
         setIsUpdateModalOpen(false);
         setSelectedType(null);
-        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "" });
+        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "", categoryName: "" });
+    };
+
+    const handleSubCategoryChange = (subCatId) => {
+        const sub = subCategories.find((s) => s._id === subCatId);
+        const categoryName = sub?.category?.name || "";
+        const categoryID = sub?.category?._id || "";
+
+        setFormData((prev) => ({
+            ...prev,
+            subCategoryID: subCatId,
+            categoryID,
+            categoryName
+        }));
     };
 
     const columns = ["Name", "Description", "Category", "Sub Category", "Action"];
 
-    const data = types.map((t) => ({
-        name: t.name,
-        description: t.description,
-        category: t.category?.name || "N/A",
-        sub_category: t.subCategory?.name || "N/A",
-        action: (
-            <div className="action_icons" key={t._id}>
-                <i className="fas fa-pen edit_icon" onClick={() => openEditModal(t)} />
-                <i className="fas fa-trash delete_icon" onClick={() => {
-                    setSelectedType(t);
-                    setIsDeleteModalOpen(true);
-                }} />
-            </div>
-        )
-    }));
+    const data = types
+        .filter((t) => !filterCosmeticOnly || t.category?.name === "Cosmetic")
+        .map((t) => ({
+            name: t.name,
+            description: t.description,
+            category: t.category?.name || "N/A",
+            sub_category: t.subCategory?.name || "N/A",
+            action: (
+                <div className="action_icons" key={t._id}>
+                    <i className="fas fa-pen edit_icon" onClick={() => openEditModal(t)} />
+                    <i className="fas fa-trash delete_icon" onClick={() => {
+                        setSelectedType(t);
+                        setIsDeleteModalOpen(true);
+                    }} />
+                </div>
+            )
+        }));
 
     return (
         <div className="WarehouseList">
             <div className="warehouse_list_container">
                 <div className="warehouse_list_header">
                     <h2 className="admin_main_title">Manage Product Type</h2>
-                    <button className="add_warehouse_btn" onClick={openAddModal}>
-                        Add New Type
-                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px", marginRight: "20px", marginBottom: "7px" }}>
+                            <input
+                                type="checkbox"
+                                checked={filterCosmeticOnly}
+                                onChange={(e) => setFilterCosmeticOnly(e.target.checked)}
+                            />
+                            Cosmetic Only
+                        </label>
+                        <button className="add_warehouse_btn" onClick={openAddModal}>
+                            Add New Type
+                        </button>
+                    </div>
                 </div>
+
                 <Table columns={columns} data={data} />
             </div>
 
@@ -206,23 +240,10 @@ function TypeList({ searchQuery }) {
                                 />
                             </div>
                             <div className="form_group">
-                                <label>Category</label>
-                                <select
-                                    value={formData.categoryID}
-                                    onChange={(e) => setFormData({ ...formData, categoryID: e.target.value })}
-                                    required
-                                >
-                                    <option value="">Select category</option>
-                                    {categories.map((cat) => (
-                                        <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="form_group">
-                                <label>SubCategory</label>
+                                <label>Sub Category</label>
                                 <select
                                     value={formData.subCategoryID}
-                                    onChange={(e) => setFormData({ ...formData, subCategoryID: e.target.value })}
+                                    onChange={(e) => handleSubCategoryChange(e.target.value)}
                                     required
                                 >
                                     <option value="">Select subcategory</option>
@@ -230,6 +251,15 @@ function TypeList({ searchQuery }) {
                                         <option key={sub._id} value={sub._id}>{sub.name}</option>
                                     ))}
                                 </select>
+                            </div>
+                            <div className="form_group">
+                                <label>Category (Auto fill)</label>
+                                <input
+                                    type="text"
+                                    value={formData.categoryName}
+                                    disabled
+                                    placeholder="Category"
+                                />
                             </div>
                             <div className="form_group">
                                 <button type="submit" className="add_account_btn">

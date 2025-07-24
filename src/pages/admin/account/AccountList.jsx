@@ -210,7 +210,7 @@ function AccountList({ searchQuery }) {
                                                 className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
                                                 onClick={() => setShowPassword(prev => !prev)}
                                                 style={{
-                                                    position: "absolute", right: "10px", top: "50%",
+                                                    position: "absolute", right: "35px", top: "45%",
                                                     transform: "translateY(-50%)", cursor: "pointer", color: "#999"
                                                 }}
                                             />
