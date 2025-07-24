@@ -35,7 +35,7 @@ import AdminAccountList from "../pages/admin/account/AccountList";
 import AdminBatchList from "../pages/admin/batch/batchList";
 import AdminBatchCertificateList from "../pages/admin/batchCertificate/batchCertificateList";
 import AdminBatchStockList from "../pages/admin/batchStock/batchStockList";
-import AdminCategoryList from "../pages/admin/category/categoryList";
+import AdminCategoryList from "../pages/admin/category/CategoryList";
 import AdminTypeList from "../pages/admin/type/TypeList";
 
 import StaffOrderList from "../pages/staff/order/OrderList";
