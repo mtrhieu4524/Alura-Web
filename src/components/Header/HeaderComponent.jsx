@@ -375,7 +375,7 @@ const HeaderComponent = () => {
 
               <li className="nav-item dropdown-cosmetics">
                 <Link className="home nav-link cosmetics-link" to="/treatments">
-                  TREATMENTS
+                  MEDICALS & TREATMENTS
                   {/* <i className="cosmetics-arrow-icon fas fa-chevron-down arrow-icon"></i> */}
                 </Link>
                 {/* <div className={`cosmetics-dropdown ${isDropdownOpen ? "open" : ""}`}>

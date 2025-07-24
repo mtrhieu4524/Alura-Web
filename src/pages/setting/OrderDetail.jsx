@@ -145,7 +145,7 @@ function OrderDetail() {
   };
 
   const handleProductView = (product) => {
-    navigate(`/cosmetics/${product.productId}`, {
+    navigate(`/products/${product.productId}`, {
       state: { id: product.productId },
     });
   };

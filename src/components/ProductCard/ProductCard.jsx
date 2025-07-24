@@ -8,16 +8,21 @@ const ProductCard = ({
   name,
   price,
   type,
-  shade,
+  skinType,
   volume,
   sex,
   stock,
 }) => {
   const navigate = useNavigate();
 
+  const capitalize = (str) =>
+    typeof str === "string" && str.length > 0
+      ? str.charAt(0).toUpperCase() + str.slice(1)
+      : "";
+
   const handleViewClick = (e) => {
     e.stopPropagation();
-    navigate(`/cosmetics/${id}`, { state: { id } });
+    navigate(`/products/${id}`, { state: { id } });
   };
 
   let stockLabel = "";
@@ -27,6 +32,10 @@ const ProductCard = ({
     stockLabel = `Only ${stock} left`;
   }
 
+  const displaySkinType = Array.isArray(skinType)
+    ? skinType.map(capitalize).join(", ")
+    : capitalize(skinType);
+
   return (
     <div className="product_card" onClick={handleViewClick}>
       <div className="image_wrapper">
@@ -34,7 +43,8 @@ const ProductCard = ({
         {stockLabel && (
           <span
             className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"
-              }`}>
+              }`}
+          >
             {stockLabel}
           </span>
         )}
@@ -44,7 +54,7 @@ const ProductCard = ({
         <i className="far fa-eye product_view_icon"></i>
       </div>
       <p className="product_card_detail">
-        {type} | {shade} | {volume} | {sex}
+        {capitalize(sex)} | {displaySkinType} | {type}
       </p>
       <h6 className="product_card_name">{name}</h6>
       <p className="product_card_price">{price.toLocaleString()} VND</p>
@@ -104,11 +114,11 @@ const ProductList = ({ products, resetKey }) => {
           image={product.imgUrls?.[0] || ""}
           name={product.name}
           price={product.price}
-          type={product.tags?.[0] || ""}
-          shade=""
+          type={product.productTypeId?.name || ""}
           volume={product.volume}
           sex={product.sex}
           stock={product.stock || 0}
+          skinType={product.skinType || "Normal"}
         />
       ))}
 
@@ -124,7 +134,8 @@ const ProductList = ({ products, resetKey }) => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`pagination_button ${currentPage === i + 1 ? "active" : ""}`}
+              className={`pagination_button ${currentPage === i + 1 ? "active" : ""
+                }`}
               onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}
@@ -144,9 +155,7 @@ const ProductList = ({ products, resetKey }) => {
         <p className="no_products">No products found.</p>
       )}
 
-      {displayedProducts.length > 0 && isCosmeticsPage && (
-        <SpecialCard />
-      )}
+      {displayedProducts.length > 0 && isCosmeticsPage && <SpecialCard />}
     </div>
   );
 };

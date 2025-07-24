@@ -138,7 +138,7 @@ function Cart() {
 
   // Navigate to product detail page
   const handleViewProduct = (item) => {
-    navigate(`/cosmetics/${item}`, {
+    navigate(`/products/${item}`, {
       state: { id: item },
     });
   };

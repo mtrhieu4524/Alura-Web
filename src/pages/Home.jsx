@@ -143,7 +143,7 @@ const Home = () => {
 
   const handleProductClick = (product) => {
     const productName = product._id.replace(/\s+/g, "-").toLowerCase();
-    const path = `/cosmetics/${productName}`;
+    const path = `/products/${productName}`;
     navigate(path, { state: { id: product._id } });
   };
 
@@ -160,7 +160,7 @@ const Home = () => {
             <div className="slide-content">
               <img className="slide-img left-img" src={slide1} alt="Slide 1" />
               <h1>
-                FACIAL <br></br>COSMETICS
+                COSMETICS
               </h1>
               <div className="slide-right-section">
                 <p className="slide-text right-text">
@@ -169,7 +169,7 @@ const Home = () => {
                 <div className="slide-small-image">
                   <img src={slide1Small} alt="Small Slide 1" />
                   <button
-                    onClick={() => handleNavigate("/cosmetics", { type: "Face" })}
+                    onClick={() => handleNavigate("/cosmetics")}
                     className="slide-button">
                     SHOP NOW
                   </button>
@@ -193,9 +193,9 @@ const Home = () => {
                 <div className="slide-small-image">
                   <img src={slide2Small} alt="Small Slide 1" />
                   <button
-                    onClick={() => handleNavigate("/cosmetics", { type: "Treatment" })}
+                    onClick={() => handleNavigate("/treatments")}
                     className="slide-button">
-                    SHOP THIS CATEGORY
+                    SHOP NOW
                   </button>
                 </div>
               </div>
@@ -205,7 +205,7 @@ const Home = () => {
             <div className="slide-background">
               <img src={sliderBackground} alt="Slide 3" />
               <h1>
-                PURE <br></br>FRAGRANCE
+                {/* PURE <br></br>FRAGRANCE */}
               </h1>
             </div>
             <div className="slide-content">
@@ -216,11 +216,11 @@ const Home = () => {
                 </p>
                 <div className="slide-small-image">
                   <img src={slide3Small} alt="Small Slide 3" />
-                  <button
+                  {/* <button
                     onClick={() => handleNavigate("/cosmetics", { type: "Fragrance" })}
                     className="slide-button">
                     SHOP THIS CATEGORY
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -277,14 +277,14 @@ const Home = () => {
               <div className="category_item_large">
                 <div className="category_image_wrapper_large">
                   <img src={earringC} alt="Facial" />
-                  <p className="category_name_large">Facial</p>
+                  <p className="category_name_large">Lipstick</p>
                   <div className="category_hover_content">
-                    <p className="category_name_large_hover">Facial</p>
+                    <p className="category_name_large_hover">Lipstick</p>
                     <div className="category_hover_text">
-                      <span className="category_large_letter">F</span>
+                      <span className="category_large_letter">L</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "Face" })
+                          handleNavigate("/cosmetics", { type: "Lipstick" })
                         }
                         className="category_view_collection">
                         VIEW CATEGORY
@@ -298,14 +298,14 @@ const Home = () => {
               <div className="category_item_small">
                 <div className="category_image_wrapper_small ciwm1">
                   <img src={ringC} alt="Ring" />
-                  <p className="category_name_small">Fragrance </p>
+                  <p className="category_name_small">Toner </p>
                   <div className="category_hover_content_small">
-                    <p className="category_name_small_hover">Fragrance </p>
+                    <p className="category_name_small_hover">Toner </p>
                     <div className="category_hover_text_small">
-                      <span className="category_large_letter_small">F</span>
+                      <span className="category_large_letter_small">T</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "Fragrance" })
+                          handleNavigate("/treatments", { type: "Toner" })
                         }
                         className="category_view_collection_small">
                         VIEW CATEGORY
@@ -317,14 +317,14 @@ const Home = () => {
               <div className="category_item_small">
                 <div className="category_image_wrapper_small ciwm2">
                   <img src={braceletC} alt="Body" />
-                  <p className="category_name_small">Body</p>
+                  <p className="category_name_small">Cleanser</p>
                   <div className="category_hover_content_small">
-                    <p className="category_name_small_hover">Body</p>
+                    <p className="category_name_small_hover">Cleanser</p>
                     <div className="category_hover_text_small">
-                      <span className="category_large_letter_small">B</span>
+                      <span className="category_large_letter_small">C</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "Body" })
+                          handleNavigate("/treatments", { type: "Cleanser" })
                         }
                         className="category_view_collection_small">
                         VIEW CATEGORY
@@ -338,14 +338,14 @@ const Home = () => {
               <div className="category_item_large">
                 <div className="category_image_wrapper_large">
                   <img src={necklaceC} alt="Necklace" />
-                  <p className="category_name_large">Makeup</p>
+                  <p className="category_name_large">Serum</p>
                   <div className="category_hover_content">
-                    <p className="category_name_large_hover">Makeup</p>
+                    <p className="category_name_large_hover">Serum</p>
                     <div className="category_hover_text">
-                      <span className="category_large_letter">M</span>
+                      <span className="category_large_letter">S</span>
                       <span
                         onClick={() =>
-                          handleNavigate("/cosmetics", { type: "Makeup" })
+                          handleNavigate("/treatments", { type: "Serum" })
                         }
                         className="category_view_collection">
                         VIEW CATEGORY
@@ -380,14 +380,14 @@ const Home = () => {
 
       {/* Trending */}
       <div className="trending_container">
-        <div className="trending_text">newest cosmetics</div>
+        <div className="trending_text">classic cosmetics</div>
         <div className="trending_white">                                 </div>
         <div className="row">
           <div className="col-lg-5 col-md-6 ">
             <img src={trending} alt="Trending" className="trending_image" />
           </div>
           <div className="col-lg-7 col-md-6 trending_right">
-            <h2 className="trending_title">New Arrival Cosmetics</h2>
+            <h2 className="trending_title">Best Seller</h2>
             <div className="trending_product_card_section row">
               {trendingProducts.map((product, index) => (
                 <div

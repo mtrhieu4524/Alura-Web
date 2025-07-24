@@ -84,6 +84,20 @@ function CosmeticListPage() {
     }, []);
 
     useEffect(() => {
+        if (typeOptions.length && location.state?.type) {
+            const incomingType = Array.isArray(location.state.type)
+                ? location.state.type
+                : [location.state.type];
+
+            const validTypes = incomingType.filter(t =>
+                typeOptions.some(opt => opt.value === t)
+            );
+
+            setType(validTypes);
+        }
+    }, [typeOptions, location.state?.type]);
+
+    useEffect(() => {
         if (location.state) {
             if (location.state.sort) setSort(location.state.sort);
             if (location.state.sex) setSex(Array.isArray(location.state.sex) ? location.state.sex : [location.state.sex]);
@@ -93,7 +107,7 @@ function CosmeticListPage() {
             if (location.state.brand) setBrand(Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand]);
             if (location.state.skinType) setSkinType(Array.isArray(location.state.skinType) ? location.state.skinType : [location.state.skinType]);
             if (location.state.skinColor) setSkinColor(Array.isArray(location.state.skinColor) ? location.state.skinColor : [location.state.skinColor]);
-            if (location.state.volume) setVolume(Array.isArray(location.state.volume) ? location.state.volume : [location.state.volume]);
+            // if (location.state.volume) setVolume(Array.isArray(location.state.volume) ? location.state.volume : [location.state.volume]);
             if (location.state.stock) setStock(Array.isArray(location.state.stock) ? location.state.stock : [location.state.stock]);
         }
     }, [location.state]);
@@ -110,13 +124,17 @@ function CosmeticListPage() {
                     let filtered = [...data.products];
 
                     if (sex.length) {
-                        filtered = filtered.filter((p) =>
-                            sex.includes(p.sex?.toLowerCase())
-                        );
+                        filtered = filtered.filter((p) => {
+                            const capitalizedSex = p.sex?.charAt(0).toUpperCase() + p.sex?.slice(1).toLowerCase();
+                            return sex.includes(capitalizedSex);
+                        });
                     }
 
-                    if (type.length)
-                        filtered = filtered.filter(p => p.tags?.some(tag => type.includes(tag)));
+                    if (type.length) {
+                        filtered = filtered.filter(p =>
+                            type.includes(p.productTypeId?.name)
+                        );
+                    }
 
                     if (brand.length) {
                         filtered = filtered.filter((p) =>
@@ -125,22 +143,27 @@ function CosmeticListPage() {
                     }
 
                     if (skinType.length) {
-                        filtered = filtered.filter((p) =>
-                            p.skinType?.some((s) => skinType.includes(s.toLowerCase()))
-                        );
+                        filtered = filtered.filter((p) => {
+                            return Array.isArray(p.skinType) &&
+                                p.skinType.some((s) => {
+                                    const formatted = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+                                    return skinType.includes(formatted);
+                                });
+                        });
                     }
 
                     if (skinColor.length) {
-                        filtered = filtered.filter((p) =>
-                            skinColor.includes(p.skinColor?.toLowerCase())
-                        );
+                        filtered = filtered.filter((p) => {
+                            const capitalizedSkinColor = p.skinColor?.charAt(0).toUpperCase() + p.skinColor?.slice(1).toLowerCase();
+                            return skinColor.includes(capitalizedSkinColor);
+                        });
                     }
 
-                    if (volume.length) {
-                        filtered = filtered.filter((p) =>
-                            volume.includes(p.volume)
-                        );
-                    }
+                    // if (volume.length) {
+                    //     filtered = filtered.filter((p) =>
+                    //         volume.includes(p.volume)
+                    //     );
+                    // }
 
                     if (stock.length) {
                         if (stock.includes("In Stock")) {
@@ -204,7 +227,7 @@ function CosmeticListPage() {
         setBrand([]);
         setSkinType([]);
         setSkinColor([]);
-        setVolume([]);
+        // setVolume([]);
         setStock([]);
     };
 
@@ -233,15 +256,15 @@ function CosmeticListPage() {
             label: "Skin Color", state: skinColor, setter: setSkinColor,
             options: ["Light", "Dark", "Neutral", "Cool"]
         },
-        {
-            label: "Volume", state: volume, setter: setVolume,
-            options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
-        }
+        // {
+        //     label: "Volume", state: volume, setter: setVolume,
+        //     options: ["10g", "30ml", "50ml", "100ml", "200ml", "1000ml", "Full Size"]
+        // }
     ];
 
     return (
         <div className="ProductList">
-            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetics' }]} />
+            <Breadcrumb items={[{ name: 'Home', link: '/' }, { name: 'Cosmetic' }]} />
 
             <div key={transitionKey} className="news_banner_main_wrapper">
                 <div className="news_banner_image">
@@ -338,7 +361,7 @@ function CosmeticListPage() {
                 </div>
             </div>
 
-            <br /><br />
+            <br /><br /> <br></br>
             <Question />
             <Insta />
         </div>

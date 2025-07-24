@@ -70,13 +70,13 @@ const FooterComponent = () => {
                         <div className="col-sm-6 col-md-2 footer_2_column">
                             <h6>Categories</h6>
                             <ul className="footer_content">
-                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Face' })}>
-                                    <Link to="/cosmetics">Facial cosmetics</Link>
+                                <li onClick={() => handleNavigate('/treatments', { type: 'Face' })}>
+                                    <Link to="/cosmetics">Cosmetics</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Hair' })}>
-                                    <Link to="/cosmetics">Hair cosmetics</Link>
+                                <li onClick={() => handleNavigate('/treatments', { type: 'Hair' })}>
+                                    <Link to="/treatments">Medicals & Treatments</Link>
                                 </li>
-                                <li onClick={() => handleNavigate('/cosmetics', { type: 'Body' })}>
+                                {/* <li onClick={() => handleNavigate('/cosmetics', { type: 'Body' })}>
                                     <Link to="/cosmetics">Body cosmetics</Link>
                                 </li>
                                 <li onClick={() => handleNavigate('/cosmetics', { type: 'Lip' })}>
@@ -84,7 +84,7 @@ const FooterComponent = () => {
                                 </li>
                                 <li onClick={() => handleNavigate('/cosmetics', { type: 'Treatment' })}>
                                     <Link to="/cosmetics">Medical & Treatment</Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                         <div className="col-sm-6 col-md-2 footer_3_column">

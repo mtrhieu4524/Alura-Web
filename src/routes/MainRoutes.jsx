@@ -63,9 +63,9 @@ const MainRoutes = () => {
         <Route path="/visual-search-result" element={<Result />} />
         <Route path="/search" element={<ProductSearch />} />
         <Route path="/cosmetics" element={<CosmeticList />} />
-        <Route path="/cosmetics/:id" element={<ProductDetail />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/treatments" element={<TreatmentList />} />
-        <Route path="/cosmetics/:id" element={<ProductDetail />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
       </Route>
 
       {/* Protected USER routes */}
