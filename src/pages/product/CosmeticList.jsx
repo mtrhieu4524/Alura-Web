@@ -254,7 +254,7 @@ function CosmeticListPage() {
         },
         {
             label: "Skin Color", state: skinColor, setter: setSkinColor,
-            options: ["Light", "Dark", "Neutral", "Cool"]
+            options: ["Light", "Dark", "Neutral", "Cool", "Warm"]
         },
         // {
         //     label: "Volume", state: volume, setter: setVolume,
