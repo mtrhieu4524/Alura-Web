@@ -11,8 +11,9 @@ function ProductList({ searchQuery = "" }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [brands, setBrands] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [productTypes, setProductTypes] = useState([]);
+    const [selectedCategoryName, setSelectedCategoryName] = useState("");
+    const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
     useEffect(() => {
         document.title = "Manage Product - Alurà System Management";
@@ -34,6 +35,7 @@ function ProductList({ searchQuery = "" }) {
             );
 
             const data = await res.json();
+
             if (data.success) setProducts(data.products || []);
         } catch (error) {
             console.error("Failed to fetch products", error);
@@ -47,18 +49,15 @@ function ProductList({ searchQuery = "" }) {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const [brandRes, categoryRes, typeRes] = await Promise.all([
+                const [brandRes, typeRes] = await Promise.all([
                     fetch(`${API_URL}/brands`),
-                    fetch(`${API_URL}/categories`),
                     fetch(`${API_URL}/product-types`),
                 ]);
 
                 const brandData = await brandRes.json();
-                const categoryData = await categoryRes.json();
                 const typeData = await typeRes.json();
 
                 if (brandData.success) setBrands(brandData.data || []);
-                if (Array.isArray(categoryData)) setCategories(categoryData);
                 if (Array.isArray(typeData)) setProductTypes(typeData);
             } catch (err) {
                 console.error("Error fetching options:", err);
@@ -81,9 +80,7 @@ function ProductList({ searchQuery = "" }) {
 
             const data = await res.json();
             if (res.ok && data.success) {
-                const message = isPublic
-                    ? "Hide product successfully."
-                    : "Show product successfully.";
+                const message = isPublic ? "Hide product successfully." : "Show product successfully.";
                 toast.success(message);
                 fetchProducts();
             } else {
@@ -91,7 +88,7 @@ function ProductList({ searchQuery = "" }) {
             }
         } catch (err) {
             console.error("Toggle public error:", err);
-            toast.error("Error when toggle disable and enable product.");
+            toast.error("Error when toggling product visibility.");
         }
     };
 
@@ -119,6 +116,19 @@ function ProductList({ searchQuery = "" }) {
         ),
     }));
 
+    const handleTypeChange = (e) => {
+        const selectedTypeId = e.target.value;
+        const selectedType = productTypes.find(pt => pt._id === selectedTypeId);
+
+        if (selectedType?.category?._id && selectedType?.category?.name) {
+            setSelectedCategoryId(selectedType.category._id);
+            setSelectedCategoryName(selectedType.category.name);
+        } else {
+            setSelectedCategoryId("");
+            setSelectedCategoryName("");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.target;
@@ -126,23 +136,22 @@ function ProductList({ searchQuery = "" }) {
 
         const imageFiles = form.imgUrls.files;
         for (let i = 0; i < imageFiles.length; i++) {
-            const file = imageFiles[i];
-            const fileType = file.type;
+            const fileType = imageFiles[i].type;
             if (!["image/png", "image/jpg", "image/jpeg"].includes(fileType)) {
-                toast.error("Image have to be png, jpg or jpeg.");
+                toast.error("Image must be png, jpg or jpeg.");
                 return;
             }
+            formData.append("imgUrls", imageFiles[i]);
         }
 
         for (let field of form.elements) {
             if (field.name && field.type !== "file") {
-                formData.append(field.name, field.value);
+                formData.append(field.name, String(field.value));
             }
         }
 
-        for (let i = 0; i < imageFiles.length; i++) {
-            formData.append("imgUrls", imageFiles[i]);
-        }
+        formData.set("categoryId", selectedCategoryId);
+        formData.set("stock", 0);
 
         try {
             const token = localStorage.getItem("token");
@@ -155,7 +164,12 @@ function ProductList({ searchQuery = "" }) {
                 body: formData,
             });
 
+            for (let pair of formData.entries()) {
+                console.log(pair[0], pair[1]);
+            }
+
             const data = await res.json();
+            console.error("Server response:", data);
             if (res.ok && data.success) {
                 toast.success("Product added successfully.");
                 setIsModalOpen(false);
@@ -168,6 +182,7 @@ function ProductList({ searchQuery = "" }) {
             toast.error("An error occurred while adding the product.");
         }
     };
+
 
     return (
         <div className="ProductList">
@@ -239,13 +254,16 @@ function ProductList({ searchQuery = "" }) {
                                         <option value="">Select Skin Color</option>
                                         <option value="neutral">Neutral</option>
                                         <option value="cool">Cool</option>
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="all">All</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div className="form_group">
                                 <label>Volume (ml)</label>
-                                <input type="number" name="volume" required />
+                                <input name="volume" required placeholder="e.g. 400ml" />
                             </div>
 
                             <div className="form_group">
@@ -275,19 +293,16 @@ function ProductList({ searchQuery = "" }) {
 
                             <div className="form_row">
                                 <div className="form_group half_width">
-                                    <label>Category</label>
-                                    <select name="categoryId" required>
-                                        <option value="">Select Category</option>
-                                        {categories.map((cat) => (
-                                            <option key={cat._id} value={cat._id}>
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <label>Category (Auto fill)</label>
+                                    <input
+                                        type="text"
+                                        value={selectedCategoryName}
+                                        disabled
+                                    />
                                 </div>
                                 <div className="form_group half_width">
                                     <label>Product Type</label>
-                                    <select name="productTypeId" required>
+                                    <select name="productTypeId" required onChange={handleTypeChange}>
                                         <option value="">Select Product Type</option>
                                         {productTypes.map((type) => (
                                             <option key={type._id} value={type._id}>
@@ -296,11 +311,6 @@ function ProductList({ searchQuery = "" }) {
                                         ))}
                                     </select>
                                 </div>
-                            </div>
-
-                            <div className="form_group">
-                                <label>Stock</label>
-                                <input type="number" name="stock" required />
                             </div>
 
                             <div className="form_group form_group_image">

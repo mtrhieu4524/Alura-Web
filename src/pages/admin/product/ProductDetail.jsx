@@ -10,6 +10,7 @@ function ProductDetail() {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
+  const [editedProduct, setEditedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
@@ -22,29 +23,12 @@ function ProductDetail() {
     const fetchOptions = async () => {
       try {
         const [b, c, t] = await Promise.all([
-          fetch(`${API_URL}/brands`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(`${API_URL}/categories`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(`${API_URL}/product-types`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
+          fetch(`${API_URL}/brands`),
+          fetch(`${API_URL}/categories`),
+          fetch(`${API_URL}/product-types`),
         ]);
 
-        if (!b.ok || !c.ok || !t.ok) {
-          throw new Error("Failed to fetch options");
-        }
+        if (!b.ok || !c.ok || !t.ok) throw new Error("Failed to fetch options");
 
         const bd = await b.json();
         const cd = await c.json();
@@ -63,10 +47,7 @@ function ProductDetail() {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${API_URL}/products/admin-and-staff/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
@@ -86,9 +67,24 @@ function ProductDetail() {
     fetchProduct();
   }, [id]);
 
+  const startEditing = () => {
+    setEditedProduct({ ...product });
+    setIsEditing(true);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prev) => ({ ...prev, [name]: value }));
+    setEditedProduct((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProductTypeChange = (e) => {
+    const selectedTypeId = e.target.value;
+    const selectedType = productTypes.find((t) => t._id === selectedTypeId);
+    setEditedProduct((prev) => ({
+      ...prev,
+      productTypeId: selectedTypeId,
+      categoryId: selectedType?.category || "",
+    }));
   };
 
   const handleImagesChange = (e) => {
@@ -110,31 +106,21 @@ function ProductDetail() {
   };
 
   const getIdValue = (field, value) => {
-    if (value && typeof value === "object" && value._id) {
-      return value._id;
-    }
+    if (value && typeof value === "object" && value._id) return value._id;
 
-    if (typeof value === "string" && /^[0-9a-fA-F]{24}$/.test(value)) {
-      return value;
-    }
+    if (typeof value === "string" && /^[0-9a-fA-F]{24}$/.test(value)) return value;
 
-    if (typeof value === "string" && value.length > 0) {
+    if (typeof value === "string") {
       if (field === "brand") {
-        const brand = brands.find(
-          (b) => b.brandName === value || b._id === value || b.id === value
-        );
+        const brand = brands.find((b) => b.brandName === value || b._id === value || b.id === value);
         return brand?._id || brand?.id || "";
       }
       if (field === "categoryId") {
-        const category = categories.find(
-          (c) => c.name === value || c._id === value
-        );
+        const category = categories.find((c) => c.name === value || c._id === value);
         return category?._id || "";
       }
       if (field === "productTypeId") {
-        const productType = productTypes.find(
-          (t) => t.name === value || t._id === value
-        );
+        const productType = productTypes.find((t) => t.name === value || t._id === value);
         return productType?._id || "";
       }
     }
@@ -147,30 +133,28 @@ function ProductDetail() {
       const formData = new FormData();
 
       const fieldsToSend = {
-        name: product.name || "",
-        price: product.price || "",
-        brand: getIdValue("brand", product.brand),
-        sex: product.sex || "",
-        skinType: product.skinType || "",
-        skinColor: product.skinColor || "",
-        volume: product.volume || "",
-        instructions: product.instructions || "",
-        preservation: product.preservation || "",
-        keyIngredients: product.keyIngredients || "",
-        detailInfredients: product.detailInfredients || "",
-        purpose: product.purpose || "",
-        categoryId: getIdValue("categoryId", product.categoryId),
-        productTypeId: getIdValue("productTypeId", product.productTypeId),
-        stock: product.stock || "",
+        name: editedProduct.name || "",
+        price: editedProduct.price || "",
+        brand: getIdValue("brand", editedProduct.brand),
+        sex: editedProduct.sex || "",
+        skinType: editedProduct.skinType || "",
+        skinColor: editedProduct.skinColor || "",
+        volume: editedProduct.volume || "",
+        instructions: editedProduct.instructions || "",
+        preservation: editedProduct.preservation || "",
+        keyIngredients: editedProduct.keyIngredients || "",
+        detailInfredients: editedProduct.detailInfredients || "",
+        purpose: editedProduct.purpose || "",
+        categoryId: getIdValue("categoryId", editedProduct.categoryId),
+        productTypeId: getIdValue("productTypeId", editedProduct.productTypeId),
+        stock: editedProduct.stock || "",
       };
 
       const objectIdFields = ["brand", "categoryId", "productTypeId"];
       for (const field of objectIdFields) {
         const value = fieldsToSend[field];
-        if (value && value !== "" && !/^[0-9a-fA-F]{24}$/.test(value)) {
-          toast.error(
-            `Invalid ${field} selected. Please select a valid option.`
-          );
+        if (value && !/^[0-9a-fA-F]{24}$/.test(value)) {
+          toast.error(`Invalid ${field} selected. Please select a valid option.`);
           return;
         }
       }
@@ -179,9 +163,7 @@ function ProductDetail() {
         formData.append(key, value || "");
       });
 
-      if (existingImages.length > 0) {
-        formData.append("existingImages", JSON.stringify(existingImages));
-      }
+      formData.append("existingImgUrls", JSON.stringify(existingImages));
 
       for (const file of newImages) {
         if (file instanceof File) {
@@ -206,6 +188,7 @@ function ProductDetail() {
       if (res.ok && data.success) {
         toast.success("Product updated successfully.");
         setProduct(data.product);
+        setEditedProduct(null);
         setExistingImages(data.product.imgUrls || []);
         setNewImages([]);
         setIsEditing(false);
@@ -242,44 +225,42 @@ function ProductDetail() {
   };
 
   const getFieldValue = (field) => {
+    const source = isEditing ? editedProduct : product;
+
+    if (!source) return "";
+
     if (field === "brand") {
-      return typeof product.brand === "object" && product.brand?._id
-        ? product.brand._id
-        : typeof product.brand === "string"
-          ? product.brand
+      return typeof source.brand === "object" && source.brand?._id
+        ? source.brand._id
+        : typeof source.brand === "string"
+          ? source.brand
           : "";
     }
 
     if (field === "categoryId") {
-      return typeof product.categoryId === "object" && product.categoryId?._id
-        ? product.categoryId._id
-        : typeof product.categoryId === "string"
-          ? product.categoryId
+      return typeof source.categoryId === "object" && source.categoryId?._id
+        ? source.categoryId._id
+        : typeof source.categoryId === "string"
+          ? source.categoryId
           : "";
     }
 
     if (field === "productTypeId") {
-      return typeof product.productTypeId === "object" &&
-        product.productTypeId?._id
-        ? product.productTypeId._id
-        : typeof product.productTypeId === "string"
-          ? product.productTypeId
+      return typeof source.productTypeId === "object" && source.productTypeId?._id
+        ? source.productTypeId._id
+        : typeof source.productTypeId === "string"
+          ? source.productTypeId
           : "";
     }
 
-    return product[field] || "";
+    return source[field] || "";
   };
 
   const getDisplayValue = (field) => {
-    if (field === "brand") {
-      return product.brand?.brandName || "";
-    }
-    if (field === "categoryId") {
-      return product.categoryId?.name || "";
-    }
-    if (field === "productTypeId") {
-      return product.productTypeId?.name || "";
-    }
+    if (!product) return "";
+    if (field === "brand") return product.brand?.brandName || "";
+    if (field === "categoryId") return product.categoryId?.name || "";
+    if (field === "productTypeId") return product.productTypeId?.name || "";
     return product[field] || "";
   };
 
@@ -316,19 +297,14 @@ function ProductDetail() {
       label: "Skin Color",
       value: "skinColor",
       isSelect: true,
-      options: ["neutral", "cool"].map((k) => ({
+      options: ["neutral", "cool", "light", "dark", "warm"].map((k) => ({
         key: k,
         label: k.charAt(0).toUpperCase() + k.slice(1),
       })),
     },
     { label: "Stock", value: "stock" },
     { label: "Volume", value: "volume" },
-    {
-      label: "Category",
-      value: "categoryId",
-      isSelect: true,
-      options: categories.map((c) => ({ key: c._id, label: c.name })),
-    },
+    { label: "Category", value: "categoryId", isSelect: false },
     {
       label: "Product Type",
       value: "productTypeId",
@@ -338,20 +314,14 @@ function ProductDetail() {
     { label: "Instructions", value: "instructions", isText: true },
     { label: "Preservation", value: "preservation", isText: true },
     { label: "Key Ingredients", value: "keyIngredients", isText: true },
-    {
-      label: "Detail Ingredients",
-      value: "detailInfredients",
-      isText: true,
-    },
+    { label: "Detail Ingredients", value: "detailInfredients", isText: true },
     { label: "Purpose", value: "purpose", isText: true },
   ];
 
   return (
     <div>
       <div className="product-detail-container-back">
-        <div
-          className="admin_back"
-          onClick={() => navigate("/admin/product-list")}>
+        <div className="admin_back" onClick={() => navigate("/admin/product-list")}>
           &lt; Back To Product List
         </div>
       </div>
@@ -360,14 +330,8 @@ function ProductDetail() {
         <div className="product-detail-header">
           <h2 className="admin_main_title">{product.name}</h2>
           <div className="product-detail-controls">
-            <i
-              className="fas fa-pen"
-              title="Edit"
-              onClick={() => setIsEditing(true)}></i>
-            <i
-              className="delete_icon fas fa-trash-alt"
-              title="Delete"
-              onClick={() => setShowDeleteModal(true)}></i>
+            <i className="fas fa-pen" title="Edit" onClick={startEditing}></i>
+            <i className="delete_icon fas fa-trash-alt" title="Delete" onClick={() => setShowDeleteModal(true)}></i>
           </div>
         </div>
 
@@ -376,9 +340,7 @@ function ProductDetail() {
             <div className="image-wrapper" key={idx}>
               <img src={img} alt={`existing-${idx}`} />
               {isEditing && (
-                <span
-                  className="remove-btn"
-                  onClick={() => removeExistingImage(idx)}>
+                <span className="remove-btn" onClick={() => removeExistingImage(idx)}>
                   ×
                 </span>
               )}
@@ -388,9 +350,7 @@ function ProductDetail() {
             <div className="image-wrapper" key={`new-${idx}`}>
               <img src={URL.createObjectURL(file)} alt="new" />
               {isEditing && (
-                <span
-                  className="remove-btn"
-                  onClick={() => removeNewImage(idx)}>
+                <span className="remove-btn" onClick={() => removeNewImage(idx)}>
                   ×
                 </span>
               )}
@@ -399,44 +359,41 @@ function ProductDetail() {
         </div>
 
         <div className="product-detail-grid">
-          {formFields.map(
-            ({ label, value, isSelect, isText, options = [] }) => (
-              <div className="product-detail-field" key={value}>
-                <label>{label}</label>
-                {isEditing ? (
-                  isSelect ? (
-                    <select
-                      name={value}
-                      value={getFieldValue(value)}
-                      onChange={handleInputChange}>
-                      <option value="">Select {label}</option>
-                      {options.map(({ key, label }) => (
-                        <option key={key} value={key}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : isText ? (
-                    <textarea
-                      name={value}
-                      value={getFieldValue(value)}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      name={value}
-                      value={getFieldValue(value)}
-                      onChange={handleInputChange}
-                      disabled={value === "stock"}
-                    />
-                  )
+          {formFields.map(({ label, value, isSelect, isText, options = [] }) => (
+            <div className="product-detail-field" key={value}>
+              <label>{label}</label>
+              {isEditing ? (
+                value === "categoryId" ? (
+                  <input type="text" value={editedProduct?.categoryId?.name || ""} disabled />
+                ) : isSelect ? (
+                  <select
+                    name={value}
+                    value={getFieldValue(value)}
+                    onChange={value === "productTypeId" ? handleProductTypeChange : handleInputChange}
+                  >
+                    <option value="">Select {label}</option>
+                    {options.map(({ key, label }) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                ) : isText ? (
+                  <textarea name={value} value={getFieldValue(value)} onChange={handleInputChange} />
                 ) : (
-                  <input type="text" readOnly value={getDisplayValue(value)} />
-                )}
-              </div>
-            )
-          )}
+                  <input
+                    type="text"
+                    name={value}
+                    value={getFieldValue(value)}
+                    onChange={handleInputChange}
+                    disabled={value === "stock"}
+                  />
+                )
+              ) : (
+                <input type="text" readOnly value={getDisplayValue(value)} />
+              )}
+            </div>
+          ))}
         </div>
 
         {isEditing && (
@@ -461,16 +418,12 @@ function ProductDetail() {
         {showDeleteModal && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <button
-                className="close_modal_btn"
-                onClick={() => setShowDeleteModal(false)}>
+              <button className="close_modal_btn" onClick={() => setShowDeleteModal(false)}>
                 ×
               </button>
               <h5>Are you sure you want to delete this product?</h5>
               <div className="modal-buttons">
-                <button onClick={() => setShowDeleteModal(false)}>
-                  Cancel
-                </button>
+                <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
                 <button onClick={handleDelete}>Confirm</button>
               </div>
             </div>
