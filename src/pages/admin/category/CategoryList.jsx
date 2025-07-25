@@ -25,7 +25,7 @@ function CategoryList({ searchQuery }) {
     const getToken = () => localStorage.getItem("token");
 
     useEffect(() => {
-        document.title = "Manage Categories - Alurà System Management";
+        document.title = "Manage Category - Alurà System Management";
         fetchCategories();
         fetchSubCategories();
         fetchAllCategories();

@@ -71,9 +71,8 @@ function ProductList({ searchQuery = "" }) {
   const handleTogglePublic = async (id, isPublic) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `${API_URL}/products/${
-        isPublic ? "disable" : "enable"
-      }/${id}`;
+      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"
+        }/${id}`;
 
       const res = await fetch(url, {
         method: "PUT",
@@ -350,3 +349,4 @@ function ProductList({ searchQuery = "" }) {
 }
 
 export default ProductList;
+

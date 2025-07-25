@@ -362,7 +362,7 @@ function BatchList({ searchQuery = "" }) {
                 />
               </div>
 
-              <button type="submit" className="add_account_btn">
+              <button type="submit" className="add_account_btn admin_modal_add_button">
                 {selectedBatch ? "Update" : "Create"} Batch
               </button>
             </form>

@@ -242,16 +242,16 @@ function ProductDetail() {
       return typeof source.brand === "object" && source.brand?._id
         ? source.brand._id
         : typeof source.brand === "string"
-        ? source.brand
-        : "";
+          ? source.brand
+          : "";
     }
 
     if (field === "categoryId") {
       return typeof source.categoryId === "object" && source.categoryId?._id
         ? source.categoryId._id
         : typeof source.categoryId === "string"
-        ? source.categoryId
-        : "";
+          ? source.categoryId
+          : "";
     }
 
     if (field === "productTypeId") {
@@ -259,8 +259,8 @@ function ProductDetail() {
         source.productTypeId?._id
         ? source.productTypeId._id
         : typeof source.productTypeId === "string"
-        ? source.productTypeId
-        : "";
+          ? source.productTypeId
+          : "";
     }
 
     return source[field] || "";

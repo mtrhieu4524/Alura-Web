@@ -74,9 +74,6 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [animate, setAnimate] = useState(false);
   const [activeTab, setActiveTab] = useState("newArrivals");
-  const [displayProducts, setDisplayProducts] = useState([]);
-  const [newProducts, setNewProducts] = useState([]);
-  const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -109,21 +106,20 @@ const Home = () => {
   };
 
 
-
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchTrendingProducts() {
       try {
-        const res = await fetch(`${API_URL}/products`);
+        const res = await fetch(`${API_URL}/dashboard/top-homepage-products`);
         const data = await res.json();
-        if (data.success && data.products) {
-          const firstTwo = data.products.slice(0, 2);
-          setTrendingProducts(firstTwo);
+        if (Array.isArray(data)) {
+          setTrendingProducts(data);
         }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        console.error("Failed to fetch top homepage products:", error);
       }
     }
-    fetchProducts();
+
+    fetchTrendingProducts();
   }, [API_URL]);
 
   useEffect(() => {
@@ -142,11 +138,8 @@ const Home = () => {
   }, []);
 
   const handleProductClick = (product) => {
-    const productName = product._id.replace(/\s+/g, "-").toLowerCase();
-    const path = `/products/${productName}`;
-    navigate(path, { state: { id: product._id } });
+    navigate(`/products/${product.productId}`, { state: { id: product.productId } });
   };
-
 
   return (
     <div className="Home">
@@ -181,7 +174,7 @@ const Home = () => {
             <div className="slide-background">
               <img src={sliderBackground} alt="Slide 2" />
               <h1>
-                MEDICAL <br></br>TREATMENT
+                MEDICAL & <br></br>TREATMENT
               </h1>
             </div>
             <div className="slide-content">
@@ -393,14 +386,17 @@ const Home = () => {
                 <div
                   key={index}
                   className="trending_product_card card"
-                  onClick={() => handleProductClick(product)}>
+                  onClick={() => handleProductClick(product)}
+                >
                   <img
                     src={product.imgUrls?.[0] || ""}
                     alt={product.name}
                     className="product_image"
                   />
                   <p className="trending_product_name">{product.name}</p>
-                  <p className="trending_product_price">{product.price.toLocaleString() || "100,000"} VND</p>
+                  <p className="trending_product_price">
+                    {product.price.toLocaleString()} VND
+                  </p>
                 </div>
               ))}
             </div>

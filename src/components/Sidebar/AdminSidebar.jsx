@@ -50,7 +50,7 @@ const AdminSidebar = () => {
       icon: "fa-paint-brush",
       path: "/admin/product-list",
     },
-    { label: "Manage Product Type", icon: "fa-window-restore", path: "/admin/type-list" },
+    { label: "Brand & Product Type", icon: "fa-window-restore", path: "/admin/type-list" },
     { label: "Manage Category", icon: "fa-shopping-bag", path: "/admin/category-list" },
     { label: "Manage Batch", icon: "fa-cube", path: "/admin/batch-list" },
     {
