@@ -90,6 +90,60 @@ function TypeList({ searchQuery }) {
         }
     };
 
+    const handleSaveType = async () => {
+        const { name, description, categoryID, subCategoryID } = formData;
+        if (!name || !description || !categoryID || !subCategoryID) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
+
+        const method = selectedType ? "PUT" : "POST";
+        const endpoint = selectedType
+            ? `${API_URL}/product-types/${selectedType._id}`
+            : `${API_URL}/product-types`;
+
+        try {
+            const res = await fetch(endpoint, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ name, description, categoryID, subCategoryID })
+            });
+
+            if (res.ok) {
+                toast.success(`Type ${selectedType ? "updated" : "added"} successfully!`);
+                fetchTypes();
+                closeModal();
+            } else {
+                toast.error("Failed to save type.");
+            }
+        } catch (error) {
+            toast.error("Error saving type.");
+        }
+    };
+
+    const handleDeleteType = async () => {
+        if (!selectedType) return;
+        try {
+            const res = await fetch(`${API_URL}/product-types/${selectedType._id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${getToken()}` }
+            });
+            if (res.ok) {
+                toast.success("Type deleted successfully!");
+                fetchTypes();
+                setIsDeleteModalOpen(false);
+                setSelectedType(null);
+            } else {
+                toast.error("Failed to delete type.");
+            }
+        } catch (error) {
+            toast.error("Error deleting type.");
+        }
+    };
+
     const handleSaveBrand = async () => {
         if (!brandData.brandName.trim()) {
             toast.error("Brand name is required.");
@@ -144,6 +198,31 @@ function TypeList({ searchQuery }) {
         }
     };
 
+    const openEditModal = (type) => {
+        setSelectedType(type);
+        setFormData({
+            name: type.name,
+            description: type.description,
+            categoryID: type.category?._id || "",
+            subCategoryID: type.subCategory?._id || "",
+            categoryName: type.category?.name || ""
+        });
+        setIsUpdateModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsUpdateModalOpen(false);
+        setSelectedType(null);
+        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "", categoryName: "" });
+    };
+
+    const handleSubCategoryChange = (subCatId) => {
+        const sub = subCategories.find((s) => s._id === subCatId);
+        const categoryName = sub?.category?.name || "";
+        const categoryID = sub?.category?._id || "";
+        setFormData((prev) => ({ ...prev, subCategoryID: subCatId, categoryID, categoryName }));
+    };
+
     const columns = ["Name", "Description", "Category", "Sub Category", "Action"];
     const brandColumns = ["Brand Name", "Action"];
 
@@ -182,31 +261,6 @@ function TypeList({ searchQuery }) {
         )
     }));
 
-    const openEditModal = (type) => {
-        setSelectedType(type);
-        setFormData({
-            name: type.name,
-            description: type.description,
-            categoryID: type.category?._id || "",
-            subCategoryID: type.subCategory?._id || "",
-            categoryName: type.category?.name || ""
-        });
-        setIsUpdateModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsUpdateModalOpen(false);
-        setSelectedType(null);
-        setFormData({ name: "", description: "", categoryID: "", subCategoryID: "", categoryName: "" });
-    };
-
-    const handleSubCategoryChange = (subCatId) => {
-        const sub = subCategories.find((s) => s._id === subCatId);
-        const categoryName = sub?.category?.name || "";
-        const categoryID = sub?.category?._id || "";
-        setFormData((prev) => ({ ...prev, subCategoryID: subCatId, categoryID, categoryName }));
-    };
-
     return (
         <div className="WarehouseList">
             <div className="warehouse_list_container">
@@ -238,6 +292,70 @@ function TypeList({ searchQuery }) {
 
                 <Table columns={brandColumns} data={brandDataRows} />
             </div>
+
+            {isUpdateModalOpen && (
+                <div className="modal_overlay">
+                    <div className="modal_content">
+                        <button className="close_modal_btn" onClick={closeModal}>×</button>
+                        <h5>{selectedType ? "Update Type" : "Add New Type"}</h5>
+                        <form className="product_form" onSubmit={(e) => { e.preventDefault(); handleSaveType(); }}>
+                            <div className="form_group">
+                                <label>Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form_group">
+                                <label>Sub Category</label>
+                                <select
+                                    value={formData.subCategoryID}
+                                    onChange={(e) => handleSubCategoryChange(e.target.value)}
+                                    required
+                                >
+                                    <option value="">Select subcategory</option>
+                                    {subCategories.map((sub) => (
+                                        <option key={sub._id} value={sub._id}>{sub.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form_group">
+                                <label>Category (Auto fill)</label>
+                                <input type="text" value={formData.categoryName} disabled placeholder="Category" />
+                            </div>
+                            <div className="form_group">
+                                <button type="submit" className="add_account_btn">
+                                    {selectedType ? "Update" : "Create"} Type
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {isDeleteModalOpen && (
+                <div className="modal_overlay">
+                    <div className="modal_content">
+                        <button className="close_modal_btn" onClick={() => setIsDeleteModalOpen(false)}>×</button>
+                        <h5>Are you sure you want to delete <b>{selectedType?.name}</b>?</h5>
+                        <div className="modal-buttons">
+                            <button className="cancel_btn" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
+                            <button className="delete_btn" onClick={handleDeleteType}>Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {isBrandModalOpen && (
                 <div className="modal_overlay">

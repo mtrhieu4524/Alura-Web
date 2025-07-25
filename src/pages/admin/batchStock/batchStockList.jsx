@@ -17,19 +17,14 @@ function BatchStockList({ searchQuery = "" }) {
   const [batchStocks, setBatchStocks] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState(null);
 
   const [batches, setBatches] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
 
   const [formData, setFormData] = useState({
     batchId: "",
-    productId: "",
-    warehouseId: "",
+    productName: "",
+    warehouseName: "",
     quantity: "",
-    remaining: "",
     note: "",
     handledBy: userId || "",
   });
@@ -74,31 +69,12 @@ function BatchStockList({ searchQuery = "" }) {
 
   const fetchDropdownData = async () => {
     try {
-      const [batchRes, productRes, warehouseRes] = await Promise.all([
-        fetch(`${API_URL}/batch`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API_URL}/products`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API_URL}/warehouse`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
+      const batchRes = await fetch(`${API_URL}/batch`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const batchJson = await batchRes.json();
       if (batchJson.success && Array.isArray(batchJson.data)) {
         setBatches(batchJson.data);
-      }
-
-      const productJson = await productRes.json();
-      if (productJson.success && Array.isArray(productJson.products)) {
-        setProducts(productJson.products);
-      }
-
-      const warehouseJson = await warehouseRes.json();
-      if (warehouseJson.data && Array.isArray(warehouseJson.data)) {
-        setWarehouses(warehouseJson.data);
       }
     } catch (error) {
       console.error("Failed to fetch dropdown data", error);
@@ -108,7 +84,20 @@ function BatchStockList({ searchQuery = "" }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "batchId") {
+      const selectedBatch = batches.find((b) => b._id === value);
+      if (selectedBatch) {
+        setFormData((prev) => ({
+          ...prev,
+          batchId: selectedBatch._id,
+          productName: `${selectedBatch.productId?.name || "N/A"} - ${selectedBatch.quantity}`,
+          warehouseName: selectedBatch.warehouseId?.name || "",
+        }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleCreateBatchStock = async (e) => {
@@ -116,29 +105,25 @@ function BatchStockList({ searchQuery = "" }) {
     setIsCreating(true);
 
     try {
-      let payload;
+      const selectedBatch = batches.find((b) => b._id === formData.batchId);
 
-      if (selectedStock) {
-        payload = {
-          quantity: parseInt(formData.quantity),
-          remaining: parseInt(formData.remaining || 0),
-        };
-      } else {
-        payload = {
-          ...formData,
-          quantity: parseInt(formData.quantity),
-          handledBy: userId,
-        };
+      if (!selectedBatch || !selectedBatch.productId || !selectedBatch.warehouseId) {
+        toast.error("Selected batch is invalid or missing product/warehouse info.");
+        setIsCreating(false);
+        return;
       }
 
-      const url = selectedStock
-        ? `${API_URL}/batch-stock/${selectedStock._id}`
-        : `${API_URL}/batch-stock`;
+      const payload = {
+        batchId: formData.batchId,
+        productId: selectedBatch.productId._id,
+        warehouseId: selectedBatch.warehouseId._id,
+        quantity: parseInt(formData.quantity),
+        note: formData.note,
+        handledBy: userId,
+      };
 
-      const method = selectedStock ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch(`${API_URL}/batch-stock`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -147,9 +132,7 @@ function BatchStockList({ searchQuery = "" }) {
       });
 
       if (res.ok) {
-        toast.success(
-          `${selectedStock ? "Update" : "Add"} batch stock successfully!`
-        );
+        toast.success("Add batch stock successfully!");
         fetchBatchStocks();
         setShowCreateModal(false);
         resetForm();
@@ -158,58 +141,22 @@ function BatchStockList({ searchQuery = "" }) {
         toast.error(`Lỗi: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Failed to create/update batch stock", error);
-      toast.error("Failed to create/update batch stock!");
+      console.error("Failed to create batch stock", error);
+      toast.error("Failed to create batch stock!");
     }
     setIsCreating(false);
   };
 
-  const handleEdit = (stock) => {
-    setSelectedStock(stock);
-    setFormData({
-      batchId: stock.batchId?._id || "",
-      productId: stock.productId?._id || "",
-      warehouseId: stock.warehouseId?._id || "",
-      quantity: stock.quantity || "",
-      note: stock.note || "",
-      handledBy: userId,
-    });
-    setShowCreateModal(true);
-  };
-
-  const handleDelete = async () => {
-    if (!selectedStock) return;
-
-    try {
-      const res = await fetch(`${API_URL}/batch-stock/${selectedStock._id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.ok) {
-        toast.success("Delete batch stock successfully!");
-        fetchBatchStocks();
-        setIsDeleteModalOpen(false);
-        setSelectedStock(null);
-      } else {
-        toast.error("Can not delete batch stock!");
-      }
-    } catch (error) {
-      console.error("Error deleting batch stock:", error);
-      toast.error("Error deleting batch stock!");
-    }
-  };
 
   const resetForm = () => {
     setFormData({
       batchId: "",
-      productId: "",
-      warehouseId: "",
+      productName: "",
+      warehouseName: "",
       quantity: "",
       note: "",
       handledBy: userId,
     });
-    setSelectedStock(null);
   };
 
   const handleCloseModal = () => {
@@ -221,13 +168,11 @@ function BatchStockList({ searchQuery = "" }) {
     { header: "Batch Code", accessor: "batchCode" },
     { header: "Product Name", accessor: "productName" },
     { header: "Warehouse", accessor: "warehouse" },
-    { header: "Quantity", accessor: "quantity" },
-    { header: "Remaining In Store ", accessor: "remaining" },
+    { header: "Quantity In Batch", accessor: "quantity" },
+    { header: "Quantity In Store ", accessor: "remaining" },
     { header: "Expiry Date", accessor: "expiryDate" },
     { header: "Exported At", accessor: "exportedAt" },
     { header: "Note", accessor: "note" },
-    // { header: "Status", accessor: "status" },
-    // { header: "Action", accessor: "action" }
   ];
 
   const tableData = batchStocks.map((stock) => ({
@@ -242,28 +187,7 @@ function BatchStockList({ searchQuery = "" }) {
     exportedAt: stock.exportedAt
       ? new Date(stock.exportedAt).toLocaleDateString("vi-VN")
       : "-",
-
     note: stock.note || "-",
-    status: (
-      <span
-        className={`status_tag ${
-          stock.lockedReason ? "status_cancelled" : "status_active"
-        }`}>
-        {stock.lockedReason ? "Cancelled" : "Active"}
-      </span>
-    ),
-    action: (
-      <div className="action_icons">
-        <i className="fas fa-pen edit_icon" onClick={() => handleEdit(stock)} />
-        <i
-          className="fas fa-trash delete_icon"
-          onClick={() => {
-            setSelectedStock(stock);
-            setIsDeleteModalOpen(true);
-          }}
-        />
-      </div>
-    ),
   }));
 
   return (
@@ -281,13 +205,9 @@ function BatchStockList({ searchQuery = "" }) {
           </button>
         </div>
 
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <Table columns={columns} data={tableData} />
-        )}
+        {isLoading ? <p>Loading...</p> : <Table columns={columns} data={tableData} />}
 
-        {showCreateModal && !selectedStock && (
+        {showCreateModal && (
           <div className="modal_overlay">
             <div className="modal_content">
               <button className="close_modal_btn" onClick={handleCloseModal}>
@@ -296,7 +216,7 @@ function BatchStockList({ searchQuery = "" }) {
               <h5>Add New Batch Stock</h5>
               <form className="product_form" onSubmit={handleCreateBatchStock}>
                 <div className="form_group">
-                  <label htmlFor="batchId">Batch *</label>
+                  <label htmlFor="batchId">Batch</label>
                   <select
                     id="batchId"
                     name="batchId"
@@ -306,45 +226,32 @@ function BatchStockList({ searchQuery = "" }) {
                     <option value="">Choose batch</option>
                     {batches.map((batch) => (
                       <option key={batch._id} value={batch._id}>
-                        {batch.batchCode} - {batch.productId?.name || "N/A"}{" "}
-                        (Còn: {batch.quantity})
+                        {batch.batchCode}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form_group">
-                  <label htmlFor="productId">Product *</label>
-                  <select
-                    id="productId"
-                    name="productId"
-                    value={formData.productId}
-                    onChange={handleInputChange}
-                    required>
-                    <option value="">Choose product</option>
-                    {products.map((product) => (
-                      <option key={product._id} value={product._id}>
-                        {product.name} - {product.price?.toLocaleString()} VND
-                      </option>
-                    ))}
-                  </select>
+                  <label htmlFor="productName">Product (Auto fill)</label>
+                  <input
+                    type="text"
+                    id="productName"
+                    name="productName"
+                    value={formData.productName}
+                    disabled
+                  />
                 </div>
 
                 <div className="form_group">
-                  <label htmlFor="warehouseId">Warehouse *</label>
-                  <select
-                    id="warehouseId"
-                    name="warehouseId"
-                    value={formData.warehouseId}
-                    onChange={handleInputChange}
-                    required>
-                    <option value="">Choose warehouse</option>
-                    {warehouses.map((warehouse) => (
-                      <option key={warehouse._id} value={warehouse._id}>
-                        {warehouse.name}
-                      </option>
-                    ))}
-                  </select>
+                  <label htmlFor="warehouseName">Warehouse (Auto fill)</label>
+                  <input
+                    type="text"
+                    id="warehouseName"
+                    name="warehouseName"
+                    value={formData.warehouseName}
+                    disabled
+                  />
                 </div>
 
                 <div className="form_group">
@@ -391,90 +298,6 @@ function BatchStockList({ searchQuery = "" }) {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        )}
-
-        {showCreateModal && selectedStock && (
-          <div className="modal_overlay">
-            <div className="modal_content">
-              <button className="close_modal_btn" onClick={handleCloseModal}>
-                ×
-              </button>
-              <h5>Update Batch Stock</h5>
-              <form className="product_form" onSubmit={handleCreateBatchStock}>
-                <div className="form_group">
-                  <label htmlFor="quantity">Quantity *</label>
-                  <input
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    value={formData.quantity}
-                    onChange={handleInputChange}
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label htmlFor="remaining">Remaining *</label>
-                  <input
-                    type="number"
-                    id="remaining"
-                    name="remaining"
-                    value={formData.remaining}
-                    onChange={handleInputChange}
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label htmlFor="handledBy">Admin ID (Auto fill)</label>
-                  <input
-                    type="text"
-                    id="handledBy"
-                    name="handledBy"
-                    value={formData.handledBy}
-                    disabled
-                  />
-                </div>
-
-                <div className="form_group">
-                  <button
-                    type="submit"
-                    className="add_account_btn"
-                    disabled={isCreating}>
-                    {isCreating ? "Đang lưu..." : "Update Batch Stock"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {isDeleteModalOpen && (
-          <div className="modal_overlay">
-            <div className="modal_content">
-              <button
-                className="close_modal_btn"
-                onClick={() => setIsDeleteModalOpen(false)}>
-                ×
-              </button>
-              <h5>
-                Are you sure you want to delete{" "}
-                <strong>{selectedStock?.batchId?.batchCode}</strong>?
-              </h5>
-              <div className="modal-buttons">
-                <button
-                  className="cancel_btn"
-                  onClick={() => setIsDeleteModalOpen(false)}>
-                  Cancel
-                </button>
-                <button className="delete_btn" onClick={handleDelete}>
-                  Confirm
-                </button>
-              </div>
             </div>
           </div>
         )}

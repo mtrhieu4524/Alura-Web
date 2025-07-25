@@ -380,7 +380,7 @@ const Home = () => {
             <img src={trending} alt="Trending" className="trending_image" />
           </div>
           <div className="col-lg-7 col-md-6 trending_right">
-            <h2 className="trending_title">Best Seller</h2>
+            <h2 className="trending_title">Alurà Best Seller</h2>
             <div className="trending_product_card_section row">
               {trendingProducts.map((product, index) => (
                 <div

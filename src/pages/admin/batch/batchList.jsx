@@ -6,6 +6,14 @@ import "../../../styles/admin/batch/BatchList.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 function BatchList({ searchQuery = "" }) {
   const { token } = useSelector((state) => state.auth);
   const [batches, setBatches] = useState([]);
@@ -29,7 +37,7 @@ function BatchList({ searchQuery = "" }) {
     quantity: "",
     amount: "",
     expiryDate: "",
-    importDate: "",
+    importDate: new Date().toISOString().split("T")[0],
     notes: "",
   });
 
@@ -39,10 +47,7 @@ function BatchList({ searchQuery = "" }) {
   }, [searchQuery]);
 
   const fetchAll = async () => {
-    await Promise.all([
-      fetchBatches(),
-      fetchDropdownOptions()
-    ]);
+    await Promise.all([fetchBatches(), fetchDropdownOptions()]);
   };
 
   const fetchBatches = async () => {
@@ -61,8 +66,7 @@ function BatchList({ searchQuery = "" }) {
   const fetchDropdownOptions = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
-
-      const [prodRes, distRes, wareRes, certRes, brandRes] = await Promise.all([
+      const [prodRes, distRes, wareRes, certRes] = await Promise.all([
         fetch(`${API_URL}/products/admin-and-staff`, { headers }),
         fetch(`${API_URL}/distributor`, { headers }),
         fetch(`${API_URL}/warehouse`, { headers }),
@@ -86,6 +90,7 @@ function BatchList({ searchQuery = "" }) {
 
   const openAddModal = () => {
     setSelectedBatch(null);
+    const today = new Date().toISOString().split("T")[0];
     setFormData({
       batchCode: "",
       productId: "",
@@ -97,7 +102,7 @@ function BatchList({ searchQuery = "" }) {
       quantity: "",
       amount: "",
       expiryDate: "",
-      importDate: "",
+      importDate: today,
       notes: "",
     });
     setIsUpdateModalOpen(true);
@@ -105,8 +110,8 @@ function BatchList({ searchQuery = "" }) {
 
   const openEditModal = (batch) => {
     setSelectedBatch(batch);
+    const today = new Date().toISOString().split("T")[0];
     setFormData({
-      batchCode: batch.batchCode,
       productId: batch.productId?._id || "",
       distributorId: batch.distributorId?._id || "",
       warehouseId: batch.warehouseId?._id || "",
@@ -116,7 +121,7 @@ function BatchList({ searchQuery = "" }) {
       quantity: batch.quantity,
       amount: batch.amount,
       expiryDate: batch.expiryDate?.slice(0, 10) || "",
-      importDate: batch.importDate?.slice(0, 10) || "",
+      importDate: today,
       notes: batch.notes || "",
     });
     setIsUpdateModalOpen(true);
@@ -135,9 +140,15 @@ function BatchList({ searchQuery = "" }) {
   const handleSaveBatch = async () => {
     const importDate = new Date(formData.importDate);
     const expiryDate = new Date(formData.expiryDate);
+    const today = new Date();
 
-    if (expiryDate <= importDate) {
-      toast.error("Expiry date must be after import date!");
+    if (expiryDate <= today.setFullYear(today.getFullYear() + 1)) {
+      toast.error("Expiry date must be at least 1 year from today!");
+      return;
+    }
+
+    if (Number(formData.quantity) < 0 || Number(formData.amount) < 0) {
+      toast.error("Quantity and amount must not be negative!");
       return;
     }
 
@@ -146,6 +157,16 @@ function BatchList({ searchQuery = "" }) {
       ? `${API_URL}/batch/${selectedBatch._id}`
       : `${API_URL}/batch`;
 
+    const payload = {
+      ...formData,
+      importDate: importDate.toISOString(),
+      expiryDate: expiryDate.toISOString(),
+    };
+
+    if (selectedBatch) {
+      delete payload.batchCode;
+    }
+
     try {
       const res = await fetch(endpoint, {
         method,
@@ -153,7 +174,7 @@ function BatchList({ searchQuery = "" }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -167,7 +188,6 @@ function BatchList({ searchQuery = "" }) {
       toast.error("Error saving batch.");
     }
   };
-
 
   const handleDeleteBatch = async () => {
     if (!selectedBatch) return;
@@ -192,7 +212,6 @@ function BatchList({ searchQuery = "" }) {
     }
   };
 
-
   const closeModal = () => {
     setIsUpdateModalOpen(false);
     setIsDeleteModalOpen(false);
@@ -204,9 +223,10 @@ function BatchList({ searchQuery = "" }) {
     "Product",
     "Warehouse",
     "Distributor",
+    "Quantity",
     "Amount",
-    // "Import Date",
     "Expiry Date",
+    "Imported Date",
     "Note",
     "Status",
     "Action",
@@ -217,14 +237,11 @@ function BatchList({ searchQuery = "" }) {
     product: b.productId?.name || "-",
     warehouse: b.warehouseId?.name || "-",
     distributor: b.distributorId?.name || "-",
-    amount: b.amount?.toLocaleString() || "",
-    expiry_date: b.expiryDate
-      ? new Date(b.expiryDate).toLocaleDateString("vi-VN")
-      : "",
-    import_date: b.importDate
-      ? new Date(b.importDate).toLocaleDateString("vi-VN")
-      : "",
-    note: b.notes || "",
+    quantity: b.quantity || "-",
+    amount: b.amount?.toLocaleString() || "-",
+    expiry_date: b.expiryDate ? formatDate(b.expiryDate) : "-",
+    imported_date: b.createdAt ? formatDate(b.createdAt) : "-",
+    note: b.notes || "-",
     status: (
       <span className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"}`}>
         {b.lockedReason ? "Cancelled" : "Active"}
@@ -334,22 +351,20 @@ function BatchList({ searchQuery = "" }) {
                 </select>
               </div>
 
-              {["quantity", "amount", "importDate", "expiryDate"].map((field) => (
+              {[
+                { field: "quantity", label: "Quantity", type: "number" },
+                { field: "amount", label: "Amount (VND)", type: "number" },
+                { field: "importDate", label: "Import Date", type: "date", disabled: true },
+                { field: "expiryDate", label: "Expiry Date", type: "date" },
+              ].map(({ field, label, type, disabled }) => (
                 <div className="form_group" key={field}>
-                  <label>
-                    {field === "amount"
-                      ? "Amount (VND)"
-                      : field === "importDate"
-                        ? "Import Date"
-                        : field === "expiryDate"
-                          ? "Expiry Date"
-                          : "Quantity"}
-                  </label>
+                  <label>{label}</label>
                   <input
-                    type={field.includes("Date") ? "date" : "number"}
+                    type={type}
                     value={formData[field]}
                     onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
                     required={field !== "quantity"}
+                    disabled={disabled}
                   />
                 </div>
               ))}

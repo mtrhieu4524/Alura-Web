@@ -394,7 +394,7 @@ const HeaderComponent = () => {
               </li>
 
               <li className="nav-item">
-                <Link className="home nav-link" to="/visual-search">VISUAL SEARCH</Link>
+                <Link className="home nav-link" to="/visual-search">VISUAL SEARCH ✧</Link>
               </li>
               <li className="nav-item">
                 <Link className="home nav-link" to="/faqs">FAQS</Link>

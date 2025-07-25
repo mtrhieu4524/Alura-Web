@@ -262,7 +262,6 @@ function ProductList({ searchQuery = "" }) {
                     <option value="cool">Cool</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
-                    <option value="all">All</option>
                   </select>
                 </div>
               </div>
