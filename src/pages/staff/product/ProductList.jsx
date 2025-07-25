@@ -177,11 +177,11 @@ function ProductList({ searchQuery = "" }) {
       <div className="product_list_container">
         <div className="product_list_header">
           <h2 className="admin_main_title">Manage Product</h2>
-          <button
+          {/* <button
             className="add_product_btn"
             onClick={() => setIsModalOpen(true)}>
             Add New Product
-          </button>
+          </button> */}
         </div>
 
         <Table columns={columns} data={tableData} />
