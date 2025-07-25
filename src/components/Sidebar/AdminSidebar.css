@@ -144,173 +144,189 @@
     }
 
     .admin_sidebar_content {
-        flex-grow: 1;
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .admin_sidebar_menu_container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
         justify-content: space-between;
+    }
 
-        .admin_sidebar_profile {
-            text-align: left;
-            margin-bottom: 20px;
+    .admin_sidebar_menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-grow: 1;
+    }
 
-            .admin_sidebar_full_name {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
+    .admin_sidebar_separator {
+        border: none;
+        border-top: 1px solid #7d7d7d;
+        margin: 10px 0;
+    }
 
-            .admin_sidebar_role {
-                font-size: 14px;
-                color: #888;
-            }
-        }
+    .admin_sidebar_sign_out {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        transition: background-color 0.2s ease;
 
-        .admin_sidebar_menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-
-            .admin_sidebar_menu_item {
-                display: flex;
-                align-items: center;
-                padding: 10px;
-                cursor: pointer;
-
-                .fa-bar-chart {
-                    font-size: 17px;
-                    margin-right: 12px;
-                    margin-left: 23px;
-                }
-
-                .fa-clipboard-list {
-                    font-size: 17px;
-                    margin-right: 13px;
-                    margin-left: 23px;
-                }
-
-                .fa-users {
-                    font-size: 16px;
-                    margin-right: 11px;
-                    margin-left: 21px;
-                }
-
-                .fa-paint-brush {
-                    font-size: 17px;
-                    margin-right: 12px;
-                    margin-left: 20px;
-                }
-
-                .fa-cubes {
-                    font-size: 17px;
-                    margin-right: 11px;
-                    margin-left: 20px;
-                }
-
-                .fa-shopping-bag {
-                    font-size: 18px;
-                    margin-right: 13px;
-                    margin-left: 20px;
-                }
-
-                .fa-window-restore {
-                    font-size: 17px;
-                    margin-right: 13px;
-                    margin-left: 20px;
-                }
-
-                .fa-cube {
-                    font-size: 17px;
-                    margin-right: 12px;
-                    margin-left: 21px;
-                }
-
-                .fa-database {
-                    font-size: 17px;
-                    margin-right: 12px;
-                    margin-left: 21px;
-                }
-
-                .fa-user-secret {
-                    font-size: 17px;
-                    margin-right: 12px;
-                    margin-left: 21px;
-                }
-
-                .fa-file-text {
-                    font-size: 17px;
-                    margin-right: 15px;
-                    margin-left: 21px;
-                }
-
-                .fa-ring {
-                    font-size: 17px;
-                    margin-right: 10px;
-                    margin-left: 23px;
-                }
-
-                span {
-                    font-size: 16px;
-                }
-
-                &:hover,
-                &.selected {
-                    background-color: #e0e0e0;
-                }
-            }
-        }
-
-        .admin_sidebar_sign_out {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            margin-bottom: 20px;
-            padding: 10px 10px 10px 10px;
-
-            .fa-sign-out-alt {
-                font-size: 17px;
-                margin-right: 10px;
-                margin-left: 23px;
-                margin-bottom: -2px;
-            }
-
-            span {
-                font-size: 16px;
-            }
-
-            &:hover {
-                background-color: #e0e0e0;
-            }
+        &:hover {
+            background-color: #e0e0e0;
         }
     }
 
-    .fa-chart-bar::before {
+    .admin_sidebar_menu_item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+
+        .fa-bar-chart {
+            font-size: 17px;
+            margin-right: 12px;
+            margin-left: 23px;
+        }
+
+        .fa-clipboard-list {
+            font-size: 17px;
+            margin-right: 13px;
+            margin-left: 23px;
+        }
+
+        .fa-users {
+            font-size: 16px;
+            margin-right: 11px;
+            margin-left: 21px;
+        }
+
+        .fa-paint-brush {
+            font-size: 17px;
+            margin-right: 12px;
+            margin-left: 20px;
+        }
+
+        .fa-cubes {
+            font-size: 17px;
+            margin-right: 11px;
+            margin-left: 20px;
+        }
+
+        .fa-shopping-bag {
+            font-size: 18px;
+            margin-right: 13px;
+            margin-left: 20px;
+        }
+
+        .fa-window-restore {
+            font-size: 17px;
+            margin-right: 13px;
+            margin-left: 20px;
+        }
+
+        .fa-cube {
+            font-size: 17px;
+            margin-right: 12px;
+            margin-left: 21px;
+        }
+
+        .fa-database {
+            font-size: 17px;
+            margin-right: 12px;
+            margin-left: 21px;
+        }
+
+        .fa-user-secret {
+            font-size: 17px;
+            margin-right: 12px;
+            margin-left: 21px;
+        }
+
+        .fa-file-text {
+            font-size: 17px;
+            margin-right: 15px;
+            margin-left: 21px;
+        }
+
+        .fa-ring {
+            font-size: 17px;
+            margin-right: 10px;
+            margin-left: 23px;
+        }
+
+        span {
+            font-size: 16px;
+        }
+
+        &:hover,
+        &.selected {
+            background-color: #e0e0e0;
+        }
+    }
+}
+
+.admin_sidebar_sign_out {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+    padding: 10px 10px 10px 10px;
+
+    .fa-sign-out-alt {
         font-size: 17px;
+        margin-right: 10px;
+        margin-left: 23px;
+        margin-bottom: -2px;
     }
 
-    .fa-users::before {
+    span {
         font-size: 16px;
     }
 
-    .fa-id-badge::before {
-        font-size: 20px;
-    }
-
-    .fa-gem::before {
-        font-size: 17px;
-    }
-
-    .fa-ring::before {
-        font-size: 17px;
-    }
-
-    .fa-sign-out-alt::before {
-        font-size: 17px;
-        margin-bottom: 10px;
-    }
-
-    .admin_side_bar_line2 {
-        margin: 0 0 -155px 0;
+    &:hover {
+        background-color: #e0e0e0;
     }
 }
+
+
+.fa-chart-bar::before {
+    font-size: 17px;
+}
+
+.fa-users::before {
+    font-size: 16px;
+}
+
+.fa-id-badge::before {
+    font-size: 20px;
+}
+
+.fa-gem::before {
+    font-size: 17px;
+}
+
+.fa-ring::before {
+    font-size: 17px;
+}
+
+.fa-sign-out-alt::before {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.admin_side_bar_line2 {
+    margin: 0 0 -155px 0;
+}
+
 
 .admin_sidebar_toggle_button {
     font-size: 15px !important;

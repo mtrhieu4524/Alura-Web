@@ -101,22 +101,26 @@ const AdminSidebar = () => {
 
       {expanded ? (
         <div className="admin_sidebar_content">
-          <ul className="admin_sidebar_menu">
-            {menuItems.map((item) => (
-              <li
-                key={item.path}
-                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""
-                  }`}
-                onClick={() => navigate(item.path)}>
-                <i className={`fas ${item.icon}`}></i>
-                <span>{item.label}</span>
-              </li>
-            ))}
+          <div className="admin_sidebar_menu_container">
+            <ul className="admin_sidebar_menu">
+              {menuItems.map((item) => (
+                <li
+                  key={item.path}
+                  className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""}`}
+                  onClick={() => navigate(item.path)}
+                >
+                  <i className={`fas ${item.icon}`}></i>
+                  <span>{item.label}</span>
+                </li>
+              ))}
+            </ul>
+            <hr className="admin_sidebar_separator" />
             <div className="admin_sidebar_sign_out" onClick={handleLogout}>
               <i className="fas fa-sign-out-alt"></i>
               <span>Sign Out</span>
             </div>
-          </ul>
+          </div>
+
         </div>
       ) : (
         <div className="admin_sidebar_icons">

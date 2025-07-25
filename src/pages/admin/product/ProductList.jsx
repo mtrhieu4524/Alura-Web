@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../components/Table/Table";
 import { toast } from "sonner";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import "../../../styles/admin/product/ProductList.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -14,6 +18,7 @@ function ProductList({ searchQuery = "" }) {
   const [productTypes, setProductTypes] = useState([]);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [filterType, setFilterType] = useState("All");
 
   useEffect(() => {
     document.title = "Manage Product - Alurà System Management";
@@ -22,19 +27,18 @@ function ProductList({ searchQuery = "" }) {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
+      let url = `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`;
+      if (filterType !== "All") {
+        url += `&productTypeId=${filterType}`;
+      }
 
-      const res = await fetch(
-        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(
-          searchQuery
-        )}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await res.json();
 
@@ -46,7 +50,7 @@ function ProductList({ searchQuery = "" }) {
 
   useEffect(() => {
     fetchProducts();
-  }, [searchQuery]);
+  }, [searchQuery, filterType]);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -71,8 +75,7 @@ function ProductList({ searchQuery = "" }) {
   const handleTogglePublic = async (id, isPublic) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"
-        }/${id}`;
+      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"}/${id}`;
 
       const res = await fetch(url, {
         method: "PUT",
@@ -148,7 +151,6 @@ function ProductList({ searchQuery = "" }) {
       formData.append("imgUrls", imageFiles[i]);
     }
 
-    console.log("Number of images selected:", imageFiles.length);
     for (let field of form.elements) {
       if (field.name && field.type !== "file") {
         formData.append(field.name, String(field.value));
@@ -170,7 +172,6 @@ function ProductList({ searchQuery = "" }) {
       });
 
       const data = await res.json();
-      console.error("Server response:", data);
       if (res.ok && data.success) {
         toast.success("Product added successfully.");
         setIsModalOpen(false);
@@ -189,15 +190,33 @@ function ProductList({ searchQuery = "" }) {
       <div className="product_list_container">
         <div className="product_list_header">
           <h2 className="admin_main_title">Manage Product</h2>
-          <button
-            className="add_product_btn"
-            onClick={() => setIsModalOpen(true)}>
-            Add New Product
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <FormControl variant="outlined" size="small">
+              <InputLabel>Product Type</InputLabel>
+              <Select
+                label="Filter by Type"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                style={{ minWidth: 180, height: 35 }}>
+                <MenuItem value="All">All</MenuItem>
+                {productTypes.map((type) => (
+                  <MenuItem key={type._id} value={type._id}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <button
+              className="add_product_btn"
+              onClick={() => setIsModalOpen(true)}>
+              Add New Product
+            </button>
+          </div>
         </div>
 
         <Table columns={columns} data={tableData} />
       </div>
+
 
       {isModalOpen && (
         <div className="modal_overlay">
@@ -267,8 +286,8 @@ function ProductList({ searchQuery = "" }) {
               </div>
 
               <div className="form_group">
-                <label>Volume (ml)</label>
-                <input name="volume" required placeholder="e.g. 400ml" />
+                <label>Volume</label>
+                <input name="volume" required placeholder="400ml, 3g" />
               </div>
 
               <div className="form_group">

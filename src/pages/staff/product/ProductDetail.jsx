@@ -222,7 +222,7 @@ function ProductDetail() {
 
       if (res.ok) {
         toast.success("Product deleted successfully.");
-        navigate("/admin/product-list");
+        navigate("/staff/product-list");
       } else {
         const data = await res.json();
         toast.error(data.message || "Failed to delete product.");
@@ -242,16 +242,16 @@ function ProductDetail() {
       return typeof source.brand === "object" && source.brand?._id
         ? source.brand._id
         : typeof source.brand === "string"
-        ? source.brand
-        : "";
+          ? source.brand
+          : "";
     }
 
     if (field === "categoryId") {
       return typeof source.categoryId === "object" && source.categoryId?._id
         ? source.categoryId._id
         : typeof source.categoryId === "string"
-        ? source.categoryId
-        : "";
+          ? source.categoryId
+          : "";
     }
 
     if (field === "productTypeId") {
@@ -259,8 +259,8 @@ function ProductDetail() {
         source.productTypeId?._id
         ? source.productTypeId._id
         : typeof source.productTypeId === "string"
-        ? source.productTypeId
-        : "";
+          ? source.productTypeId
+          : "";
     }
 
     return source[field] || "";
@@ -343,10 +343,10 @@ function ProductDetail() {
           <h2 className="admin_main_title">{product.name}</h2>
           <div className="product-detail-controls">
             <i className="fas fa-pen" title="Edit" onClick={startEditing}></i>
-            <i
+            {/* <i
               className="delete_icon fas fa-trash-alt"
               title="Delete"
-              onClick={() => setShowDeleteModal(true)}></i>
+              onClick={() => setShowDeleteModal(true)}></i> */}
           </div>
         </div>
 

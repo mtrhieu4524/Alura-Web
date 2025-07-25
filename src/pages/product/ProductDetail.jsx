@@ -151,9 +151,10 @@ function ProductDetail() {
             <Image
               src={selectedImage}
               alt={product.name}
-              className="main_image"
               width={415}
               height={516}
+              style={{ objectFit: 'cover' }}
+              className="main_image"
             />
           </Image.PreviewGroup>
         </div>

@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../components/Table/Table";
 import { toast } from "sonner";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import "../../../styles/admin/product/ProductList.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -11,8 +15,10 @@ function ProductList({ searchQuery = "" }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [filterType, setFilterType] = useState("All");
 
   useEffect(() => {
     document.title = "Manage Product - Alurà System Management";
@@ -21,21 +27,21 @@ function ProductList({ searchQuery = "" }) {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
+      let url = `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`;
+      if (filterType !== "All") {
+        url += `&productTypeId=${filterType}`;
+      }
 
-      const res = await fetch(
-        `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(
-          searchQuery
-        )}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await res.json();
+
       if (data.success) setProducts(data.products || []);
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -44,23 +50,20 @@ function ProductList({ searchQuery = "" }) {
 
   useEffect(() => {
     fetchProducts();
-  }, [searchQuery]);
+  }, [searchQuery, filterType]);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [brandRes, categoryRes, typeRes] = await Promise.all([
+        const [brandRes, typeRes] = await Promise.all([
           fetch(`${API_URL}/brands`),
-          fetch(`${API_URL}/categories`),
           fetch(`${API_URL}/product-types`),
         ]);
 
         const brandData = await brandRes.json();
-        const categoryData = await categoryRes.json();
         const typeData = await typeRes.json();
 
         if (brandData.success) setBrands(brandData.data || []);
-        if (Array.isArray(categoryData)) setCategories(categoryData);
         if (Array.isArray(typeData)) setProductTypes(typeData);
       } catch (err) {
         console.error("Error fetching options:", err);
@@ -72,9 +75,7 @@ function ProductList({ searchQuery = "" }) {
   const handleTogglePublic = async (id, isPublic) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `${API_URL}/products/${
-        isPublic ? "disable" : "enable"
-      }/${id}`;
+      const url = `${API_URL}/products/${isPublic ? "disable" : "enable"}/${id}`;
 
       const res = await fetch(url, {
         method: "PUT",
@@ -95,7 +96,7 @@ function ProductList({ searchQuery = "" }) {
       }
     } catch (err) {
       console.error("Toggle public error:", err);
-      toast.error("Error when toggle disable and enable product.");
+      toast.error("Error when toggling product visibility.");
     }
   };
 
@@ -122,6 +123,19 @@ function ProductList({ searchQuery = "" }) {
     ),
   }));
 
+  const handleTypeChange = (e) => {
+    const selectedTypeId = e.target.value;
+    const selectedType = productTypes.find((pt) => pt._id === selectedTypeId);
+
+    if (selectedType?.category?._id && selectedType?.category?.name) {
+      setSelectedCategoryId(selectedType.category._id);
+      setSelectedCategoryName(selectedType.category.name);
+    } else {
+      setSelectedCategoryId("");
+      setSelectedCategoryName("");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -129,23 +143,22 @@ function ProductList({ searchQuery = "" }) {
 
     const imageFiles = form.imgUrls.files;
     for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      const fileType = file.type;
+      const fileType = imageFiles[i].type;
       if (!["image/png", "image/jpg", "image/jpeg"].includes(fileType)) {
-        toast.error("Image have to be png, jpg or jpeg.");
+        toast.error("Image must be png, jpg or jpeg.");
         return;
       }
+      formData.append("imgUrls", imageFiles[i]);
     }
 
     for (let field of form.elements) {
       if (field.name && field.type !== "file") {
-        formData.append(field.name, field.value);
+        formData.append(field.name, String(field.value));
       }
     }
 
-    for (let i = 0; i < imageFiles.length; i++) {
-      formData.append("imgUrls", imageFiles[i]);
-    }
+    formData.set("categoryId", selectedCategoryId);
+    formData.set("stock", 0);
 
     try {
       const token = localStorage.getItem("token");
@@ -177,15 +190,33 @@ function ProductList({ searchQuery = "" }) {
       <div className="product_list_container">
         <div className="product_list_header">
           <h2 className="admin_main_title">Manage Product</h2>
-          {/* <button
-            className="add_product_btn"
-            onClick={() => setIsModalOpen(true)}>
-            Add New Product
-          </button> */}
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <FormControl variant="outlined" size="small">
+              <InputLabel>Product Type</InputLabel>
+              <Select
+                label="Filter by Type"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                style={{ minWidth: 180, height: 35 }}>
+                <MenuItem value="All">All</MenuItem>
+                {productTypes.map((type) => (
+                  <MenuItem key={type._id} value={type._id}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {/* <button
+              className="add_product_btn"
+              onClick={() => setIsModalOpen(true)}>
+              Add New Product
+            </button> */}
+          </div>
         </div>
 
         <Table columns={columns} data={tableData} />
       </div>
+
 
       {isModalOpen && (
         <div className="modal_overlay">
@@ -248,13 +279,15 @@ function ProductList({ searchQuery = "" }) {
                     <option value="">Select Skin Color</option>
                     <option value="neutral">Neutral</option>
                     <option value="cool">Cool</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
                   </select>
                 </div>
               </div>
 
               <div className="form_group">
-                <label>Volume (ml)</label>
-                <input type="number" name="volume" required />
+                <label>Volume</label>
+                <input name="volume" required placeholder="400ml, 3g" />
               </div>
 
               <div className="form_group">
@@ -284,19 +317,15 @@ function ProductList({ searchQuery = "" }) {
 
               <div className="form_row">
                 <div className="form_group half_width">
-                  <label>Category</label>
-                  <select name="categoryId" required>
-                    <option value="">Select Category</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
+                  <label>Category (Auto fill)</label>
+                  <input type="text" value={selectedCategoryName} disabled />
                 </div>
                 <div className="form_group half_width">
                   <label>Product Type</label>
-                  <select name="productTypeId" required>
+                  <select
+                    name="productTypeId"
+                    required
+                    onChange={handleTypeChange}>
                     <option value="">Select Product Type</option>
                     {productTypes.map((type) => (
                       <option key={type._id} value={type._id}>
@@ -305,11 +334,6 @@ function ProductList({ searchQuery = "" }) {
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div className="form_group">
-                <label>Stock</label>
-                <input type="number" name="stock" required />
               </div>
 
               <div className="form_group form_group_image">
@@ -343,3 +367,4 @@ function ProductList({ searchQuery = "" }) {
 }
 
 export default ProductList;
+
