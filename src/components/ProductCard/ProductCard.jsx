@@ -101,27 +101,29 @@ const ProductList = ({ products, resetKey }) => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 700);
     }
   };
 
   return (
     <div className="product_list col-lg-12">
-      <div className="product_grid">
-        {displayedProducts.map((product) => (
-          <ProductCard
-            key={product._id}
-            id={product._id}
-            image={product.imgUrls?.[0] || ""}
-            name={product.name}
-            price={product.price}
-            type={product.productTypeId?.name || ""}
-            volume={product.volume}
-            sex={product.sex}
-            stock={product.stock || 0}
-            skinType={product.skinType || "Normal"}
-          />
-        ))}
+      <div className="product_grid_wrapper">
+        <div className="product_grid">
+          {displayedProducts.map((product) => (
+            <ProductCard
+              key={product._id}
+              id={product._id}
+              image={product.imgUrls?.[0] || ""}
+              name={product.name}
+              price={product.price}
+              type={product.productTypeId?.name || ""}
+              volume={product.volume}
+              sex={product.sex}
+              stock={product.stock || 0}
+              skinType={product.skinType || "Normal"}
+            />
+          ))}
+        </div>
       </div>
 
       {totalPages > 1 && (
@@ -159,6 +161,7 @@ const ProductList = ({ products, resetKey }) => {
       {displayedProducts.length > 0 && isCosmeticsPage && <SpecialCard />}
     </div>
   );
+
 };
 
 export default ProductList;
