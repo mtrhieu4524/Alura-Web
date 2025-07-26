@@ -18,7 +18,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.25.3",
     "bootstrap": "^5.3.6",
-    "chart.js": "^4.4.9",
+    "chart.js": "^4.5.0",
     "crypto-js": "^4.2.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",

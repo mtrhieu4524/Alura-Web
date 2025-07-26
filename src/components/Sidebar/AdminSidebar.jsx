@@ -120,28 +120,29 @@ const AdminSidebar = () => {
               <span>Sign Out</span>
             </div>
           </div>
-
         </div>
       ) : (
-        <div className="admin_sidebar_icons">
+        <div className="admin_sidebar_menu_container">
           <ul className="admin_sidebar_menu_icons">
             {menuItems.map((item) => (
               <li
                 key={item.path}
-                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""
-                  }`}
+                className={`admin_sidebar_menu_item ${currentPath.startsWith(item.path) ? "selected" : ""}`}
                 data-tooltip={item.label}
-                onClick={() => navigate(item.path)}>
+                onClick={() => navigate(item.path)}
+              >
                 <i className={`fas ${item.icon}`}></i>
               </li>
             ))}
-            <div
-              className="admin_sidebar_sign_out_icon"
-              data-tooltip="Sign Out"
-              onClick={() => navigate("/sign-in")}>
-              <i className="fas fa-sign-out-alt"></i>
-            </div>
           </ul>
+          <hr className="admin_sidebar_separator" />
+          <div
+            className="admin_sidebar_sign_out_icon"
+            data-tooltip="Sign Out"
+            onClick={handleLogout}
+          >
+            <i className="fas fa-sign-out-alt"></i>
+          </div>
         </div>
       )}
     </div>

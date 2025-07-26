@@ -7,11 +7,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
   ArcElement,
 } from "chart.js";
+import { Bar } from "react-chartjs-2";
 import "../../styles/admin/dashboard.css";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
@@ -20,6 +22,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -46,6 +49,7 @@ function Dashboard() {
   });
   const [topProducts, setTopProducts] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
+  const [barChartData, setBarChartData] = useState([]);
 
   useEffect(() => {
     document.title = "Dashboard - Alurà System Management";
@@ -64,6 +68,7 @@ function Dashboard() {
     fetchDashboardData(thisMonth, thisYear);
     fetchTopProducts(thisMonth, thisYear);
     fetchPieData(thisMonth, thisYear);
+    fetchBarData(thisMonth, thisYear);
   }, []);
 
   const getPreviousMonthYear = (month, year) => {
@@ -133,6 +138,22 @@ function Dashboard() {
     }
   };
 
+  const fetchBarData = async (month, year) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/dashboard/products-sold-by-type?month=${month}&year=${year}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result = await res.json();
+      if (result?.data) {
+        setBarChartData(result.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch bar chart data:", err);
+    }
+  };
+
   const calcPercent = (current, previous) => {
     if (previous === 0) return current === 0 ? 0 : 100;
     return Number((((current - previous) / previous) * 100).toFixed(2));
@@ -144,13 +165,43 @@ function Dashboard() {
       {
         data: pieChartData.map((d) => d.totalQuantitySold),
         backgroundColor: [
-          "#4CAF50", "#2196F3", "#FFC107", "#FF5722",
-          "#9C27B0", "#3F51B5", "#009688", "#E91E63"
+          "#93aad8", "#a4d693", "#d3cd92", "#d3b692",
+          "#c492d3", "#a292d3", "#92d3b8", "#d39292"
         ],
         borderWidth: 1,
       },
     ],
   };
+
+  const barData = {
+    labels: barChartData.map((d) => d.productTypeName),
+    datasets: [
+      {
+        label: "Sold",
+        data: barChartData.map((d) => d.totalQuantitySold),
+        backgroundColor: [
+          "#d3b692", "#d39292", "#d3cd92", "#93aad8",
+          "#c492d3", "#a292d3", "#92d3b8", "#a4d693"
+        ].slice(0, barChartData.length),
+        borderRadius: 4,
+      },
+    ],
+  };
+
+  const barOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
 
   const handleMonthChange = (e) => {
     const [month, year] = e.target.value.split("/").map(Number);
@@ -158,6 +209,7 @@ function Dashboard() {
     fetchDashboardData(month, year);
     fetchTopProducts(month, year);
     fetchPieData(month, year);
+    fetchBarData(month, year);
   };
 
   return (
@@ -230,6 +282,19 @@ function Dashboard() {
               )}
             </div>
           </div>
+          <div className="revenue_chart">
+            <div className="chart_header">
+              <h5>Top Selling Types</h5>
+            </div>
+            {barChartData.length > 0 ? (
+              <Bar data={barData} options={barOptions} />
+            ) : (
+              <p style={{ padding: "20px", textAlign: "center" }}>No data available</p>
+            )}
+          </div>
+        </div>
+
+        <div className="dashboard_charts">
           <div className="revenue_chart">
             <div className="chart_header">
               <h5>Top Selling Products</h5>

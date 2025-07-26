@@ -17,22 +17,27 @@
         }
 
         .admin_sidebar_icons {
-            display: flex;
+            /* display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%;
+            height: 100%; */
         }
 
         .admin_sidebar_menu_icons {
             list-style: none;
             padding: 0;
             margin: 0;
+            flex-grow: 1;
+
 
             .admin_sidebar_menu_item {
-                padding: 10px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                margin-left: -10px !important;
                 text-align: center;
                 cursor: pointer;
                 position: relative;
+
 
                 i {
                     font-size: 16px;
@@ -73,6 +78,7 @@
             margin-bottom: 20px;
             cursor: pointer;
             position: relative;
+
 
             i {
                 font-size: 16px;
@@ -174,7 +180,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 15px 20px;
+        padding: 15px 20px 15px 10px;
         cursor: pointer;
         font-size: 14px;
         color: #333;
