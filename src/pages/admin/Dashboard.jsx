@@ -271,7 +271,7 @@ function Dashboard() {
 
         <div className="dashboard_charts">
           <div className="total_sales_pie">
-            <h5>Top Selling Categories</h5>
+            <h5>Category Statitics</h5>
             <div className="pie_wrapper">
               {pieChartData.length > 0 ? (
                 <Pie data={pieData} />
@@ -289,7 +289,7 @@ function Dashboard() {
             {barChartData.length > 0 ? (
               <Bar data={barData} options={barOptions} />
             ) : (
-              <p style={{ padding: "20px", textAlign: "center" }}>No data available</p>
+              <p style={{ padding: "40px", textAlign: "center", fontSize: "14px" }}>No data available</p>
             )}
           </div>
         </div>
@@ -321,7 +321,7 @@ function Dashboard() {
                         <i
                           className="fas fa-info-circle detail_icon"
                           title="View Details"
-                          onClick={() => navigate(`/admin/product-list/${product._id}`)}
+                          onClick={() => navigate(`/admin/product-list/${product.productId}`)}
                           style={{ cursor: "pointer" }}
                         />
                       </td>
@@ -329,7 +329,7 @@ function Dashboard() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>No data available</td>
+                    <td colSpan="5" style={{ textAlign: "center", fontSize: "14px" }}>No data available</td>
                   </tr>
                 )}
               </tbody>

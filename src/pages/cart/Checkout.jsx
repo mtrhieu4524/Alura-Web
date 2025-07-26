@@ -181,9 +181,30 @@ function Checkout() {
     setLoading(true);
 
     try {
-      // Step 1: Prepare order for VNPay (if payment method is VNPAY)
+      const productsRes = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+      const productsData = await productsRes.json();
+
+      if (!productsData?.success || !Array.isArray(productsData.products)) {
+        toast.error("Failed to verify products. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const availableProductIds = productsData.products
+        .filter((p) => p.isPublic)
+        .map((p) => p._id);
+
+      const invalidCartItems = cartItems.filter(
+        (item) => !availableProductIds.includes(item.productId)
+      );
+
+      if (invalidCartItems.length > 0) {
+        toast.error("Some products in your cart are no longer available.");
+        navigate("/cart");
+        return;
+      }
+
       if (paymentMethod === "VNPAY") {
-        // First, prepare the order for VNPay payment
         const prepareOrderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -212,7 +233,6 @@ function Checkout() {
         }
 
         const prepareResult = await prepareResponse.json();
-        console.log("Prepare Result:", prepareResult);
 
         const paymentResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/payment/vnpay/createPaymentUrl`,
@@ -223,8 +243,8 @@ function Checkout() {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              ...prepareResult.paymentData, // Spread toàn bộ paymentData
-              amount: prepareResult.amount, // Thêm amount
+              ...prepareResult.paymentData,
+              amount: prepareResult.amount,
               bankCode: "",
             }),
           }
@@ -233,20 +253,18 @@ function Checkout() {
         if (!paymentResponse.ok) {
           toast.error("Failed to create payment URL");
           navigate("/cart");
+          return;
         }
 
         const paymentResult = await paymentResponse.json();
 
         toast.success("Order prepared successfully! Redirecting to VNPay...");
-
-        // Redirect to VNPay payment page
         if (paymentResult.paymentUrl) {
           window.location.href = paymentResult.paymentUrl;
         } else {
           throw new Error("Payment URL not received");
         }
       } else {
-        // Handle COD payment (original logic)
         const orderData = {
           shippingAddress: address,
           shippingMethod: shippingMethod,
@@ -288,13 +306,12 @@ function Checkout() {
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      toast.error(
-        error.message || "An error occurred while placing your order."
-      );
+      toast.error(error.message || "An error occurred while placing your order.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="Checkout">

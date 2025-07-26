@@ -8,10 +8,12 @@ import "../../styles/product/ProductDetail.css";
 import { useCart } from "../../context/CartContext";
 import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function ProductDetail() {
   const location = useLocation();
   const productId = location.state?.id;
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
@@ -45,11 +47,6 @@ function ProductDetail() {
       return;
     }
 
-    if (product && product.isPublic === false) {
-      toast.error("This product is currently unavailable for purchase.");
-      return;
-    }
-
     const token = localStorage.getItem("token");
     if (!token) {
       toast.warning("Please sign in before add product to cart.");
@@ -57,6 +54,24 @@ function ProductDetail() {
     }
 
     try {
+      const productsRes = await fetch(`${API_URL}/products`);
+      const productsData = await productsRes.json();
+
+      if (!productsData?.success || !Array.isArray(productsData.products)) {
+        toast.error("Something went wrong. Please try again.");
+        return;
+      }
+
+      const stillExists = productsData.products.find(
+        (p) => p._id === productId && p.isPublic === true
+      );
+
+      if (!stillExists) {
+        navigate("/");
+        toast.error("Sorry, this product is no longer available now.");
+        return;
+      }
+
       const response = await fetch(`${API_URL}/cart/add`, {
         method: "POST",
         headers: {
@@ -70,7 +85,6 @@ function ProductDetail() {
       });
 
       if (!response.ok) {
-        // const errData = await response.json().catch(() => null);
         let errorMessage = "Failed to add to cart";
         if (role === "ADMIN" || role === "STAFF") {
           errorMessage =

@@ -30,7 +30,6 @@ function Cart() {
   console.log("Loading:", loading);
   console.log("CartItems length:", cartItems.length);
 
-  // Authentication and initial data fetch
   useEffect(() => {
     console.log("=== DEBUG CART ===");
     console.log("Token:", token);
@@ -39,7 +38,6 @@ function Cart() {
     fetchCartItems();
   }, []);
 
-  // Handle vnpay fail return
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const responseCode = urlParams.get("responseCode");
@@ -59,7 +57,6 @@ function Cart() {
     }
   }, []);
 
-  // Fetch cart items from API
   const fetchCartItems = async () => {
     console.log("=== DEBUG CART ===");
     console.log("Token:", token);
@@ -93,7 +90,6 @@ function Cart() {
     }
   };
 
-  // Handle quantity change
   const handleQuantityChange = async (cartItemId, newQuantity) => {
     if (!token) {
       toast.error("You must be logged in to change quantity.");
@@ -118,12 +114,11 @@ function Cart() {
         throw new Error(errData?.message || "Failed to update quantity.");
       }
 
-      // Refresh cart data
       await fetchCartItems();
       toast.success("Quantity updated successfully.");
     } catch (error) {
       console.error("Error updating quantity:", error);
-      toast.error("An error occurred while updating quantity.");
+      toast.error("Sorry, some products in cart are unavailable now.");
       await fetch(`${API_URL}/cart/item/${cartItemId}`, {
         method: "DELETE",
         headers: {
@@ -136,14 +131,12 @@ function Cart() {
     }
   };
 
-  // Navigate to product detail page
   const handleViewProduct = (item) => {
     navigate(`/products/${item}`, {
       state: { id: item },
     });
   };
 
-  // Navigate to checkout page
   const handleCheckoutPage = async () => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty. Please add items before checking out.");
@@ -151,7 +144,31 @@ function Cart() {
     }
 
     try {
-      // Call preview API before checkout
+      const productsRes = await fetch(`${API_URL}/products`);
+      const productsData = await productsRes.json();
+
+      if (!productsData?.success || !Array.isArray(productsData.products)) {
+        toast.error("Failed to verify products. Please try again.");
+        return;
+      }
+
+      const availableProductIds = productsData.products
+        .filter((p) => p.isPublic)
+        .map((p) => p._id);
+
+      const invalidCartItems = cartItems.filter(
+        (item) => !availableProductIds.includes(item.productId)
+      );
+
+      if (invalidCartItems.length > 0) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+        toast.error("Some products in your cart are no longer available.");
+        return;
+      }
+
+
       const selectedCartItemIds = cartItems.map((item) => item._id);
 
       const response = await fetch(`${API_URL}/cart/preview`, {
@@ -175,7 +192,6 @@ function Cart() {
 
       const previewData = await response.json();
 
-      // Navigate to checkout with preview data
       navigate("/checkout", {
         state: {
           cartItems,
@@ -189,7 +205,7 @@ function Cart() {
     }
   };
 
-  // Remove item from cart
+
   const handleRemoveFromCart = async (itemId) => {
     if (!token) {
       toast.error("You must be logged in.");
@@ -212,7 +228,6 @@ function Cart() {
 
       toast.success("Item removed from cart.");
 
-      // Refresh cart data
       await fetchCartItems();
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -222,14 +237,12 @@ function Cart() {
     }
   };
 
-  // Loading component
   const LoadingSpinner = () => (
     <div className="cart_loading">
       <Spin />
     </div>
   );
 
-  // Empty cart component
   const EmptyCart = () => (
     <div className="cart_empty_message">
       <h5>Your cart is empty</h5>
@@ -237,7 +250,6 @@ function Cart() {
     </div>
   );
 
-  // Cart item component
   const CartItem = ({ item }) => {
     const product = item.productId;
     const quantity = item.quantity;

@@ -91,7 +91,7 @@ function BatchStockList({ searchQuery = "" }) {
         setFormData((prev) => ({
           ...prev,
           batchId: selectedBatch._id,
-          productName: `${selectedBatch.productId?.name || "N/A"} - ${selectedBatch.quantity}`,
+          productName: `${selectedBatch.productId?.name || "N/A"}`,
           warehouseName: selectedBatch.warehouseId?.name || "",
         }));
       }
@@ -168,8 +168,8 @@ function BatchStockList({ searchQuery = "" }) {
     { header: "Batch Code", accessor: "batchCode" },
     { header: "Product Name", accessor: "productName" },
     { header: "Warehouse", accessor: "warehouse" },
-    { header: "Quantity In Batch", accessor: "quantity" },
-    { header: "Quantity In Store ", accessor: "remaining" },
+    { header: "Quantity Exported To Store", accessor: "quantityExportedToStore" },
+    { header: "Remaining", accessor: "remaining" },
     { header: "Expiry Date", accessor: "expiryDate" },
     { header: "Exported At", accessor: "exportedAt" },
     { header: "Note", accessor: "note" },
@@ -179,8 +179,8 @@ function BatchStockList({ searchQuery = "" }) {
     batchCode: stock.batchId?.batchCode || "-",
     productName: stock.productId?.name || "-",
     warehouse: stock.warehouseId?.name || "-",
-    quantity: stock.quantity ?? "-",
     remaining: stock.remaining ?? "-",
+    quantityExportedToStore: stock.quantity ?? "-",
     expiryDate: stock.batchId?.expiryDate
       ? new Date(stock.batchId.expiryDate).toLocaleDateString("vi-VN")
       : "-",
@@ -226,7 +226,7 @@ function BatchStockList({ searchQuery = "" }) {
                     <option value="">Choose batch</option>
                     {batches.map((batch) => (
                       <option key={batch._id} value={batch._id}>
-                        {batch.batchCode}
+                        {`${batch.batchCode} - Quantity: ${batch.remaining}`}
                       </option>
                     ))}
                   </select>
@@ -255,7 +255,7 @@ function BatchStockList({ searchQuery = "" }) {
                 </div>
 
                 <div className="form_group">
-                  <label htmlFor="quantity">Quantity *</label>
+                  <label htmlFor="quantity">Quantity</label>
                   <input
                     type="number"
                     id="quantity"

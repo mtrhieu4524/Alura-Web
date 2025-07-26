@@ -67,7 +67,7 @@ function BatchList({ searchQuery = "" }) {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [prodRes, distRes, wareRes, certRes] = await Promise.all([
-        fetch(`${API_URL}/products/admin-and-staff`, { headers }),
+        fetch(`${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=100`, { headers }),
         fetch(`${API_URL}/distributor`, { headers }),
         fetch(`${API_URL}/warehouse`, { headers }),
         fetch(`${API_URL}/batch-certificate`, { headers }),
@@ -77,6 +77,8 @@ function BatchList({ searchQuery = "" }) {
       const distData = await distRes.json();
       const wareData = await wareRes.json();
       const certData = await certRes.json();
+
+      console.log(prodData);
 
       if (prodData.success) setProducts(prodData.products);
       if (Array.isArray(distData)) setDistributors(distData);
@@ -110,7 +112,6 @@ function BatchList({ searchQuery = "" }) {
 
   const openEditModal = (batch) => {
     setSelectedBatch(batch);
-    const today = new Date().toISOString().split("T")[0];
     setFormData({
       productId: batch.productId?._id || "",
       distributorId: batch.distributorId?._id || "",
@@ -121,7 +122,7 @@ function BatchList({ searchQuery = "" }) {
       quantity: batch.quantity,
       amount: batch.amount,
       expiryDate: batch.expiryDate?.slice(0, 10) || "",
-      importDate: today,
+      importDate: new Date().toISOString().split("T")[0],
       notes: batch.notes || "",
     });
     setIsUpdateModalOpen(true);
@@ -192,7 +193,7 @@ function BatchList({ searchQuery = "" }) {
   const handleDeleteBatch = async () => {
     if (!selectedBatch) return;
     if (selectedBatch.lockedReason) {
-      toast.error("Batch is already cancelled.");
+      toast.error("Batch is already deleted.");
       return;
     }
     try {
@@ -201,11 +202,11 @@ function BatchList({ searchQuery = "" }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        toast.success("Batch cancelled successfully!");
+        toast.success("Batch deleted successfully!");
         setBatches(batches.filter((b) => b._id !== selectedBatch._id));
         closeModal();
       } else {
-        toast.error("Batch is already cancelled.");
+        toast.error("Batch is already deleted.");
       }
     } catch {
       toast.error("Error deleting batch.");
@@ -224,11 +225,12 @@ function BatchList({ searchQuery = "" }) {
     "Warehouse",
     "Distributor",
     "Quantity",
+    "Remaining",
     "Amount",
     "Expiry Date",
     "Imported Date",
     "Note",
-    "Status",
+    // "Status",
     "Action",
   ];
 
@@ -238,15 +240,16 @@ function BatchList({ searchQuery = "" }) {
     warehouse: b.warehouseId?.name || "-",
     distributor: b.distributorId?.name || "-",
     quantity: b.quantity || "-",
+    remaining: b.remaining || "-",
     amount: b.amount?.toLocaleString() || "-",
     expiry_date: b.expiryDate ? formatDate(b.expiryDate) : "-",
     imported_date: b.createdAt ? formatDate(b.createdAt) : "-",
     note: b.notes || "-",
-    status: (
-      <span className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"}`}>
-        {b.lockedReason ? "Cancelled" : "Active"}
-      </span>
-    ),
+    // status: (
+    //   <span className={`status_tag ${b.lockedReason ? "status_cancelled" : "status_active"}`}>
+    //     {b.lockedReason ? "Cancelled" : "Active"}
+    //   </span>
+    // ),
     action: (
       <div className="action_icons" key={b._id}>
         <i className="fas fa-pen edit_icon" onClick={() => openEditModal(b)} />
@@ -296,86 +299,173 @@ function BatchList({ searchQuery = "" }) {
                 </div>
               )}
 
-              <div className="form_group">
-                <label>Product</label>
-                <select
-                  value={formData.productId}
-                  onChange={(e) => handleProductChange(e.target.value)}
-                  required
-                >
-                  <option value="">Select Product</option>
-                  {products.map((p) => (
-                    <option key={p._id} value={p._id}>{p.name}</option>
-                  ))}
-                </select>
-              </div>
+              {selectedBatch ? (
+                <>
+                  <div className="form_group">
+                    <label>Distributor</label>
+                    <select
+                      value={formData.distributorId}
+                      onChange={(e) => setFormData({ ...formData, distributorId: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Distributor</option>
+                      {distributors.map((d) => (
+                        <option key={d._id} value={d._id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="form_group">
-                <label>Distributor</label>
-                <select
-                  value={formData.distributorId}
-                  onChange={(e) => setFormData({ ...formData, distributorId: e.target.value })}
-                  required
-                >
-                  <option value="">Select Distributor</option>
-                  {distributors.map((d) => (
-                    <option key={d._id} value={d._id}>{d.name}</option>
-                  ))}
-                </select>
-              </div>
+                  <div className="form_group">
+                    <label>Warehouse</label>
+                    <select
+                      value={formData.warehouseId}
+                      onChange={(e) => setFormData({ ...formData, warehouseId: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Warehouse</option>
+                      {warehouses.map((w) => (
+                        <option key={w._id} value={w._id}>{w.name}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="form_group">
-                <label>Warehouse</label>
-                <select
-                  value={formData.warehouseId}
-                  onChange={(e) => setFormData({ ...formData, warehouseId: e.target.value })}
-                  required
-                >
-                  <option value="">Select Warehouse</option>
-                  {warehouses.map((w) => (
-                    <option key={w._id} value={w._id}>{w.name}</option>
-                  ))}
-                </select>
-              </div>
+                  <div className="form_group">
+                    <label>Certificate</label>
+                    <select
+                      value={formData.certificateId}
+                      onChange={(e) => setFormData({ ...formData, certificateId: e.target.value })}
+                    >
+                      <option value="">Select Certificate</option>
+                      {certificates.map((c) => (
+                        <option key={c._id} value={c._id}>{c.certificateCode}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="form_group">
-                <label>Certificate</label>
-                <select
-                  value={formData.certificateId}
-                  onChange={(e) => setFormData({ ...formData, certificateId: e.target.value })}
-                >
-                  <option value="">Select Certificate</option>
-                  {certificates.map((c) => (
-                    <option key={c._id} value={c._id}>{c.certificateCode}</option>
-                  ))}
-                </select>
-              </div>
+                  <div className="form_group">
+                    <label>Amount (VND)</label>
+                    <input
+                      type="number"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                      required
+                    />
+                  </div>
 
-              {[
-                { field: "quantity", label: "Quantity", type: "number" },
-                { field: "amount", label: "Amount (VND)", type: "number" },
-                { field: "importDate", label: "Import Date", type: "date", disabled: true },
-                { field: "expiryDate", label: "Expiry Date", type: "date" },
-              ].map(({ field, label, type, disabled }) => (
-                <div className="form_group" key={field}>
-                  <label>{label}</label>
-                  <input
-                    type={type}
-                    value={formData[field]}
-                    onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                    required={field !== "quantity"}
-                    disabled={disabled}
-                  />
-                </div>
-              ))}
+                  <div className="form_group">
+                    <label>Expiry Date</label>
+                    <input
+                      type="date"
+                      value={formData.expiryDate}
+                      onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                      required
+                    />
+                  </div>
 
-              <div className="form_group">
-                <label>Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                />
-              </div>
+                  <div className="form_group">
+                    <label>Notes</label>
+                    <textarea
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="form_group">
+                    <label>Product</label>
+                    <select
+                      value={formData.productId}
+                      onChange={(e) => handleProductChange(e.target.value)}
+                      required
+                    >
+                      <option value="">Select Product</option>
+                      {products.map((p) => (
+                        <option key={p._id} value={p._id}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form_group">
+                    <label>Distributor</label>
+                    <select
+                      value={formData.distributorId}
+                      onChange={(e) => setFormData({ ...formData, distributorId: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Distributor</option>
+                      {distributors.map((d) => (
+                        <option key={d._id} value={d._id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form_group">
+                    <label>Warehouse</label>
+                    <select
+                      value={formData.warehouseId}
+                      onChange={(e) => setFormData({ ...formData, warehouseId: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Warehouse</option>
+                      {warehouses.map((w) => (
+                        <option key={w._id} value={w._id}>{w.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form_group">
+                    <label>Certificate</label>
+                    <select
+                      value={formData.certificateId}
+                      onChange={(e) => setFormData({ ...formData, certificateId: e.target.value })}
+                    >
+                      <option value="">Select Certificate</option>
+                      {certificates.map((c) => (
+                        <option key={c._id} value={c._id}>{c.certificateCode}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form_group">
+                    <label>Quantity</label>
+                    <input
+                      type="number"
+                      value={formData.quantity}
+                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Amount (VND)</label>
+                    <input
+                      type="number"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Expiry Date</label>
+                    <input
+                      type="date"
+                      value={formData.expiryDate}
+                      onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Notes</label>
+                    <textarea
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
 
               <button type="submit" className="add_account_btn admin_modal_add_button">
                 {selectedBatch ? "Update" : "Create"} Batch
@@ -390,7 +480,7 @@ function BatchList({ searchQuery = "" }) {
           <div className="modal_content">
             <button className="close_modal_btn" onClick={closeModal}>×</button>
             <h5>
-              Are you sure you want to delete (cancelled) <b>{selectedBatch?.batchCode}</b>?
+              Are you sure you want to delete (soft delete) <b>{selectedBatch?.batchCode}</b>?
             </h5>
             <div className="modal-buttons">
               <button className="cancel_btn" onClick={closeModal}>Cancel</button>
