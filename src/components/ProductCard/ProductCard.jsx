@@ -107,20 +107,22 @@ const ProductList = ({ products, resetKey }) => {
 
   return (
     <div className="product_list col-lg-12">
-      {displayedProducts.map((product) => (
-        <ProductCard
-          key={product._id}
-          id={product._id}
-          image={product.imgUrls?.[0] || ""}
-          name={product.name}
-          price={product.price}
-          type={product.productTypeId?.name || ""}
-          volume={product.volume}
-          sex={product.sex}
-          stock={product.stock || 0}
-          skinType={product.skinType || "Normal"}
-        />
-      ))}
+      <div className="product_grid">
+        {displayedProducts.map((product) => (
+          <ProductCard
+            key={product._id}
+            id={product._id}
+            image={product.imgUrls?.[0] || ""}
+            name={product.name}
+            price={product.price}
+            type={product.productTypeId?.name || ""}
+            volume={product.volume}
+            sex={product.sex}
+            stock={product.stock || 0}
+            skinType={product.skinType || "Normal"}
+          />
+        ))}
+      </div>
 
       {totalPages > 1 && (
         <div className="pagination_container">
@@ -134,8 +136,7 @@ const ProductList = ({ products, resetKey }) => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`pagination_button ${currentPage === i + 1 ? "active" : ""
-                }`}
+              className={`pagination_button ${currentPage === i + 1 ? "active" : ""}`}
               onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}

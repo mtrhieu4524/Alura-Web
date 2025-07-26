@@ -248,7 +248,7 @@ function ProductDetail() {
               <i
                 className="fas fa-shopping-cart"
                 style={{ color: "white" }}></i>{" "}
-              {maxProductAvailable === 0 ? "Sold out" : "Add to cart"}
+              {maxProductAvailable === 0 ? "Sold Out" : "Add To Cart"}
             </button>
           </div>
 
