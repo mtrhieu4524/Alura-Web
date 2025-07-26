@@ -158,11 +158,19 @@ function BatchList({ searchQuery = "" }) {
       ? `${API_URL}/batch/${selectedBatch._id}`
       : `${API_URL}/batch`;
 
-    const payload = {
-      ...formData,
-      importDate: importDate.toISOString(),
-      expiryDate: expiryDate.toISOString(),
-    };
+    const payload = selectedBatch
+      ? {
+        distributorId: formData.distributorId,
+        certificateId: formData.certificateId || null,
+        amount: Number(formData.amount),
+        expiryDate: new Date(formData.expiryDate).toISOString(),
+        notes: formData.notes,
+      }
+      : {
+        ...formData,
+        importDate: importDate.toISOString(),
+        expiryDate: expiryDate.toISOString(),
+      };
 
     if (selectedBatch) {
       delete payload.batchCode;
@@ -314,7 +322,7 @@ function BatchList({ searchQuery = "" }) {
                       ))}
                     </select>
                   </div>
-
+                  {/* 
                   <div className="form_group">
                     <label>Warehouse</label>
                     <select
@@ -327,7 +335,7 @@ function BatchList({ searchQuery = "" }) {
                         <option key={w._id} value={w._id}>{w.name}</option>
                       ))}
                     </select>
-                  </div>
+                  </div> */}
 
                   <div className="form_group">
                     <label>Certificate</label>
