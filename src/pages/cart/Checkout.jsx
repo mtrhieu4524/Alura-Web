@@ -181,7 +181,7 @@ function Checkout() {
     setLoading(true);
 
     try {
-      const productsRes = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+      const productsRes = await fetch(`${import.meta.env.VITE_API_URL}/products?pageIndex=1&pageSize=100`);
       const productsData = await productsRes.json();
 
       if (!productsData?.success || !Array.isArray(productsData.products)) {

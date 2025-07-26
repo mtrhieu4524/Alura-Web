@@ -144,7 +144,7 @@ function Cart() {
     }
 
     try {
-      const productsRes = await fetch(`${API_URL}/products`);
+      const productsRes = await fetch(`${API_URL}/products?pageIndex=1&pageSize=100`);
       const productsData = await productsRes.json();
 
       if (!productsData?.success || !Array.isArray(productsData.products)) {

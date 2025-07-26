@@ -54,7 +54,7 @@ function ProductDetail() {
     }
 
     try {
-      const productsRes = await fetch(`${API_URL}/products`);
+      const productsRes = await fetch(`${API_URL}/products?pageIndex=1&pageSize=100`);
       const productsData = await productsRes.json();
 
       if (!productsData?.success || !Array.isArray(productsData.products)) {
@@ -67,7 +67,7 @@ function ProductDetail() {
       );
 
       if (!stillExists) {
-        navigate("/");
+        // navigate("/");
         toast.error("Sorry, this product is no longer available now.");
         return;
       }

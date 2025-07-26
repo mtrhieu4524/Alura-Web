@@ -27,7 +27,7 @@ function ProductList({ searchQuery = "" }) {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      let url = `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=20&searchByName=${encodeURIComponent(searchQuery)}`;
+      let url = `${API_URL}/products/admin-and-staff?pageIndex=1&pageSize=100&searchByName=${encodeURIComponent(searchQuery)}`;
       if (filterType !== "All") {
         url += `&productTypeId=${filterType}`;
       }
