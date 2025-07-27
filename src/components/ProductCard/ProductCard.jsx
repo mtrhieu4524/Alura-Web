@@ -42,9 +42,9 @@ const ProductCard = ({
         <img src={image} alt={name} />
         {stockLabel && (
           <span
-            className={`stock_status ${stock === 0 ? "sold_out" : "low_stock"
-              }`}
-          >
+            className={`stock_status ${
+              stock === 0 ? "sold_out" : "low_stock"
+            }`}>
             {stockLabel}
           </span>
         )}
@@ -116,7 +116,9 @@ const ProductList = ({ products, resetKey }) => {
               image={product.imgUrls?.[0] || ""}
               name={product.name}
               price={product.price}
-              type={product.productTypeId?.name || ""}
+              type={
+                product.productTypeId?.name || product.productType?.name || ""
+              }
               volume={product.volume}
               sex={product.sex}
               stock={product.stock || 0}
@@ -131,24 +133,23 @@ const ProductList = ({ products, resetKey }) => {
           <button
             className="pagination_button"
             onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
+            disabled={currentPage === 1}>
             &lt;
           </button>
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`pagination_button ${currentPage === i + 1 ? "active" : ""}`}
-              onClick={() => handlePageChange(i + 1)}
-            >
+              className={`pagination_button ${
+                currentPage === i + 1 ? "active" : ""
+              }`}
+              onClick={() => handlePageChange(i + 1)}>
               {i + 1}
             </button>
           ))}
           <button
             className="pagination_button"
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
+            disabled={currentPage === totalPages}>
             &gt;
           </button>
         </div>
@@ -161,7 +162,6 @@ const ProductList = ({ products, resetKey }) => {
       {displayedProducts.length > 0 && isCosmeticsPage && <SpecialCard />}
     </div>
   );
-
 };
 
 export default ProductList;
