@@ -220,7 +220,7 @@ function OrderDetail() {
                                     <i className="fas fa-phone"></i>
                                     <span>
                                         <strong>Phone Number: </strong>
-                                        <span>{orderDetails.userId?.phone || 'None'}</span>
+                                        <span>{orderDetails.phoneNumber || 'None'}</span>
                                     </span>
                                 </div>
                             </div>
